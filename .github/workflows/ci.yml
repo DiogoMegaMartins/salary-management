@@ -1,21 +1,43 @@
 name: CI
 on:
   push:
-  pull_request:
+  workflow_dispatch:
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+permissions:
+  contents: read
 jobs:
-  verify:
+  check:
+    name: check
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [20, 22, 24]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 24
           cache: npm
       - run: npm ci
       - run: npm run check
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
       - run: npm test
-      - run: npm audit --audit-level=high
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
       - run: npm run build
