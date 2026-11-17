@@ -1,5 +1,7 @@
 # Partição do Salário
 
+[![CI](https://github.com/DiogoMegaMartins/salary-management/actions/workflows/ci.yml/badge.svg)](https://github.com/DiogoMegaMartins/salary-management/actions/workflows/ci.yml)
+
 Aplicação web pessoal para dividir o rendimento mensal em parcelas (gastos, poupança, investimento), registar despesas, acompanhar metas e submetas e guardar cópias de segurança. Interface em português (Portugal), moeda base EUR.
 
 ## Funcionalidades
@@ -25,6 +27,9 @@ npm run build      # produz dist/ (cliente em dist/public, servidor em dist/inde
 npm start          # produção (NODE_ENV=production node dist/index.cjs)
 ```
 Variável de ambiente: `PORT` (por omissão 5000). Os dados ficam em `data.db` (SQLite) na raiz do projeto.
+
+## GitHub e integração contínua
+O código está em [DiogoMegaMartins/salary-management](https://github.com/DiogoMegaMartins/salary-management) (repositório privado). O fluxo [`.github/workflows/ci.yml`](.github/workflows/ci.yml) corre em cada `push` e `pull_request`, com Node 20, 22 e 24: `npm ci`, verificação de tipos, testes, `npm audit` e build. Se o `npm ci` falhar, confirmar o acesso a `cdn.sheetjs.com`, de onde vem a dependência `xlsx`.
 
 ## Documentação
 | Ficheiro | Conteúdo |
