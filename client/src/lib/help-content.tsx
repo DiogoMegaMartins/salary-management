@@ -223,6 +223,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         <UL>
           <li>Saldo inicial: valor e data de referência. O mês da data e os seguintes contam como novos; os anteriores já estão no saldo.</li>
           <li>Ajuste: valor com sinal, data e nota. &quot;Corrigir total&quot; regista a diferença como ajuste.</li>
+          <li>Cada saldo ou ajuste do histórico aparece num cartão, como as submetas. O lápis edita valor, data e nota; o caixote apaga. O tipo e a meta ou submeta não mudam: para isso, apaga e cria de novo.</li>
           <li>Submetas (um nível): plataforma, moeda, objetivo e prazo. Os aportes e retiradas da meta podem ser atribuídos a submetas, até ao valor do movimento.</li>
           <li>Moedas: as taxas são manuais (1 origem = taxa × destino). Sem taxa, a submeta fica fora do total, que é marcado como incompleto.</li>
         </UL>
@@ -314,6 +315,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         <H3>Tablet, campos e layouts</H3>
         <P>Os formulários adaptam as colunas ao espaço disponível no próprio cartão. Janelas e painéis respeitam a largura e a altura do ecrã; tabelas financeiras largas podem ter deslocação horizontal dentro da tabela, sem alargar a página.</P>
         <P>A navegação lateral persistente aparece a partir de 1024 px de largura do ecrã. Os cartões personalizados empilham abaixo de 900 px de largura útil, sem alterar automaticamente as posições guardadas para computador. Guardar um layout no modo compacto continua a aplicar esse layout globalmente, conforme o aviso no editor.</P>
+        <P>Para mudar a disposição, usa o botão Editar layout (ícone de grelha) no cabeçalho, junto de mostrar valores e do tema. Existe no Painel, nas Parcelas, na Carteira e no Orçamento; cada cartão, incluindo os indicadores de topo, move-se e redimensiona-se sozinho.</P>
       </>
     ),
   },

@@ -13,7 +13,7 @@ Se existir código de acesso, enviar o cabeçalho `x-codigo-acesso` em todos os 
 | Movimentos | `GET /months/:id/transactions`, `POST /transactions`, `PATCH /transactions/:id`, `DELETE /transactions/:id` |
 | Categorias | `GET/POST /categories`, `PATCH/DELETE /categories/:id` |
 | Catálogos | `POST /platforms`, `PATCH/DELETE /platforms/:id`; o mesmo para `/parcel-types` e `/tx-types` |
-| Metas | `POST /goal-entries`, `DELETE /goal-entries/:id`, `POST /subgoals`, `PATCH/DELETE /subgoals/:id`, `POST/DELETE /contribution-links`, `POST/DELETE /fx-rates` |
+| Metas | `POST /goal-entries`, `PATCH/DELETE /goal-entries/:id`, `POST /subgoals`, `PATCH/DELETE /subgoals/:id`, `POST/DELETE /contribution-links`, `POST/DELETE /fx-rates` |
 | Backup | `GET /export/json`, `GET /export/xlsx`, `POST /import/preview`, `POST /import` |
 
 ## Regras de validação relevantes

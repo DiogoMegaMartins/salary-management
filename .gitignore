@@ -20,3 +20,6 @@ pre-import-backup-*.json
 
 *.log
 .DS_Store
+
+# Cache de ferramentas locais
+.impeccable/
