@@ -1,13 +1,17 @@
 version: 2
 updates:
+  # npm: sem PRs de versões novas. Só chegam PRs de segurança (limite 0 desliga as atualizações de versão).
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
-    groups:
-      minor-and-patch:
-        update-types: [minor, patch]
+      interval: monthly
+    open-pull-requests-limit: 0
+  # GitHub Actions: no máximo um PR por mês.
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
+    open-pull-requests-limit: 1
+    groups:
+      actions:
+        patterns: ["*"]
