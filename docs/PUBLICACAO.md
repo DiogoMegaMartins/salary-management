@@ -37,7 +37,9 @@ Os controlos de publicação estão em https://www.perplexity.ai/computer/a/d0b6
 ## Cópias automáticas e CI
 - `./backups/` guarda cópias diárias da base de dados (ver [BACKUP-E-RESTAURO.md](BACKUP-E-RESTAURO.md)); só ajudam se essa pasta sobreviver às republicações.
 - Definir `ACCESS_CODE` no ambiente.
-- `.github/workflows/ci.yml` corre tipos, testes, `npm audit` e build em Node 20, 22 e 24.
+- `.github/workflows/ci.yml` corre em cada push, com Node 24 e três jobs em paralelo: `check` (tipos), `test` e `build` (inclui um teste de arranque em produção que chama `/api/health`).
+- `.github/workflows/audit.yml` corre `npm audit --omit=dev --audit-level=high` às segundas-feiras e quando `package.json` ou o lock mudam; não bloqueia PRs.
+- O CI não publica: a publicação continua a ser manual na plataforma.
 
 ## Onde ficam os dados
 - `DATA_DIR` (ou `DB_PATH`) define onde ficam `data.db`, `backups/` e os `pre-import-backup-*.json`. Apontar para um volume que sobreviva às republicações; por omissão é a pasta de trabalho.
