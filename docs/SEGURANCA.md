@@ -17,7 +17,7 @@
 - Logs sem corpos de resposta; `X-Content-Type-Options` e `Referrer-Policy`.
 
 ## Riscos conhecidos
-- `npm audit` sem avisos à data de 2026-11-17; repetir antes de cada publicação. `xlsx` vem da distribuição oficial SheetJS (não do registo npm) e só é usado para exportar.
+- `npm audit --omit=dev` (dependências de produção) sem avisos à data de 2026-11-17; corre semanalmente no workflow `audit.yml`. As ferramentas de build podem ter avisos sem correção (ex.: `picomatch`, ReDoS em extglobs); não entram em produção. `xlsx` vem da distribuição oficial SheetJS (não do registo npm) e só é usado para exportar.
 - SQLite local não é persistência durável de produção.
 - A cópia offline é cifrada com uma chave derivada do código de acesso.
 - Catálogos, submetas, taxas e recorrências já validam na camada de armazenamento; falta esquema formal nessas rotas.
