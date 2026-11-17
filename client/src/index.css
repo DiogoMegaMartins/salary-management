@@ -1,0 +1,492 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* LIGHT MODE */
+:root {
+  --button-outline: rgba(0, 0, 0, 0.1);
+  --badge-outline: rgba(0, 0, 0, 0.05);
+  --opaque-button-border-intensity: -8;
+  --elevate-1: rgba(0, 0, 0, 0.03);
+  --elevate-2: rgba(0, 0, 0, 0.08);
+  --background: 210 25% 97%;
+  --foreground: 220 25% 12%;
+  --border: 214 16% 87%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 25% 12%;
+  --card-border: 214 16% 90%;
+  --sidebar: 212 22% 94%;
+  --sidebar-foreground: 220 25% 12%;
+  --sidebar-border: 214 16% 86%;
+  --sidebar-primary: 168 62% 27%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 212 20% 88%;
+  --sidebar-accent-foreground: 220 25% 12%;
+  --sidebar-ring: 168 62% 27%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 25% 12%;
+  --popover-border: 214 16% 88%;
+  --primary: 168 62% 27%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 212 20% 91%;
+  --secondary-foreground: 220 25% 12%;
+  --muted: 212 18% 93%;
+  --muted-foreground: 215 14% 42%;
+  --accent: 212 20% 90%;
+  --accent-foreground: 220 25% 12%;
+  --destructive: 2 72% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --input: 214 14% 78%;
+  --ring: 168 62% 27%;
+  --chart-1: 168 62% 32%;
+  --chart-2: 214 66% 44%;
+  --chart-3: 268 46% 50%;
+  --chart-4: 38 78% 42%;
+  --chart-5: 12 68% 48%;
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-serif: Source Serif 4, Georgia, serif;
+  --font-mono: JetBrains Mono, ui-monospace, monospace;
+  --radius: 0.5rem;
+  --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0);
+  --shadow-xs: 0px 2px 0px 0px hsl(0 0% 0% / 0);
+  --shadow-sm: 0px 2px 0px 0px hsl(0 0% 0% / 0), 0px 1px 2px -1px hsl(0 0% 0% / 0);
+  --shadow: 0px 2px 0px 0px hsl(0 0% 0% / 0), 0px 1px 2px -1px hsl(0 0% 0% / 0);
+  --shadow-md: 0px 2px 0px 0px hsl(0 0% 0% / 0), 0px 2px 4px -1px hsl(0 0% 0% / 0);
+  --shadow-lg: 0px 2px 0px 0px hsl(0 0% 0% / 0), 0px 4px 6px -1px hsl(0 0% 0% / 0);
+  --shadow-xl: 0px 2px 0px 0px hsl(0 0% 0% / 0), 0px 8px 10px -1px hsl(0 0% 0% / 0);
+  --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+
+  /* Fallback for older browsers */
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(
+    from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(
+    from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(
+    from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(
+    from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(
+    from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(
+    from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(
+    from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+}
+
+.dark {
+  --button-outline: rgba(255, 255, 255, 0.1);
+  --badge-outline: rgba(255, 255, 255, 0.05);
+  --opaque-button-border-intensity: 9;
+  --elevate-1: rgba(255, 255, 255, 0.04);
+  --elevate-2: rgba(255, 255, 255, 0.09);
+  --background: 220 20% 7%;
+  --foreground: 210 16% 96%;
+  --border: 218 14% 18%;
+  --card: 220 18% 10%;
+  --card-foreground: 210 16% 96%;
+  --card-border: 218 14% 16%;
+  --sidebar: 220 20% 9%;
+  --sidebar-foreground: 210 16% 96%;
+  --sidebar-border: 218 14% 16%;
+  --sidebar-primary: 166 58% 46%;
+  --sidebar-primary-foreground: 220 25% 8%;
+  --sidebar-accent: 218 14% 17%;
+  --sidebar-accent-foreground: 210 16% 96%;
+  --sidebar-ring: 166 58% 46%;
+  --popover: 220 18% 12%;
+  --popover-foreground: 210 16% 96%;
+  --popover-border: 218 14% 19%;
+  --primary: 166 58% 46%;
+  --primary-foreground: 220 25% 8%;
+  --secondary: 218 14% 18%;
+  --secondary-foreground: 210 16% 96%;
+  --muted: 218 14% 16%;
+  --muted-foreground: 214 12% 66%;
+  --accent: 218 14% 18%;
+  --accent-foreground: 210 16% 96%;
+  --destructive: 2 68% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --input: 218 12% 30%;
+  --ring: 166 58% 46%;
+  --chart-1: 166 58% 48%;
+  --chart-2: 212 74% 62%;
+  --chart-3: 268 60% 68%;
+  --chart-4: 40 84% 58%;
+  --chart-5: 12 74% 62%;
+  --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0);
+  --shadow-xs: 0px 2px 0px 0px hsl(0 0% 0% / 0);
+  --shadow-sm: 0px 2px 0px 0px hsl(0 0% 0% / 0), 0px 1px 2px -1px hsl(0 0% 0% / 0);
+  --shadow: 0px 2px 0px 0px hsl(0 0% 0% / 0), 0px 1px 2px -1px hsl(0 0% 0% / 0);
+  --shadow-md: 0px 2px 0px 0px hsl(0 0% 0% / 0), 0px 2px 4px -1px hsl(0 0% 0% / 0);
+  --shadow-lg: 0px 2px 0px 0px hsl(0 0% 0% / 0), 0px 4px 6px -1px hsl(0 0% 0% / 0);
+  --shadow-xl: 0px 2px 0px 0px hsl(0 0% 0% / 0), 0px 8px 10px -1px hsl(0 0% 0% / 0);
+  --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0);
+
+  /* Fallback for older browsers */
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(
+    from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(
+    from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(
+    from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(
+    from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(
+    from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(
+    from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(
+    from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/**
+ * Using the elevate system.
+ * Automatic contrast adjustment.
+ *
+ * <element className="hover-elevate" />
+ * <element className="active-elevate-2" />
+ *
+ * // Using the tailwind utility when a data attribute is "on"
+ * <element className="toggle-elevate data-[state=on]:toggle-elevated" />
+ * // Or manually controlling the toggle state
+ * <element className="toggle-elevate toggle-elevated" />
+ *
+ * Elevation systems have to handle many states.
+ * - not-hovered, vs. hovered vs. active  (three mutually exclusive states)
+ * - toggled or not
+ * - focused or not (this is not handled with these utilities)
+ *
+ * Even without handling focused or not, this is six possible combinations that
+ * need to be distinguished from eachother visually.
+ */
+@layer utilities {
+  /* Hide ugly search cancel button in Chrome until we can style it properly */
+  input[type='search']::-webkit-search-cancel-button {
+    @apply hidden;
+  }
+
+  /* Placeholder styling for contentEditable div */
+  [contenteditable][data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: hsl(var(--muted-foreground));
+    pointer-events: none;
+  }
+
+  /* .no-default-hover-elevate/no-default-active-elevate is an escape hatch so consumers of
+   * buttons/badges can remove the automatic brightness adjustment on interactions
+   * and program their own. */
+  .no-default-hover-elevate {
+  }
+
+  .no-default-active-elevate {
+  }
+
+  /**
+   * Toggleable backgrounds go behind the content. Hoverable/active goes on top.
+   * This way they can stack/compound. Both will overlap the parent's borders!
+   * So borders will be automatically adjusted both on toggle, and hover/active,
+   * and they will be compounded.
+   */
+  .toggle-elevate::before,
+  .toggle-elevate-2::before {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    /*border-radius: inherit;   match rounded corners */
+    border-radius: inherit;
+    z-index: -1;
+    /* sits behind content but above backdrop */
+  }
+
+  .toggle-elevate.toggle-elevated::before {
+    background-color: var(--elevate-2);
+  }
+
+  /* If there's a 1px border, adjust the inset so that it covers that parent's border */
+  .border.toggle-elevate::before {
+    inset: -1px;
+  }
+
+  /* Does not work on elements with overflow:hidden! */
+  .hover-elevate:not(.no-default-hover-elevate),
+  .active-elevate:not(.no-default-active-elevate),
+  .hover-elevate-2:not(.no-default-hover-elevate),
+  .active-elevate-2:not(.no-default-active-elevate) {
+    position: relative;
+    z-index: 0;
+  }
+
+  .hover-elevate:not(.no-default-hover-elevate)::after,
+  .active-elevate:not(.no-default-active-elevate)::after,
+  .hover-elevate-2:not(.no-default-hover-elevate)::after,
+  .active-elevate-2:not(.no-default-active-elevate)::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    /*border-radius: inherit;   match rounded corners */
+    border-radius: inherit;
+    z-index: 999;
+    /* sits in front of content */
+  }
+
+  .hover-elevate:hover:not(.no-default-hover-elevate)::after,
+  .active-elevate:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-1);
+  }
+
+  .hover-elevate-2:hover:not(.no-default-hover-elevate)::after,
+  .active-elevate-2:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-2);
+  }
+
+  /* If there's a 1px border, adjust the inset so that it covers that parent's border */
+  .border.hover-elevate:not(.no-hover-interaction-elevate)::after,
+  .border.active-elevate:not(.no-active-interaction-elevate)::after,
+  .border.hover-elevate-2:not(.no-hover-interaction-elevate)::after,
+  .border.active-elevate-2:not(.no-active-interaction-elevate)::after,
+  .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
+    inset: -1px;
+  }
+}
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    overflow: hidden;
+  }
+  .tnum {
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.28);
+    border-radius: 99px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.45); background-clip: content-box; }
+}
+
+/* Ocultar montantes (visual; não é controlo de acesso) */
+.privacy-hide .tnum,
+.privacy-hide [data-money] {
+  filter: blur(7px);
+  user-select: none;
+}
+.privacy-hide .tnum:hover,
+.privacy-hide [data-money]:hover { filter: none; }
+
+/* Fields follow their containing card, including a narrow saved dashboard widget. */
+.responsive-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: .5rem;
+  align-items: start;
+}
+.responsive-form > * { min-width: 0; max-width: 100%; }
+.form-actions { display: flex; flex-wrap: wrap; gap: .375rem; grid-column: 1 / -1; }
+.form-actions > button { flex: 1 1 auto; }
+.section-card, .grid-widget, .parcel-card { min-width: 0; overflow-wrap: anywhere; }
+.section-card { container: section-card / inline-size; }
+@container section-card (max-width: 24rem) {
+  .donut-layout { flex-direction: column; align-items: center; gap: 1rem; }
+  .donut-disc { width: min(100%, 16rem) !important; height: auto !important; aspect-ratio: 1; min-width: 0 !important; }
+  .donut-legend { width: 100%; padding-left: 0; }
+}
+.parcel-card { container: parcel-card / inline-size; }
+.parcel-fields { grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); }
+.parcel-fields > * { min-width: 0; }
+.goal-summary > div { flex-wrap: wrap; gap: .25rem .75rem; }
+.goal-summary span { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.catalog-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); }
+.catalog-grid > * { min-width: 0; }
+.catalog-row { grid-template-columns: minmax(0, 1fr) 44px 44px; }
+.catalog-row > input { grid-column: 1 / -1; }
+.catalog-row > button:nth-last-child(2) { grid-column: 2; grid-row: 2; }
+.catalog-row > button:last-child { grid-column: 3; grid-row: 2; }
+@container parcel-card (max-width: 26rem) {
+  .parcel-heading { display: grid; grid-template-columns: minmax(0, 1fr) 44px 44px; }
+  .parcel-heading > input:not([type="color"]) { grid-column: 1 / -1; grid-row: 2; margin-left: -0.25rem; width: calc(100% + 0.25rem); }
+  .parcel-heading > button { width: 44px; }
+}
+/* Portalled controls must also fit short desktop/landscape windows. */
+[data-ui="dialog"], [data-ui="sheet"] {
+  min-width: 0;
+  max-height: min(90dvh, calc(var(--visual-height, 100dvh) - 1rem));
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+}
+[data-ui="dialog"] { width: calc(100dvw - 1rem); }
+[data-ui="sheet"] { max-width: calc(100dvw - 1rem); }
+[data-ui="popover"] {
+  max-width: min(calc(100dvw - 1rem), var(--radix-popover-content-available-width, 100dvw));
+  max-height: min(calc(100dvh - 1rem), var(--radix-popover-content-available-height, 100dvh));
+  overflow: auto;
+}
+[data-ui="select-content"] {
+  max-width: calc(100dvw - 1rem);
+  max-height: min(calc(100dvh - 1rem), var(--radix-select-content-available-height, 100dvh));
+}
+[role="tablist"] { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.react-resizable-handle { min-width: 44px; min-height: 44px; touch-action: none; }
+@media (max-width: 1023px), (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]), textarea, [role="combobox"] {
+    font-size: 16px !important; min-height: 44px;
+  }
+  [role="combobox"] { height: auto !important; min-width: 0; max-width: 100%; }
+  [role="combobox"] > span { display: block !important; -webkit-line-clamp: unset !important; white-space: normal !important; text-overflow: clip !important; overflow: visible !important; text-align: left; line-height: 1.3; overflow-wrap: anywhere; }
+  [role="combobox"] > svg { flex-shrink: 0; }
+  button:not([role="switch"]):not([role="checkbox"]), [role="menuitem"], [role="tab"], [role="option"], a[data-testid^="link-help-"] { min-height: 44px; }
+  a[data-testid^="link-help-"] { min-width: 44px; }
+  button[aria-label]:not([role="checkbox"]) { min-width: 44px; }
+  label:has(input[type="checkbox"]), label:has([role="checkbox"]), label:has([role="switch"]) { min-height: 44px; }
+  button[role="switch"], button[role="checkbox"] { position: relative; }
+  button[role="switch"]::after, button[role="checkbox"]::after {
+    content: ""; position: absolute; inset: 50% auto auto 50%;
+    width: max(100%, 44px); height: 44px; transform: translate(-50%, -50%);
+  }
+}
+/* Mobile workspace: safe areas and deliberate table scroll, never compressed forms. */
+@media (max-width: 1023px) {
+  main, .app-header, main > * { min-width: 0; }
+  .app-header h1, .app-header p { white-space: normal !important; overflow-wrap: anywhere; }
+  .app-header { padding-top: max(.75rem, env(safe-area-inset-top)); }
+  main { padding-bottom: max(1.25rem, env(safe-area-inset-bottom)); }
+}
+@media (max-width: 767px) {
+  table { font-size: .8125rem; }
+  .month-editor[role="dialog"] {
+    top: 0; left: 0; width: 100%; max-width: 100%; height: var(--visual-height, 100dvh); max-height: var(--visual-height, 100dvh);
+    transform: none !important; border: 0; border-radius: 0; animation: none !important; transition: none !important;
+  }
+  .month-editor > div:first-child { padding: max(1rem, env(safe-area-inset-top)) 3.5rem 0 1rem; text-align: left; }
+  .month-editor-body { padding: 1rem; scroll-padding-block: 4rem; }
+  .month-editor > div:last-of-type { padding: .75rem 1rem max(.75rem, env(safe-area-inset-bottom)); gap: .5rem; flex-direction: row; flex-wrap: wrap; }
+  .month-editor > div:last-of-type > button:last-child { flex: 1; }
+  .month-tabs { position: sticky; top: -1rem; z-index: 10; height: auto; background: hsl(var(--background)); padding-block: .5rem; }
+  .division-summary { position: sticky; top: 42px; z-index: 9; }
+  .division-summary p { font-size: 12px; overflow-wrap: anywhere; }
+  .allocation-card { border: 1px solid hsl(var(--border)); border-radius: .75rem; padding: 1rem; background: hsl(var(--card)); }
+  .allocation-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .75rem; }
+  .allocation-name { grid-column: 1 / -1; font-weight: 600; }
+  .allocation-result { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: .5rem; }
+  .allocation-result::before { content: "Valor calculado"; font-weight: 400; color: hsl(var(--muted-foreground)); }
+  .allocation-card > .flex { padding-left: 0; }
+  .platform-panel, .assets-panel { margin-left: 0; }
+  .platform-row { grid-template-columns: minmax(0, 1fr) 44px; border-top: 1px solid hsl(var(--border)); padding-top: .75rem; }
+  .platform-row > :first-child { grid-column: 1 / -1; }
+  .platform-row > input { grid-column: 1; }
+  .platform-row > span { grid-column: 1; text-align: left; }
+  .platform-row > button:last-child { grid-column: 2; grid-row: 2 / 4; }
+  .asset-row { grid-template-columns: minmax(0,1fr) 44px; border-top: 1px solid hsl(var(--border)); padding-top: .75rem; }
+  .asset-row > input:first-child, .asset-row > input:nth-child(4) { grid-column: 1 / -1; }
+  .asset-row > input:nth-child(2), .asset-row > span { grid-column: 1; text-align: left; }
+  .asset-row > button:last-child { grid-column: 2; grid-row: 2 / 4; }
+  .assets-panel > button { text-align: left; flex-wrap: wrap; }
+  [data-testid="select-from-month"], [data-testid="select-to-month"] { width: 128px; }
+  [data-testid="button-mobile-filters"] { height: auto; }
+  [data-testid="button-mobile-filters"] > span { min-width: 0; white-space: normal; text-align: left; }
+  .tnum { white-space: nowrap; }
+}
+
+/* iOS Safari: native date/month inputs keep an intrinsic min-width and overflow narrow grids. */
+@layer base {
+  input[type="date"], input[type="month"], input[type="time"], input[type="datetime-local"] {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    min-height: 2.25rem;
+  }
+  input[type="date"]::-webkit-date-and-time-value,
+  input[type="month"]::-webkit-date-and-time-value {
+    text-align: left;
+    margin: 0;
+  }
+}
+
+/* Tabelas: palavras inteiras. A regra "overflow-wrap: anywhere" dos cartões reduzia o mínimo das colunas a um
+   carácter e partia nomes letra a letra no telemóvel. Os valores monetários não quebram e há respiro entre colunas;
+   a 1.ª coluna fica fixa ao deslocar a tabela na horizontal. */
+table th, table td { overflow-wrap: normal; word-break: normal; hyphens: manual; }
+table td.tnum, table td[class*="text-right"] { white-space: nowrap; min-width: 5.5rem; }
+@media (max-width: 1023px) {
+  main table th, main table td { padding-left: 1rem !important; padding-right: 1rem !important; text-align: left !important; }
+  main table th > span { justify-content: flex-start !important; text-align: left; }
+  main table th:first-child, main table td:first-child {
+    position: sticky; left: 0; z-index: 1; min-width: 6.5rem;
+    padding-left: 0 !important; background: hsl(var(--card)); box-shadow: 1px 0 0 hsl(var(--border));
+  }
+}

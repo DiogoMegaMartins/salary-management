@@ -1,0 +1,2819 @@
+{
+  "date": "2026-11-15",
+  "engine": "Chromium",
+  "physicalDevices": false,
+  "productionPublished": false,
+  "mainMatrix": [
+    {
+      "width": 320,
+      "height": 820,
+      "route": "/",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 562,
+      "regions": [
+        {
+          "cls": "overflow-x-auto",
+          "extra": 172,
+          "table": true,
+          "scroll": true
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "height": 820,
+      "route": "/meses",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 562,
+      "regions": []
+    },
+    {
+      "width": 320,
+      "height": 820,
+      "route": "/despesas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 626,
+      "regions": []
+    },
+    {
+      "width": 320,
+      "height": 820,
+      "route": "/fecho",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 626,
+      "regions": []
+    },
+    {
+      "width": 320,
+      "height": 820,
+      "route": "/parcelas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 626,
+      "regions": []
+    },
+    {
+      "width": 320,
+      "height": 820,
+      "route": "/carteira",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 562,
+      "regions": [
+        {
+          "cls": "overflow-x-auto",
+          "extra": 466,
+          "table": true,
+          "scroll": true
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "height": 820,
+      "route": "/orcamento",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 562,
+      "regions": []
+    },
+    {
+      "width": 320,
+      "height": 820,
+      "route": "/dados",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 626,
+      "regions": []
+    },
+    {
+      "width": 320,
+      "height": 820,
+      "route": "/ajuda",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 590,
+      "regions": []
+    },
+    {
+      "width": 375,
+      "height": 820,
+      "route": "/",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 562,
+      "regions": [
+        {
+          "cls": "overflow-x-auto",
+          "extra": 117,
+          "table": true,
+          "scroll": true
+        }
+      ]
+    },
+    {
+      "width": 375,
+      "height": 820,
+      "route": "/meses",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 562,
+      "regions": []
+    },
+    {
+      "width": 375,
+      "height": 820,
+      "route": "/despesas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 626,
+      "regions": []
+    },
+    {
+      "width": 375,
+      "height": 820,
+      "route": "/fecho",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 626,
+      "regions": []
+    },
+    {
+      "width": 375,
+      "height": 820,
+      "route": "/parcelas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 626,
+      "regions": []
+    },
+    {
+      "width": 375,
+      "height": 820,
+      "route": "/carteira",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 578,
+      "regions": [
+        {
+          "cls": "overflow-x-auto",
+          "extra": 411,
+          "table": true,
+          "scroll": true
+        }
+      ]
+    },
+    {
+      "width": 375,
+      "height": 820,
+      "route": "/orcamento",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 562,
+      "regions": []
+    },
+    {
+      "width": 375,
+      "height": 820,
+      "route": "/dados",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 626,
+      "regions": []
+    },
+    {
+      "width": 375,
+      "height": 820,
+      "route": "/ajuda",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 642,
+      "regions": []
+    },
+    {
+      "width": 640,
+      "height": 820,
+      "route": "/",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 618,
+      "regions": []
+    },
+    {
+      "width": 640,
+      "height": 820,
+      "route": "/meses",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 618,
+      "regions": []
+    },
+    {
+      "width": 640,
+      "height": 820,
+      "route": "/despesas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 698,
+      "regions": []
+    },
+    {
+      "width": 640,
+      "height": 820,
+      "route": "/fecho",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 698,
+      "regions": []
+    },
+    {
+      "width": 640,
+      "height": 820,
+      "route": "/parcelas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 698,
+      "regions": []
+    },
+    {
+      "width": 640,
+      "height": 820,
+      "route": "/carteira",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 634,
+      "regions": [
+        {
+          "cls": "overflow-x-auto",
+          "extra": 146,
+          "table": true,
+          "scroll": true
+        }
+      ]
+    },
+    {
+      "width": 640,
+      "height": 820,
+      "route": "/orcamento",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 618,
+      "regions": []
+    },
+    {
+      "width": 640,
+      "height": 820,
+      "route": "/dados",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 698,
+      "regions": []
+    },
+    {
+      "width": 640,
+      "height": 820,
+      "route": "/ajuda",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 698,
+      "regions": []
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "route": "/",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 774,
+      "regions": []
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "route": "/meses",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 792,
+      "regions": [
+        {
+          "cls": "hidden overflow-x-auto rounded-lg border border-card-border bg-card md:block",
+          "extra": 262,
+          "table": true,
+          "scroll": true
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "route": "/despesas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 898,
+      "regions": []
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "route": "/fecho",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 898,
+      "regions": []
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "route": "/parcelas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 898,
+      "regions": []
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "route": "/carteira",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 774,
+      "regions": [
+        {
+          "cls": "overflow-x-auto",
+          "extra": 34,
+          "table": true,
+          "scroll": true
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "route": "/orcamento",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 792,
+      "regions": []
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "route": "/dados",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 898,
+      "regions": []
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "route": "/ajuda",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 898,
+      "regions": []
+    },
+    {
+      "width": 820,
+      "height": 1180,
+      "route": "/",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 948,
+      "regions": []
+    },
+    {
+      "width": 820,
+      "height": 1180,
+      "route": "/meses",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 982,
+      "regions": [
+        {
+          "cls": "hidden overflow-x-auto rounded-lg border border-card-border bg-card md:block",
+          "extra": 210,
+          "table": true,
+          "scroll": true
+        }
+      ]
+    },
+    {
+      "width": 820,
+      "height": 1180,
+      "route": "/despesas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 1054,
+      "regions": []
+    },
+    {
+      "width": 820,
+      "height": 1180,
+      "route": "/fecho",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 1054,
+      "regions": []
+    },
+    {
+      "width": 820,
+      "height": 1180,
+      "route": "/parcelas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 1054,
+      "regions": []
+    },
+    {
+      "width": 820,
+      "height": 1180,
+      "route": "/carteira",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 948,
+      "regions": []
+    },
+    {
+      "width": 820,
+      "height": 1180,
+      "route": "/orcamento",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 982,
+      "regions": []
+    },
+    {
+      "width": 820,
+      "height": 1180,
+      "route": "/dados",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 1054,
+      "regions": []
+    },
+    {
+      "width": 820,
+      "height": 1180,
+      "route": "/ajuda",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 1054,
+      "regions": []
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "route": "/",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 611,
+      "regions": []
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "route": "/meses",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 617,
+      "regions": [
+        {
+          "cls": "hidden overflow-x-auto rounded-lg border border-card-border bg-card md:block",
+          "extra": 242,
+          "table": true,
+          "scroll": true
+        }
+      ]
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "route": "/despesas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 695,
+      "regions": []
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "route": "/fecho",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 695,
+      "regions": []
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "route": "/parcelas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 695,
+      "regions": []
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "route": "/carteira",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 611,
+      "regions": [
+        {
+          "cls": "overflow-x-auto",
+          "extra": 14,
+          "table": true,
+          "scroll": true
+        }
+      ]
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "route": "/orcamento",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 617,
+      "regions": []
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "route": "/dados",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 695,
+      "regions": []
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "route": "/ajuda",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 695,
+      "regions": []
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "route": "/",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 683,
+      "regions": []
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "route": "/meses",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 683,
+      "regions": []
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "route": "/despesas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 727,
+      "regions": []
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "route": "/fecho",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 727,
+      "regions": []
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "route": "/parcelas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 727,
+      "regions": []
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "route": "/carteira",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 683,
+      "regions": []
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "route": "/orcamento",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 683,
+      "regions": []
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "route": "/dados",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 727,
+      "regions": []
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "route": "/ajuda",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 727,
+      "regions": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "route": "/",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 783,
+      "regions": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "route": "/meses",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 783,
+      "regions": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "route": "/despesas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 827,
+      "regions": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "route": "/fecho",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 827,
+      "regions": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "route": "/parcelas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 827,
+      "regions": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "route": "/carteira",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 783,
+      "regions": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "route": "/orcamento",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 783,
+      "regions": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "route": "/dados",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 827,
+      "regions": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "route": "/ajuda",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 827,
+      "regions": []
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "route": "/",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 963,
+      "regions": []
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "route": "/meses",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 963,
+      "regions": []
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "route": "/despesas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 1007,
+      "regions": []
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "route": "/fecho",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 1007,
+      "regions": []
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "route": "/parcelas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 1007,
+      "regions": []
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "route": "/carteira",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 963,
+      "regions": []
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "route": "/orcamento",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 963,
+      "regions": []
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "route": "/dados",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 1007,
+      "regions": []
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "route": "/ajuda",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 1007,
+      "regions": []
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "route": "/",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 189,
+      "regions": []
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "route": "/meses",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 189,
+      "regions": []
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "route": "/despesas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 253,
+      "regions": []
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "route": "/fecho",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 253,
+      "regions": []
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "route": "/parcelas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 253,
+      "regions": []
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "route": "/carteira",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 189,
+      "regions": [
+        {
+          "cls": "overflow-x-auto",
+          "extra": 119,
+          "table": true,
+          "scroll": true
+        }
+      ]
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "route": "/orcamento",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 173,
+      "regions": []
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "route": "/dados",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 253,
+      "regions": []
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "route": "/ajuda",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 253,
+      "regions": []
+    },
+    {
+      "width": 1024,
+      "height": 600,
+      "route": "/",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 443,
+      "regions": []
+    },
+    {
+      "width": 1024,
+      "height": 600,
+      "route": "/meses",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 449,
+      "regions": [
+        {
+          "cls": "hidden overflow-x-auto rounded-lg border border-card-border bg-card md:block",
+          "extra": 242,
+          "table": true,
+          "scroll": true
+        }
+      ]
+    },
+    {
+      "width": 1024,
+      "height": 600,
+      "route": "/despesas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 527,
+      "regions": []
+    },
+    {
+      "width": 1024,
+      "height": 600,
+      "route": "/fecho",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 527,
+      "regions": []
+    },
+    {
+      "width": 1024,
+      "height": 600,
+      "route": "/parcelas",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 527,
+      "regions": []
+    },
+    {
+      "width": 1024,
+      "height": 600,
+      "route": "/carteira",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 443,
+      "regions": [
+        {
+          "cls": "overflow-x-auto",
+          "extra": 14,
+          "table": true,
+          "scroll": true
+        }
+      ]
+    },
+    {
+      "width": 1024,
+      "height": 600,
+      "route": "/orcamento",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 449,
+      "regions": []
+    },
+    {
+      "width": 1024,
+      "height": 600,
+      "route": "/dados",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 527,
+      "regions": []
+    },
+    {
+      "width": 1024,
+      "height": 600,
+      "route": "/ajuda",
+      "mainOverflow": 0,
+      "docOverflow": 0,
+      "mainHeight": 527,
+      "regions": []
+    }
+  ],
+  "settingsClosingTabs": [
+    {
+      "width": 320,
+      "route": "/dados",
+      "tab": "Cálculo",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "route": "/dados",
+      "tab": "Catálogos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "route": "/dados",
+      "tab": "Backups e importação",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "route": "/dados",
+      "tab": "Segurança",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "route": "/dados",
+      "tab": "Histórico",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "route": "/fecho",
+      "tab": "Fecho mensal",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "route": "/fecho",
+      "tab": "Recorrências e reservas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "route": "/fecho",
+      "tab": "Simulador de metas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "route": "/fecho",
+      "tab": "Composição dos totais",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "route": "/dados",
+      "tab": "Cálculo",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "route": "/dados",
+      "tab": "Catálogos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "route": "/dados",
+      "tab": "Backups e importação",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "route": "/dados",
+      "tab": "Segurança",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "route": "/dados",
+      "tab": "Histórico",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "route": "/fecho",
+      "tab": "Fecho mensal",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "route": "/fecho",
+      "tab": "Recorrências e reservas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "route": "/fecho",
+      "tab": "Simulador de metas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "route": "/fecho",
+      "tab": "Composição dos totais",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "route": "/dados",
+      "tab": "Cálculo",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "route": "/dados",
+      "tab": "Catálogos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "route": "/dados",
+      "tab": "Backups e importação",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "route": "/dados",
+      "tab": "Segurança",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "route": "/dados",
+      "tab": "Histórico",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "route": "/fecho",
+      "tab": "Fecho mensal",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "route": "/fecho",
+      "tab": "Recorrências e reservas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "route": "/fecho",
+      "tab": "Simulador de metas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "route": "/fecho",
+      "tab": "Composição dos totais",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "route": "/dados",
+      "tab": "Cálculo",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "route": "/dados",
+      "tab": "Catálogos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "route": "/dados",
+      "tab": "Backups e importação",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "route": "/dados",
+      "tab": "Segurança",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "route": "/dados",
+      "tab": "Histórico",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "route": "/fecho",
+      "tab": "Fecho mensal",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "route": "/fecho",
+      "tab": "Recorrências e reservas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "route": "/fecho",
+      "tab": "Simulador de metas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "route": "/fecho",
+      "tab": "Composição dos totais",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    }
+  ],
+  "expandedForms": [
+    {
+      "width": 320,
+      "form": "expense",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "form": "recurring/reserves",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "form": "goals/subgoals/edit/history",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [
+        {
+          "test": "input-color-1",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": "input-color-2",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": "input-color-3",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": "input-color-4",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "form": "expense",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "form": "recurring/reserves",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "form": "goals/subgoals/edit/history",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [
+        {
+          "test": "input-color-1",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": "input-color-2",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": "input-color-3",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": "input-color-4",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        }
+      ]
+    },
+    {
+      "width": 1024,
+      "form": "expense",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "form": "recurring/reserves",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "form": "goals/subgoals/edit/history",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [
+        {
+          "test": "input-color-1",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": "input-color-2",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": "input-color-3",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": "input-color-4",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "form": "expense",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "form": "recurring/reserves",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "form": "goals/subgoals/edit/history",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [
+        {
+          "test": "input-color-1",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": "input-color-2",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": "input-color-3",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": "input-color-4",
+          "type": "color",
+          "w": 42
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        },
+        {
+          "test": null,
+          "type": "text",
+          "w": 62
+        }
+      ]
+    }
+  ],
+  "monthEditor": [
+    {
+      "width": 320,
+      "height": 820,
+      "tab": "vencimento",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 320,
+        "height": 820
+      }
+    },
+    {
+      "width": 320,
+      "height": 820,
+      "tab": "divisao",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 320,
+        "height": 820
+      }
+    },
+    {
+      "width": 320,
+      "height": 820,
+      "tab": "movimentos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 320,
+        "height": 820
+      }
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "tab": "vencimento",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 752,
+        "height": 922
+      }
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "tab": "divisao",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 752,
+        "height": 922
+      }
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "tab": "movimentos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 752,
+        "height": 647
+      }
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "tab": "vencimento",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 768,
+        "height": 691
+      }
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "tab": "divisao",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 768,
+        "height": 691
+      }
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "tab": "movimentos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 768,
+        "height": 613
+      }
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "tab": "vencimento",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 768,
+        "height": 810
+      }
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "tab": "divisao",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 768,
+        "height": 810
+      }
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "tab": "movimentos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 768,
+        "height": 613
+      }
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "tab": "vencimento",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 667,
+        "height": 375
+      }
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "tab": "divisao",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 667,
+        "height": 375
+      }
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "tab": "movimentos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": [],
+      "bounds": {
+        "within": true,
+        "width": 667,
+        "height": 375
+      }
+    }
+  ],
+  "overlays": [
+    {
+      "label": "report",
+      "viewport": {
+        "width": 320,
+        "height": 820
+      },
+      "overflow": 0,
+      "bounds": [
+        8,
+        182,
+        312,
+        638
+      ],
+      "within": true
+    },
+    {
+      "label": "drill-down",
+      "viewport": {
+        "width": 320,
+        "height": 820
+      },
+      "overflow": 0,
+      "bounds": [
+        16,
+        0,
+        320,
+        738
+      ],
+      "within": true
+    },
+    {
+      "label": "new-parcel",
+      "viewport": {
+        "width": 320,
+        "height": 820
+      },
+      "overflow": 0,
+      "bounds": [
+        8,
+        121,
+        312,
+        699
+      ],
+      "within": true
+    },
+    {
+      "label": "new-budget-category",
+      "viewport": {
+        "width": 320,
+        "height": 820
+      },
+      "overflow": 0,
+      "bounds": [
+        8,
+        211,
+        312,
+        609
+      ],
+      "within": true
+    },
+    {
+      "label": "new-month",
+      "viewport": {
+        "width": 320,
+        "height": 820
+      },
+      "overflow": 0,
+      "bounds": [
+        0,
+        0,
+        320,
+        820
+      ],
+      "within": true
+    },
+    {
+      "label": "report",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "overflow": 0,
+      "bounds": [
+        128,
+        368,
+        640,
+        656
+      ],
+      "within": true
+    },
+    {
+      "label": "drill-down",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "overflow": 0,
+      "bounds": [
+        256,
+        0,
+        768,
+        922
+      ],
+      "within": true
+    },
+    {
+      "label": "new-parcel",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "overflow": 0,
+      "bounds": [
+        160,
+        274,
+        608,
+        750
+      ],
+      "within": true
+    },
+    {
+      "label": "new-budget-category",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "overflow": 0,
+      "bounds": [
+        128,
+        339,
+        640,
+        685
+      ],
+      "within": true
+    },
+    {
+      "label": "new-month",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "overflow": 0,
+      "bounds": [
+        8,
+        51,
+        760,
+        973
+      ],
+      "within": true
+    },
+    {
+      "label": "report",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": 0,
+      "bounds": [
+        464,
+        309,
+        976,
+        591
+      ],
+      "within": true
+    },
+    {
+      "label": "drill-down",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": 0,
+      "bounds": [
+        928,
+        0,
+        1440,
+        810
+      ],
+      "within": true
+    },
+    {
+      "label": "new-parcel",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": 0,
+      "bounds": [
+        496,
+        227,
+        944,
+        673
+      ],
+      "within": true
+    },
+    {
+      "label": "new-budget-category",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": 0,
+      "bounds": [
+        464,
+        288,
+        976,
+        612
+      ],
+      "within": true
+    },
+    {
+      "label": "new-month",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": 0,
+      "bounds": [
+        336,
+        45,
+        1104,
+        855
+      ],
+      "within": true
+    },
+    {
+      "label": "report",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "overflow": 0,
+      "bounds": [
+        78,
+        44,
+        590,
+        332
+      ],
+      "within": true
+    },
+    {
+      "label": "drill-down",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "overflow": 0,
+      "bounds": [
+        155,
+        0,
+        667,
+        338
+      ],
+      "within": true
+    },
+    {
+      "label": "new-parcel",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "overflow": 0,
+      "bounds": [
+        110,
+        19,
+        558,
+        356
+      ],
+      "within": true
+    },
+    {
+      "label": "new-budget-category",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "overflow": 0,
+      "bounds": [
+        78,
+        19,
+        590,
+        356
+      ],
+      "within": true
+    },
+    {
+      "label": "new-month",
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "overflow": 0,
+      "bounds": [
+        0,
+        0,
+        667,
+        375
+      ],
+      "within": true
+    },
+    {
+      "label": "mobile-more",
+      "viewport": {
+        "width": 375,
+        "height": 820
+      },
+      "overflow": 0,
+      "bounds": [
+        0,
+        447,
+        359,
+        820
+      ],
+      "within": true
+    }
+  ],
+  "helpArticles": [
+    {
+      "width": 320,
+      "slug": "comecar-rapidamente",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "visao-geral",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "painel",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "meses",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "rendimentos-e-descontos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "despesas-e-categorias",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "parcelas-e-metas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "plataformas-e-metas-avancadas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "orcamento-e-alertas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "fecho-e-planeamento",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "usar-no-telemovel",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "modo-offline",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "sincronizacao-e-conflitos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "formulas-e-calculos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "dados-e-backups",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "privacidade-e-seguranca",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "perguntas-frequentes",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "glossario",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 320,
+      "slug": "notas-de-versao",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "comecar-rapidamente",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "visao-geral",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "painel",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "meses",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "rendimentos-e-descontos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "despesas-e-categorias",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "parcelas-e-metas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "plataformas-e-metas-avancadas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "orcamento-e-alertas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "fecho-e-planeamento",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "usar-no-telemovel",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "modo-offline",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "sincronizacao-e-conflitos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "formulas-e-calculos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "dados-e-backups",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "privacidade-e-seguranca",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "perguntas-frequentes",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "glossario",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "slug": "notas-de-versao",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "comecar-rapidamente",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "visao-geral",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "painel",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "meses",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "rendimentos-e-descontos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "despesas-e-categorias",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "parcelas-e-metas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "plataformas-e-metas-avancadas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "orcamento-e-alertas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "fecho-e-planeamento",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "usar-no-telemovel",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "modo-offline",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "sincronizacao-e-conflitos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "formulas-e-calculos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "dados-e-backups",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "privacidade-e-seguranca",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "perguntas-frequentes",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "glossario",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "slug": "notas-de-versao",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "comecar-rapidamente",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "visao-geral",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "painel",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "meses",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "rendimentos-e-descontos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "despesas-e-categorias",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "parcelas-e-metas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "plataformas-e-metas-avancadas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "orcamento-e-alertas",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "fecho-e-planeamento",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "usar-no-telemovel",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "modo-offline",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "sincronizacao-e-conflitos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "formulas-e-calculos",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "dados-e-backups",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "privacidade-e-seguranca",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "perguntas-frequentes",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "glossario",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "slug": "notas-de-versao",
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    }
+  ],
+  "customLayouts": [
+    {
+      "width": 320,
+      "route": "/",
+      "main": 0,
+      "grid": 0,
+      "wide": []
+    },
+    {
+      "width": 320,
+      "route": "/parcelas",
+      "main": 0,
+      "grid": 0,
+      "wide": []
+    },
+    {
+      "width": 320,
+      "route": "/carteira",
+      "main": 0,
+      "grid": 0,
+      "wide": []
+    },
+    {
+      "width": 768,
+      "route": "/",
+      "main": 0,
+      "grid": 0,
+      "wide": []
+    },
+    {
+      "width": 768,
+      "route": "/parcelas",
+      "main": 0,
+      "grid": 0,
+      "wide": []
+    },
+    {
+      "width": 768,
+      "route": "/carteira",
+      "main": 0,
+      "grid": 0,
+      "wide": []
+    },
+    {
+      "width": 1024,
+      "route": "/",
+      "main": 0,
+      "grid": 0,
+      "wide": []
+    },
+    {
+      "width": 1024,
+      "route": "/parcelas",
+      "main": 0,
+      "grid": 0,
+      "wide": []
+    },
+    {
+      "width": 1024,
+      "route": "/carteira",
+      "main": 0,
+      "grid": 0,
+      "wide": []
+    },
+    {
+      "width": 1440,
+      "route": "/",
+      "main": 0,
+      "grid": 7,
+      "wide": []
+    },
+    {
+      "width": 1440,
+      "route": "/parcelas",
+      "main": 0,
+      "grid": 7,
+      "wide": []
+    },
+    {
+      "width": 1440,
+      "route": "/carteira",
+      "main": 0,
+      "grid": 3,
+      "wide": []
+    }
+  ],
+  "assetEditor": [
+    {
+      "width": 320,
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 768,
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1024,
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    },
+    {
+      "width": 1440,
+      "overflow": 0,
+      "wide": [],
+      "tiny": []
+    }
+  ],
+  "drilldownEditor": [
+    {
+      "width": 320,
+      "overflow": 0,
+      "fields": [
+        227,
+        227,
+        227,
+        227
+      ]
+    },
+    {
+      "width": 768,
+      "overflow": 0,
+      "fields": [
+        213,
+        213,
+        435,
+        435
+      ]
+    },
+    {
+      "width": 1440,
+      "overflow": 0,
+      "fields": [
+        213,
+        213,
+        435,
+        435
+      ]
+    }
+  ],
+  "longNamesPhoneFinal": [],
+  "originalContextPageErrors": [],
+  "technical": {
+    "typeScript": "pass",
+    "tests": {
+      "pass": 109,
+      "fail": 0
+    },
+    "productionBuild": "pass",
+    "impeccableSourceDetector": []
+  },
+  "notes": [
+    "Only explicit local table scroll regions are expected in the main matrix.",
+    "Fixture tests intercept GET /api/state and block writes.",
+    "Touch evidence is synthesized CDP touch input in Chromium, not physical hardware.",
+    "Hosted preview: dashboard and per-goal toggle at 375px, expense form at 768px, five fields 168x44px and zero main/form overflow."
+  ]
+}

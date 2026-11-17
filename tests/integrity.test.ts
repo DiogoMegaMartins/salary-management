@@ -1,0 +1,143 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { createServer } from "node:http";
+process.chdir(mkdtempSync(join(tmpdir(), "sm-int-")));
+const express = (await import("express")).default;
+const { storage } = await import("../server/storage");
+const { registerRoutes } = await import("../server/routes");
+const { installBase } = await import("../server/middleware");
+const app = express();
+installBase(app);
+const server = createServer(app);
+await registerRoutes(server, app);
+await new Promise<void>((r) => server.listen(0, r));
+test.after(() => server.close());
+const base = `http://127.0.0.1:${(server.address() as any).port}`;
+const call = async (method: string, path: string, body?: any) => {
+  const r = await fetch(base + path, { method, headers: { "Content-Type": "application/json", "x-sm-client": "1" }, body: body === undefined ? undefined : JSON.stringify(body) });
+  const text = await r.text();
+  let json: any; try { json = JSON.parse(text); } catch { json = text; }
+  return { status: r.status, json };
+};
+const state = () => storage.getState();
+
+test("meses: corpo validado (tipos, limites) e erros sempre em {message}", async () => {
+  const id = state().months[0].id;
+  for (const bad of [{ base: "abc" }, { base: -5 }, { taxaSs: 2 }, { month: 13 }, { descontosMode: "x" }, { label: "" }]) {
+    const r = await call("PATCH", `/api/months/${id}`, bad);
+    assert.equal(r.status, 400, JSON.stringify(bad));
+    assert.equal(typeof r.json.message, "string");
+  }
+  assert.equal((await call("PATCH", `/api/months/${id}`, { base: 1234.5 })).status, 200);
+  assert.equal((await call("POST", "/api/months", { year: 2090 })).status, 400);
+  assert.equal((await call("POST", "/api/months", { year: 2090, month: 1, label: "Teste", status: "fechado", carryIn: 999 })).json.status, "aberto");
+  assert.equal((await call("POST", "/api/months", { year: 2090, month: 1, label: "Teste" })).json.carryIn, 0);
+});
+
+test("parcelas: validação e eliminação protegida quando há movimentos", async () => {
+  assert.equal((await call("POST", "/api/parcels", { name: "" })).status, 400);
+  assert.equal((await call("POST", "/api/parcels", { name: "X", kind: "outro" })).status, 400);
+  const p = (await call("POST", "/api/parcels", { name: "Temp", kind: "gastos" })).json;
+  assert.equal((await call("PATCH", `/api/parcels/${p.id}`, { defaultValue: "muito" })).status, 400);
+  assert.equal((await call("PATCH", `/api/parcels/999999`, { name: "n" })).status, 404);
+  const m = state().months[0];
+  const tx = await call("POST", "/api/transactions", { monthId: m.id, date: `${m.year}-${String(m.month).padStart(2, "0")}-10`, type: "expense", value: 5, parcelId: p.id });
+  assert.equal(tx.status, 200);
+  const del = await call("DELETE", `/api/parcels/${p.id}`);
+  assert.equal(del.status, 409);
+  assert.match(del.json.message, /Arquiva/);
+  assert.ok(state().parcels.some((x) => x.id === p.id));
+  await call("DELETE", `/api/transactions/${tx.json.id}`);
+  assert.equal((await call("DELETE", `/api/parcels/${p.id}`)).status, 200);
+});
+
+test("duplicar um mês fechado dá um mês aberto, sem transporte, e falhas não deixam meses a meio", async () => {
+  const src = (await call("POST", "/api/months", { year: 2091, month: 3, label: "Origem", base: 1000 })).json;
+  assert.equal((await call("POST", `/api/months/${src.id}/close`, { destination: "manter" })).status, 200);
+  const before = state().months.length;
+  const dup = await call("POST", `/api/months/${src.id}/duplicate`, { year: 2091, month: 4, label: "Copia" });
+  assert.equal(dup.status, 200);
+  assert.equal(dup.json.status, "aberto");
+  assert.equal(dup.json.carryIn, 0);
+  assert.equal(state().months.length, before + 1);
+  const bad = await call("POST", `/api/months/${src.id}/duplicate`, { year: 2091, month: 13, label: "Mau" });
+  assert.equal(bad.status, 400);
+  assert.equal(state().months.length, before + 1);
+});
+
+test("apagar um mês limpa o histórico de fechos associado; categorias exigem nome", async () => {
+  const m = (await call("POST", "/api/months", { year: 2092, month: 1, label: "Fechar" })).json;
+  await call("POST", `/api/months/${m.id}/close`, { destination: "manter" });
+  assert.ok(state().monthClosures!.some((c: any) => c.monthId === m.id));
+  await call("POST", `/api/months/${m.id}/reopen`, { note: "teste" });
+  assert.equal((await call("DELETE", `/api/months/${m.id}`)).status, 200);
+  assert.ok(!state().monthClosures!.some((c: any) => c.monthId === m.id));
+  assert.equal((await call("POST", "/api/categories", { name: "  " })).status, 400);
+  assert.equal((await call("PUT", "/api/allocations", { monthId: 1, parcelId: 1, mode: "xx", value: 1 })).status, 400);
+});
+
+test("exportação XLSX devolve um ficheiro válido (zip) com a biblioteca atualizada", async () => {
+  const r = await fetch(base + "/api/export/xlsx");
+  assert.equal(r.status, 200);
+  const buf = Buffer.from(await r.arrayBuffer());
+  assert.equal(buf.subarray(0, 2).toString(), "PK");
+  assert.ok(buf.length > 1000);
+});
+
+test("o histórico de alterações não vai no estado do cliente mas vai no backup e tem rota própria", async () => {
+  const m = state().months[0];
+  await call("PATCH", `/api/months/${m.id}`, { notes: "para o histórico" });
+  assert.equal("changeLog" in (await call("GET", "/api/state")).json, false);
+  const exp = await fetch(base + "/api/export/json").then((r) => r.json());
+  assert.ok(Array.isArray(exp.changeLog) && exp.changeLog.length > 0);
+  const log = (await call("GET", "/api/change-log")).json;
+  assert.ok(log.length > 0 && log[0].id > log[log.length - 1].id, "mais recentes primeiro");
+});
+
+test("cópias automáticas: cria ficheiros SQLite válidos e mantém só as mais recentes", async () => {
+  const { runBackup } = await import("../server/backup");
+  const { mkdtempSync, readdirSync, readFileSync } = await import("node:fs");
+  const dir = mkdtempSync(join(tmpdir(), "sm-bk-"));
+  for (let i = 0; i < 4; i++) { await runBackup(dir, 2); await new Promise((r) => setTimeout(r, 5)); }
+  const files = readdirSync(dir).filter((n) => n.endsWith(".db"));
+  assert.equal(files.length, 2);
+  assert.equal(readFileSync(join(dir, files[0])).subarray(0, 15).toString(), "SQLite format 3");
+});
+
+test("euros guardados a cêntimos (sem restos de vírgula flutuante)", async () => {
+  const m = state().months[0];
+  const r = await call("PATCH", `/api/months/${m.id}`, { base: 1234.5678, mealDaily: 7.634 });
+  assert.equal(r.json.base, 1234.57);
+  assert.equal(r.json.mealDaily, 7.63);
+  const p = state().parcels[0];
+  const tx = await call("POST", "/api/transactions", { monthId: m.id, date: `${m.year}-${String(m.month).padStart(2, "0")}-05`, type: "expense", value: 0.1 + 0.2, parcelId: p.id });
+  assert.equal(tx.json.value, 0.3);
+  const al = await call("PUT", "/api/allocations", { monthId: m.id, parcelId: p.id, mode: "fixo", value: 10.005 });
+  assert.equal(al.status, 200);
+  assert.equal(al.json.value, 10.01);
+});
+
+test("/api/health responde sem autenticação e sem dados", async () => {
+  const r = await fetch(base + "/api/health");
+  assert.equal(r.status, 200);
+  assert.deepEqual(await r.json(), { ok: true });
+});
+
+test("editar saldo inicial e ajuste: valor, data e nota; validações; tipo fica igual", async () => {
+  const p = (await call("POST", "/api/parcels", { name: "Meta edição", kind: "poupanca" })).json;
+  const ini = (await call("POST", "/api/goal-entries", { parcelId: p.id, kind: "inicial", amount: 100, date: "2026-01-01", note: "a" })).json;
+  const aj = (await call("POST", "/api/goal-entries", { parcelId: p.id, kind: "ajuste", amount: -10, date: "2026-01-02", note: "b" })).json;
+  const r = await call("PATCH", `/api/goal-entries/${aj.id}`, { amount: -12.345, date: "2026-02-03", note: "corrigido" });
+  assert.equal(r.status, 200);
+  assert.deepEqual([r.json.amount, r.json.date, r.json.note, r.json.kind], [-12.35, "2026-02-03", "corrigido", "ajuste"]);
+  assert.equal((await call("PATCH", `/api/goal-entries/${ini.id}`, { amount: -5 })).status, 400); // saldo inicial não negativo
+  assert.equal((await call("PATCH", `/api/goal-entries/${aj.id}`, { amount: 0 })).status, 400); // ajuste de 0 não altera nada
+  assert.equal((await call("PATCH", `/api/goal-entries/${aj.id}`, { amount: "x" })).status, 400);
+  assert.equal((await call("PATCH", `/api/goal-entries/${aj.id}`, { date: "03/02/2026" })).status, 400);
+  assert.equal((await call("PATCH", `/api/goal-entries/999999`, { note: "x" })).status, 404);
+  assert.equal(state().goalEntries.find((e) => e.id === aj.id)!.amount, -12.35);
+  assert.ok(state().changeLog!.some((c: any) => c.entity === "saldo/ajuste" && c.action === "alterar"));
+});

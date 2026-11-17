@@ -1,0 +1,702 @@
+import { useMemo, useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Area,
+  Bar,
+  CartesianGrid,
+  Cell,
+  ComposedChart,
+  Line,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { AlertTriangle, ChevronDown, ChevronUp, TrendingUp } from "lucide-react";
+import { AppShell } from "@/components/layout";
+import { FilterBar } from "@/components/filter-bar";
+import { Kpi, SectionCard } from "@/components/kpi";
+import { ChartTooltip, LegendDots, axisProps, eurAxis, gridProps, useSquareFit } from "@/components/charts";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useAppState, useDerived, useSave } from "@/lib/app";
+import { goalCtx } from "@/components/goal-panel";
+import { DashboardSubgoals, formatGoalMoney } from "@/components/dashboard-subgoals";
+import { fmtEur, fmtPct, goalBreakdown, monthKeyOf, monthLabelShort } from "@shared/calc";
+import { DrillDownSheet } from "@/components/drill-down-sheet";
+import { MonthlyReportDialog } from "@/components/monthly-report-dialog";
+import { EditableSectionGrid, type SectionSpec } from "@/components/editable-section-grid";
+import { usePageLayout } from "@/lib/page-layout";
+
+export default function Dashboard() {
+  const isMobile = useIsMobile();
+  const { data, isLoading } = useAppState();
+  const d = useDerived(data);
+  const pageLayout = usePageLayout(data?.settings ?? ({} as any), "painel");
+  const [expandedGoals, setExpandedGoals] = useState<Record<number, boolean>>({});
+  const [drillDown, setDrillDown] = useState<{ title: string; description: string; filter: (t: any) => boolean } | null>(
+    null,
+  );
+  const { ref: donutFitRef, size: donutSize } = useSquareFit(0.45);
+
+  const model = useMemo(() => {
+    if (!d) return null;
+    const c = d.computed;
+    const n = c.length || 1;
+    const netTotal = c.reduce((a, x) => a + x.net, 0);
+    const grossTotal = c.reduce((a, x) => a + x.gross, 0);
+    const descontosTotal = c.reduce((a, x) => a + x.descontos, 0);
+    const mealTotal = c.reduce((a, x) => a + x.meal, 0);
+    const availableTotal = c.reduce((a, x) => a + x.available, 0);
+    const remainingTotal = c.reduce((a, x) => a + x.remaining, 0);
+    const savedTotal = c.reduce((a, x) => a + x.byKind.poupanca + x.byKind.investimento, 0);
+    const spentTotal = c.reduce((a, x) => a + x.byKind.gastos, 0);
+
+    // SM-008: comparação com o período anterior equivalente
+    const pc = d.previousComputed;
+    const prevNetTotal = pc.reduce((a, x) => a + x.net, 0);
+    const prevSavedTotal = pc.reduce((a, x) => a + x.byKind.poupanca + x.byKind.investimento, 0);
+    const prevSpentTotal = pc.reduce((a, x) => a + x.byKind.gastos, 0);
+    const prevAvailableTotal = pc.reduce((a, x) => a + x.available, 0);
+    const prevSavingsRate = prevAvailableTotal > 0 ? prevSavedTotal / prevAvailableTotal : 0;
+    const pctChange = (curr: number, prev: number) => (prev !== 0 ? curr / prev - 1 : curr !== 0 ? null : 0);
+    const comparison = pc.length > 0
+      ? {
+          hasData: true as const,
+          netDelta: pctChange(netTotal, prevNetTotal),
+          savedDelta: pctChange(savedTotal, prevSavedTotal),
+          spentDelta: pctChange(spentTotal, prevSpentTotal),
+          savingsRateDeltaPP: (availableTotal > 0 ? savedTotal / availableTotal : 0) - prevSavingsRate,
+          n: pc.length,
+        }
+      : { hasData: false as const, netDelta: null, savedDelta: null, spentDelta: null, savingsRateDeltaPP: 0, n: 0 };
+
+    const series = c.map((x) => {
+      const row: any = {
+        name: monthLabelShort(x.month),
+        liquido: x.net,
+        bruto: x.gross,
+        descontos: x.descontos,
+        subsidio: x.meal,
+        disponivel: x.available,
+        restante: x.remaining,
+        taxa: x.savingsRate,
+        gastos: x.byKind.gastos,
+        poupanca: x.byKind.poupanca,
+        investimento: x.byKind.investimento,
+      };
+      for (const p of d.parcels) row[`p${p.id}`] = x.byParcel[p.id] ?? 0;
+      return row;
+    });
+
+    const perParcel = d.parcels
+      .map((p) => {
+        const values = c.map((x) => x.byParcel[p.id] ?? 0);
+        const total = values.reduce((a, b) => a + b, 0);
+        const nonZero = values.filter((v) => v > 0).length || 1;
+        const half = Math.ceil(values.length / 2);
+        const firstHalf = values.slice(0, half).reduce((a, b) => a + b, 0) / (half || 1);
+        const secondHalf =
+          values.slice(half).reduce((a, b) => a + b, 0) / (values.length - half || 1);
+        return {
+          parcel: p,
+          total,
+          avg: total / nonZero,
+          share: availableTotal > 0 ? total / availableTotal : 0,
+          trend: firstHalf > 0 ? secondHalf / firstHalf - 1 : 0,
+          values,
+        };
+      })
+      .sort((a, b) => b.total - a.total);
+
+    // tolerância de arredondamento: só alerta acima de 1 cêntimo por parcela
+    const alerts = c.filter((x) => x.remaining < -0.5);
+    const avgExpenses = spentTotal / n;
+
+    // acumulado global por parcela (para metas)
+    const goals = d.allParcels
+      .filter((p) => (p.targetAmount != null && p.targetAmount > 0) || data?.subgoals?.some((s) => s.parcelId === p.id))
+      .map((p) => {
+        const monthly = d.allComputed.map((x) => ({
+          key: monthKeyOf(x.month.year, x.month.month),
+          amount: x.byParcel[p.id] ?? 0,
+        }));
+        const breakdown = data ? goalBreakdown(goalCtx(data, p, monthly), p.id) : null;
+        const acc = breakdown?.total ?? monthly.reduce((a, x) => a + x.amount, 0);
+        const recent = d.allComputed.slice(-3);
+        const pace =
+          recent.length > 0 ? recent.reduce((a, x) => a + (x.byParcel[p.id] ?? 0), 0) / recent.length : 0;
+        const missing = Math.max(0, (p.targetAmount ?? 0) - acc);
+        return {
+          parcel: p,
+          subs: breakdown?.subs ?? [],
+          incomplete: breakdown?.incomplete ?? false,
+          missingRates: breakdown?.missing ?? [],
+          acc,
+          pace,
+          missing,
+          monthsLeft: pace > 0 ? Math.ceil(missing / pace) : null,
+          pct: p.targetAmount && p.targetAmount > 0 ? Math.max(0, Math.min(1, acc / p.targetAmount)) : 0,
+        };
+      })
+      .sort((a, b) => b.pct - a.pct);
+
+    return {
+      netTotal,
+      grossTotal,
+      descontosTotal,
+      mealTotal,
+      availableTotal,
+      remainingTotal,
+      savedTotal,
+      spentTotal,
+      avgNet: netTotal / n,
+      savingsRate: availableTotal > 0 ? savedTotal / availableTotal : 0,
+      effectiveTax: grossTotal > 0 ? descontosTotal / grossTotal : 0,
+      runway: avgExpenses > 0 ? savedTotal / avgExpenses : 0,
+      series,
+      perParcel,
+      alerts,
+      goals,
+      n,
+      comparison,
+    };
+  }, [d, data]);
+
+  if (isLoading || !d || !model) {
+    return (
+      <AppShell title="Painel" subtitle="A carregar…">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-[104px] rounded-lg" />
+          ))}
+        </div>
+        <Skeleton className="mt-4 h-[320px] rounded-lg" />
+      </AppShell>
+    );
+  }
+
+  const empty = d.months.length === 0;
+
+  return (
+    <AppShell
+      title="Painel"
+      subtitle="Visão geral do rendimento e da divisão em parcelas"
+      filters={<FilterBar d={d} />}
+      actions={<MonthlyReportDialog d={d} />}
+    >
+      {empty ? (
+        <div className="flex h-[60vh] flex-col items-center justify-center gap-2 text-center">
+          <TrendingUp className="h-8 w-8 text-muted-foreground" />
+          <p className="text-sm font-medium">Sem meses no período selecionado</p>
+          <p className="max-w-sm text-xs text-muted-foreground">
+            Ajusta os filtros no topo ou adiciona um mês novo na página Meses.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {model.alerts.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+              <span className="font-medium">
+                {model.alerts.length} {model.alerts.length === 1 ? "mês" : "meses"} com divisão acima do valor disponível:
+              </span>
+              <span className="text-muted-foreground">
+                {model.alerts.map((a) => `${monthLabelShort(a.month)} (${fmtEur(a.remaining)})`).join(", ")}
+              </span>
+            </div>
+          )}
+
+          {(() => {
+            const kpiNodes: { id: string; title: string; node: React.ReactNode }[] = [
+  { id: "kpi-net", title: "Líquido total", node: (
+            <Kpi
+              label="Líquido total"
+              value={model.netTotal}
+              delta={model.comparison.hasData ? model.comparison.netDelta : null}
+              hint={
+                model.comparison.hasData
+                  ? `vs. ${model.comparison.n} ${model.comparison.n === 1 ? "mês" : "meses"} anteriores`
+                  : `${model.n} meses`
+              }
+              testId="kpi-net"
+              helpSlug="painel"
+            />
+  ) },
+  { id: "kpi-avg", title: "Média mensal", node: (
+            <Kpi label="Média mensal" value={model.avgNet} hint="líquido por mês" testId="kpi-avg" />
+  ) },
+  { id: "kpi-savings", title: "Taxa de poupança", node: (
+            <Kpi
+              label="Taxa de poupança"
+              value={model.savingsRate}
+              kind="pct"
+              tone="primary"
+              delta={model.comparison.hasData ? model.comparison.savingsRateDeltaPP : null}
+              hint={fmtEur(model.savedTotal)}
+              testId="kpi-savings"
+              helpSlug="formulas-e-calculos"
+            />
+  ) },
+  { id: "kpi-spent", title: "Gastos", node: (
+            <Kpi
+              label="Gastos"
+              deltaTone="up-bad"
+              value={model.spentTotal}
+              delta={model.comparison.hasData ? model.comparison.spentDelta : null}
+              hint={`${fmtPct(model.availableTotal > 0 ? model.spentTotal / model.availableTotal : 0)} do disponível`}
+              testId="kpi-spent"
+              helpSlug="painel"
+              onClick={() => {
+                const monthIds = new Set(d.months.map((m) => m.id));
+                setDrillDown({
+                  title: "Gastos do período",
+                  description: `Movimentos do tipo despesa nos ${d.months.length} meses do período filtrado.`,
+                  filter: (t) => t.type === "expense" && monthIds.has(t.monthId),
+                });
+              }}
+            />
+  ) },
+  { id: "kpi-tax", title: "Carga fiscal efetiva", node: (
+            <Kpi
+              label="Carga fiscal efetiva"
+              value={model.effectiveTax}
+              kind="pct"
+              hint={`${fmtEur(model.descontosTotal)} de descontos`}
+              testId="kpi-tax"
+              helpSlug="formulas-e-calculos"
+            />
+  ) },
+  { id: "kpi-remaining", title: "Por alocar", node: (
+            <Kpi
+              label="Por alocar"
+              value={model.remainingTotal}
+              tone={model.remainingTotal < -0.5 ? "negative" : "neutral"}
+              hint={model.remainingTotal < -0.5 ? "acima do disponível" : "sobra acumulada"}
+              testId="kpi-remaining"
+              helpSlug="formulas-e-calculos"
+              onClick={() => {
+                const monthIds = new Set(d.months.map((m) => m.id));
+                setDrillDown({
+                  title: "Movimentos do período",
+                  description: `Todos os lançamentos individuais nos ${d.months.length} meses do período filtrado, para investigar o valor por alocar.`,
+                  filter: (t) => monthIds.has(t.monthId),
+                });
+              }}
+            />
+  ) },
+];
+            const sections: SectionSpec[] = kpiNodes.map((kn, i) => ({
+              id: kn.id,
+              title: kn.title,
+              group: "kpis",
+              groupClass: "grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6",
+              minW: 3,
+              minH: 3,
+              defaultLayout: { x: (i % 3) * 4, y: Math.floor(i / 3) * 3, w: 4, h: 3 },
+              node: kn.node,
+            }));
+            sections.push({
+              id: "rendimento-poupanca",
+              title: "Rendimento e poupança",
+              defaultLayout: { x: 0, y: 6, w: 7, h: 11 },
+              node: (
+            <SectionCard
+              title="Rendimento e poupança"
+              description="Líquido, subsídio de alimentação e taxa de poupança mês a mês"
+            >
+            <div className="[.grid-widget_&]:flex [.grid-widget_&]:h-full [.grid-widget_&]:flex-col">
+              <div className="h-[300px] [.grid-widget_&]:h-auto [.grid-widget_&]:min-h-0 [.grid-widget_&]:flex-1">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={model.series} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                    <defs>
+                      <linearGradient id="fillNet" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(var(--chart-1))" stopOpacity={0.35} />
+                        <stop offset="100%" stopColor="hsl(var(--chart-1))" stopOpacity={0.02} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid {...gridProps} />
+                    <XAxis dataKey="name" {...axisProps} />
+                    <YAxis {...axisProps} tickFormatter={eurAxis} width={44} />
+                    <YAxis
+                      yAxisId="pct"
+                      orientation="right"
+                      {...axisProps}
+                      tickFormatter={(v) => `${Math.round(v * 100)}%`}
+                      width={40}
+                      domain={[0, 1]}
+                    />
+                    <Tooltip trigger={isMobile ? "click" : "hover"} content={<ChartTooltip />} />
+                    <Area
+                      type="monotone"
+                      dataKey="liquido"
+                      name="Líquido"
+                      stroke="hsl(var(--chart-1))"
+                      strokeWidth={2}
+                      fill="url(#fillNet)"
+                    />
+                    <Bar dataKey="subsidio" name="Subsídio alimentação" fill="hsl(var(--chart-4))" radius={[3, 3, 0, 0]} barSize={14} />
+                    <Line
+                      yAxisId="pct"
+                      type="monotone"
+                      dataKey="taxa"
+                      name="Taxa de poupança"
+                      stroke="hsl(var(--chart-3))"
+                      strokeWidth={2}
+                      dot={{ r: 2.5 }}
+                      unit="%"
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-3 shrink-0">
+                <LegendDots
+                  items={[
+                    { name: "Líquido", color: "hsl(var(--chart-1))" },
+                    { name: "Subsídio alimentação", color: "hsl(var(--chart-4))" },
+                    { name: "Taxa de poupança", color: "hsl(var(--chart-3))" },
+                  ]}
+                />
+              </div>
+            </div>
+            </SectionCard>
+              ),
+            });
+            sections.push({
+              id: "distribuicao-media",
+              title: "Distribuição média",
+              defaultLayout: { x: 7, y: 6, w: 5, h: 11 },
+              node: (
+            <SectionCard title="Distribuição média" description="Peso de cada parcela no período filtrado">
+              <div className="donut-layout flex h-full min-h-[260px] min-w-0 items-stretch">
+                <div ref={donutFitRef} className="donut-disc shrink-0" style={{ width: donutSize || undefined, height: donutSize || undefined, minWidth: donutSize ? undefined : 180, minHeight: donutSize ? undefined : 180 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={model.perParcel.filter((p) => p.total > 0).map((p) => ({
+                          name: p.parcel.name,
+                          value: p.total,
+                          color: p.parcel.color,
+                        }))}
+                        dataKey="value"
+                        nameKey="name"
+                        innerRadius="58%"
+                        outerRadius="96%"
+                        paddingAngle={2}
+                        stroke="hsl(var(--card))"
+                        strokeWidth={2}
+                      >
+                        {model.perParcel
+                          .filter((p) => p.total > 0)
+                          .map((p) => (
+                            <Cell key={p.parcel.id} fill={p.parcel.color} />
+                          ))}
+                      </Pie>
+                      <Tooltip trigger={isMobile ? "click" : "hover"} content={<ChartTooltip />} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="donut-legend flex min-w-0 flex-1 flex-col justify-center space-y-2 pl-2">
+                  {model.perParcel
+                    .filter((p) => p.total > 0)
+                    .map((p) => (
+                      <div key={p.parcel.id} className="flex items-center gap-2 text-xs">
+                        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: p.parcel.color }} />
+                        <span className="min-w-0 break-words">{p.parcel.name}</span>
+                        <span className="tnum ml-auto font-medium">{fmtPct(p.share)}</span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </SectionCard>
+              ),
+            });
+            sections.push({
+              id: "divisao-por-parcela",
+              title: "Divisão por parcela",
+              defaultLayout: { x: 0, y: 17, w: 12, h: 11 },
+              node: (
+          <SectionCard
+            title="Divisão por parcela"
+            description="Como cada mês foi repartido, com o valor disponível como referência"
+          >
+          <div className="[.grid-widget_&]:flex [.grid-widget_&]:h-full [.grid-widget_&]:flex-col">
+            <div className="h-[320px] [.grid-widget_&]:h-auto [.grid-widget_&]:min-h-0 [.grid-widget_&]:flex-1">
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={model.series} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                  <CartesianGrid {...gridProps} />
+                  <XAxis dataKey="name" {...axisProps} />
+                  <YAxis {...axisProps} tickFormatter={eurAxis} width={44} />
+                  <Tooltip trigger={isMobile ? "click" : "hover"} content={<ChartTooltip total />} />
+                  {d.parcels.map((p, i) => (
+                    <Bar
+                      key={p.id}
+                      dataKey={`p${p.id}`}
+                      name={p.name}
+                      stackId="a"
+                      fill={p.color}
+                      radius={i === d.parcels.length - 1 ? [3, 3, 0, 0] : undefined}
+                    />
+                  ))}
+                  <Line
+                    type="monotone"
+                    dataKey="disponivel"
+                    name="Disponível"
+                    stroke="hsl(var(--foreground))"
+                    strokeWidth={1.5}
+                    strokeDasharray="4 3"
+                    dot={false}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-3 shrink-0">
+              <LegendDots items={d.parcels.map((p) => ({ name: p.name, color: p.color }))} />
+            </div>
+          </div>
+          </SectionCard>
+              ),
+            });
+            sections.push({
+              id: "parcelas-periodo",
+              title: "Parcelas no período",
+              defaultLayout: { x: 0, y: 28, w: 6, h: 11 },
+              node: (
+            <SectionCard title="Parcelas no período" description="Total, média e tendência da segunda metade do período">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-xs text-muted-foreground">
+                      <th className="py-2 text-left font-medium">Parcela</th>
+                      <th className="py-2 text-right font-medium">Total</th>
+                      <th className="py-2 text-right font-medium">Média</th>
+                      <th className="py-2 text-right font-medium">Peso</th>
+                      <th className="py-2 pl-3 text-right font-medium">Tendência</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {model.perParcel.map((p) => (
+                      <tr
+                        key={p.parcel.id}
+                        className="cursor-pointer border-b border-border/60 last:border-0 transition-colors hover:bg-muted/40"
+                        onClick={() => {
+                          const monthIds = new Set(d.months.map((m) => m.id));
+                          setDrillDown({
+                            title: `Movimentos · ${p.parcel.name}`,
+                            description: `Lançamentos individuais desta parcela nos ${d.months.length} meses do período filtrado.`,
+                            filter: (t) => monthIds.has(t.monthId) && (t.parcelId === p.parcel.id || t.targetParcelId === p.parcel.id),
+                          });
+                        }}
+                        data-testid={`row-parcel-drilldown-${p.parcel.id}`}
+                      >
+                        <td className="py-2">
+                          <span className="flex items-center gap-2">
+                            <span className="h-2.5 w-2.5 rounded-full" style={{ background: p.parcel.color }} />
+                            <span className="truncate">{p.parcel.name}</span>
+                          </span>
+                        </td>
+                        <td className="tnum py-2 text-right font-medium">{fmtEur(p.total)}</td>
+                        <td className="tnum py-2 text-right text-muted-foreground">{fmtEur(p.avg)}</td>
+                        <td className="tnum py-2 text-right text-muted-foreground">{fmtPct(p.share)}</td>
+                        <td className="py-2 pl-3 text-right">
+                          <Badge
+                            variant="secondary"
+                            className={
+                              p.trend > 0.02
+                                ? "bg-primary/15 text-primary"
+                                : p.trend < -0.02
+                                  ? "bg-destructive/15 text-destructive"
+                                  : ""
+                            }
+                          >
+                            <span className="tnum">
+                              {p.trend > 0 ? "+" : ""}
+                              {fmtPct(p.trend, 0)}
+                            </span>
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </SectionCard>
+              ),
+            });
+            sections.push({
+              id: "metas",
+              title: "Metas",
+              defaultLayout: { x: 6, y: 28, w: 6, h: 11 },
+              node: (
+            <SectionCard
+              title="Metas"
+              description="Metas e submetas com base em todo o histórico; ritmo das metas nos últimos 3 meses"
+            >
+              {model.goals.length === 0 ? (
+                <p className="py-6 text-center text-xs text-muted-foreground">
+                  Define uma meta em Parcelas e metas para acompanhar o progresso aqui.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {model.goals.map((g) => (
+                    <div key={g.parcel.id} data-testid={`dashboard-goal-${g.parcel.id}`}>
+                      <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-2 text-sm">
+                        <span className="flex min-w-0 items-center gap-2">
+                          <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: g.parcel.color }} />
+                          <span className="min-w-0 break-words">
+                            {g.parcel.name}
+                          </span>
+                        </span>
+                        <span className="tnum text-xs text-muted-foreground">
+                          {formatGoalMoney(g.acc, g.parcel.currency || "EUR")}
+                          {g.parcel.targetAmount != null && g.parcel.targetAmount > 0 && ` / ${formatGoalMoney(g.parcel.targetAmount, g.parcel.currency || "EUR")}`}
+                        </span>
+                      </div>
+                      {g.incomplete && (
+                        <p className="mb-1.5 text-xs text-destructive">
+                          Acumulado incompleto: falta taxa {g.missingRates.join(", ")}.
+                        </p>
+                      )}
+                      {g.parcel.targetAmount != null && g.parcel.targetAmount > 0 && (
+                        <Progress value={g.pct * 100} aria-valuenow={g.pct * 100} aria-label={`Progresso de ${g.parcel.name}`} className="h-2" />
+                      )}
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {!g.parcel.targetAmount || g.parcel.targetAmount <= 0
+                          ? "Sem objetivo definido para a meta principal"
+                          : g.incomplete
+                            ? "O progresso é parcial até definires a taxa de conversão."
+                          : g.missing <= 0
+                          ? "Meta concluída"
+                          : g.monthsLeft
+                            ? `Faltam ${formatGoalMoney(g.missing, g.parcel.currency || "EUR")} · ~${g.monthsLeft} ${g.monthsLeft === 1 ? "mês" : "meses"} ao ritmo de ${formatGoalMoney(g.pace, g.parcel.currency || "EUR")}/mês`
+                            : `Faltam ${formatGoalMoney(g.missing, g.parcel.currency || "EUR")} · sem contribuições recentes`}
+                      </p>
+                      {g.subs.length > 0 && (
+                        <>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="mt-2 min-h-11 gap-1.5 text-xs"
+                            aria-label={`${expandedGoals[g.parcel.id] ? "Esconder" : "Mostrar"} submetas de ${g.parcel.name}`}
+                            aria-expanded={!!expandedGoals[g.parcel.id]}
+                            aria-controls={`dashboard-subgoals-${g.parcel.id}`}
+                            onClick={() => setExpandedGoals((current) => ({
+                              ...current,
+                              [g.parcel.id]: !current[g.parcel.id],
+                            }))}
+                            data-testid={`button-toggle-dashboard-subgoals-${g.parcel.id}`}
+                          >
+                            {expandedGoals[g.parcel.id]
+                              ? <ChevronUp className="h-4 w-4" aria-hidden="true" />
+                              : <ChevronDown className="h-4 w-4" aria-hidden="true" />}
+                            {expandedGoals[g.parcel.id] ? "Esconder submetas" : `Mostrar submetas (${g.subs.length})`}
+                          </Button>
+                          <div id={`dashboard-subgoals-${g.parcel.id}`} hidden={!expandedGoals[g.parcel.id]}>
+                            <DashboardSubgoals subs={g.subs} />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </SectionCard>
+              ),
+            });
+            sections.push({
+              id: "bruto-descontos",
+              title: "Bruto vs. descontos",
+              defaultLayout: { x: 0, y: 39, w: 6, h: 9 },
+              node: (
+            <SectionCard title="Bruto vs. descontos" description="Quanto do rendimento bruto fica retido">
+            <div className="[.grid-widget_&]:flex [.grid-widget_&]:h-full [.grid-widget_&]:flex-col">
+              <div className="h-[240px] [.grid-widget_&]:h-auto [.grid-widget_&]:min-h-0 [.grid-widget_&]:flex-1">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={model.series} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                    <CartesianGrid {...gridProps} />
+                    <XAxis dataKey="name" {...axisProps} />
+                    <YAxis {...axisProps} tickFormatter={eurAxis} width={44} />
+                    <Tooltip trigger={isMobile ? "click" : "hover"} content={<ChartTooltip />} />
+                    <Bar dataKey="liquido" name="Líquido" stackId="b" fill="hsl(var(--chart-1))" />
+                    <Bar dataKey="descontos" name="Descontos" stackId="b" fill="hsl(var(--chart-5))" radius={[3, 3, 0, 0]} />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-3 shrink-0">
+                <LegendDots
+                  items={[
+                    { name: "Líquido", color: "hsl(var(--chart-1))" },
+                    { name: "Descontos", color: "hsl(var(--chart-5))" },
+                  ]}
+                />
+              </div>
+            </div>
+            </SectionCard>
+              ),
+            });
+            sections.push({
+              id: "gastos-poupanca-investimento",
+              title: "Gastos, poupança e investimento",
+              defaultLayout: { x: 6, y: 39, w: 6, h: 9 },
+              node: (
+            <SectionCard title="Gastos, poupança e investimento" description="Divisão por tipo de parcela">
+            <div className="[.grid-widget_&]:flex [.grid-widget_&]:h-full [.grid-widget_&]:flex-col">
+              <div className="h-[240px] [.grid-widget_&]:h-auto [.grid-widget_&]:min-h-0 [.grid-widget_&]:flex-1">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={model.series} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                    <CartesianGrid {...gridProps} />
+                    <XAxis dataKey="name" {...axisProps} />
+                    <YAxis {...axisProps} tickFormatter={eurAxis} width={44} />
+                    <Tooltip trigger={isMobile ? "click" : "hover"} content={<ChartTooltip total />} />
+                    <Bar dataKey="gastos" name="Gastos" stackId="c" fill="hsl(var(--chart-5))" />
+                    <Bar dataKey="poupanca" name="Poupança" stackId="c" fill="hsl(var(--chart-2))" />
+                    <Bar dataKey="investimento" name="Investimento" stackId="c" fill="hsl(var(--chart-1))" radius={[3, 3, 0, 0]} />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 shrink-0">
+                <LegendDots
+                  items={[
+                    { name: "Gastos", color: "hsl(var(--chart-5))" },
+                    { name: "Poupança", color: "hsl(var(--chart-2))" },
+                    { name: "Investimento", color: "hsl(var(--chart-1))" },
+                  ]}
+                />
+                <span className="text-xs text-muted-foreground tnum">
+                  Reserva ≈ {model.runway.toFixed(1)} meses de gastos
+                </span>
+              </div>
+            </div>
+            </SectionCard>
+              ),
+            });
+            return (
+              <EditableSectionGrid
+                pageKey="painel"
+                sections={sections}
+                savedLayout={pageLayout.savedLayout}
+                isSaving={pageLayout.isSaving}
+                onSave={pageLayout.onSave}
+              />
+            );
+          })()}
+        </div>
+      )}
+
+      <DrillDownSheet
+        open={drillDown != null}
+        onOpenChange={(v) => !v && setDrillDown(null)}
+        title={drillDown?.title ?? ""}
+        description={drillDown?.description}
+        transactions={drillDown ? data!.transactions.filter(drillDown.filter) : []}
+        parcels={d.parcels}
+        months={d.months}
+      />
+    </AppShell>
+  );
+}

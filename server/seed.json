@@ -1,0 +1,774 @@
+{
+ "parcels": [
+  {
+   "name": "Gastos Mensais",
+   "kind": "gastos",
+   "color": "#d97757",
+   "platforms": "Banco Exemplo",
+   "sortOrder": 0,
+   "defaultMode": "fixo",
+   "defaultValue": 0,
+   "targetAmount": null,
+   "targetDate": null,
+   "archived": 0
+  },
+  {
+   "name": "Outras Poupanças",
+   "kind": "poupanca",
+   "color": "#c9a227",
+   "platforms": "",
+   "sortOrder": 1,
+   "defaultMode": "fixo",
+   "defaultValue": 0,
+   "targetAmount": null,
+   "targetDate": null,
+   "archived": 0
+  },
+  {
+   "name": "Fundo de Emergência",
+   "kind": "poupanca",
+   "color": "#2f9e8f",
+   "platforms": "Banco Exemplo | Corretora Exemplo",
+   "sortOrder": 2,
+   "defaultMode": "fixo",
+   "defaultValue": 0,
+   "targetAmount": 10000,
+   "targetDate": null,
+   "archived": 0
+  },
+  {
+   "name": "Ações",
+   "kind": "investimento",
+   "color": "#3b7dd8",
+   "platforms": "Corretora Exemplo",
+   "sortOrder": 3,
+   "defaultMode": "fixo",
+   "defaultValue": 0,
+   "targetAmount": null,
+   "targetDate": null,
+   "archived": 0
+  },
+  {
+   "name": "ETFs",
+   "kind": "investimento",
+   "color": "#7a5cd0",
+   "platforms": "Corretora Exemplo",
+   "sortOrder": 4,
+   "defaultMode": "fixo",
+   "defaultValue": 0,
+   "targetAmount": null,
+   "targetDate": null,
+   "archived": 0
+  },
+  {
+   "name": "Matérias-Primas",
+   "kind": "investimento",
+   "color": "#2aa7c0",
+   "platforms": "Corretora Exemplo",
+   "sortOrder": 5,
+   "defaultMode": "fixo",
+   "defaultValue": 0,
+   "targetAmount": null,
+   "targetDate": null,
+   "archived": 0
+  },
+  {
+   "name": "Criptomoedas",
+   "kind": "investimento",
+   "color": "#c2477f",
+   "platforms": "Corretora Exemplo | Exchange Exemplo",
+   "sortOrder": 6,
+   "defaultMode": "fixo",
+   "defaultValue": 0,
+   "targetAmount": null,
+   "targetDate": null,
+   "archived": 0
+  }
+ ],
+ "months": [
+  {
+   "year": 2025,
+   "month": 10,
+   "label": "Outubro",
+   "sortOrder": 0,
+   "base": 1500,
+   "extraordinaria": 0,
+   "outrosIrsSs": 0,
+   "outrosIrs": 0,
+   "isentos": 0,
+   "taxaIrsBase": 0,
+   "taxaIrsExtra": 0,
+   "taxaSs": 0.11,
+   "irsJovem": "",
+   "descontosMode": "manual",
+   "descontosManual": 285.0,
+   "mealDaily": 7.63,
+   "mealDays": 22,
+   "notes": "",
+   "allocations": [
+    {
+     "parcelIndex": 0,
+     "mode": "fixo",
+     "value": 600
+    },
+    {
+     "parcelIndex": 1,
+     "mode": "fixo",
+     "value": 50
+    },
+    {
+     "parcelIndex": 2,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 3,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 4,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 5,
+     "mode": "fixo",
+     "value": 0
+    },
+    {
+     "parcelIndex": 6,
+     "mode": "fixo",
+     "value": 25
+    }
+   ]
+  },
+  {
+   "year": 2025,
+   "month": 11,
+   "label": "Novembro",
+   "sortOrder": 1,
+   "base": 1500,
+   "extraordinaria": 0,
+   "outrosIrsSs": 0,
+   "outrosIrs": 0,
+   "isentos": 0,
+   "taxaIrsBase": 0,
+   "taxaIrsExtra": 0,
+   "taxaSs": 0.11,
+   "irsJovem": "",
+   "descontosMode": "manual",
+   "descontosManual": 285.0,
+   "mealDaily": 7.63,
+   "mealDays": 20,
+   "notes": "",
+   "allocations": [
+    {
+     "parcelIndex": 0,
+     "mode": "fixo",
+     "value": 650
+    },
+    {
+     "parcelIndex": 1,
+     "mode": "fixo",
+     "value": 0
+    },
+    {
+     "parcelIndex": 2,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 3,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 4,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 5,
+     "mode": "fixo",
+     "value": 0
+    },
+    {
+     "parcelIndex": 6,
+     "mode": "fixo",
+     "value": 25
+    }
+   ]
+  },
+  {
+   "year": 2025,
+   "month": 12,
+   "label": "Dezembro (SN)",
+   "sortOrder": 2,
+   "base": 0,
+   "extraordinaria": 0,
+   "outrosIrsSs": 1500,
+   "outrosIrs": 0,
+   "isentos": 0,
+   "taxaIrsBase": 0,
+   "taxaIrsExtra": 0,
+   "taxaSs": 0.11,
+   "irsJovem": "",
+   "descontosMode": "manual",
+   "descontosManual": 330.0,
+   "mealDaily": 0,
+   "mealDays": 0,
+   "notes": "",
+   "allocations": [
+    {
+     "parcelIndex": 0,
+     "mode": "fixo",
+     "value": 500
+    },
+    {
+     "parcelIndex": 1,
+     "mode": "fixo",
+     "value": 0
+    },
+    {
+     "parcelIndex": 2,
+     "mode": "fixo",
+     "value": 0
+    },
+    {
+     "parcelIndex": 3,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 4,
+     "mode": "fixo",
+     "value": 0
+    },
+    {
+     "parcelIndex": 5,
+     "mode": "fixo",
+     "value": 0
+    },
+    {
+     "parcelIndex": 6,
+     "mode": "fixo",
+     "value": 0
+    }
+   ]
+  },
+  {
+   "year": 2025,
+   "month": 12,
+   "label": "Dezembro (SF)",
+   "sortOrder": 3,
+   "base": 1500,
+   "extraordinaria": 0,
+   "outrosIrsSs": 500,
+   "outrosIrs": 0,
+   "isentos": 0,
+   "taxaIrsBase": 0,
+   "taxaIrsExtra": 0,
+   "taxaSs": 0.11,
+   "irsJovem": "",
+   "descontosMode": "manual",
+   "descontosManual": 400.0,
+   "mealDaily": 7.63,
+   "mealDays": 21,
+   "notes": "",
+   "allocations": [
+    {
+     "parcelIndex": 0,
+     "mode": "fixo",
+     "value": 750
+    },
+    {
+     "parcelIndex": 1,
+     "mode": "fixo",
+     "value": 100
+    },
+    {
+     "parcelIndex": 2,
+     "mode": "fixo",
+     "value": 250
+    },
+    {
+     "parcelIndex": 3,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 4,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 5,
+     "mode": "fixo",
+     "value": 0
+    },
+    {
+     "parcelIndex": 6,
+     "mode": "fixo",
+     "value": 50
+    }
+   ]
+  },
+  {
+   "year": 2026,
+   "month": 1,
+   "label": "Janeiro",
+   "sortOrder": 0,
+   "base": 1550,
+   "extraordinaria": 0,
+   "outrosIrsSs": 0,
+   "outrosIrs": 0,
+   "isentos": 0,
+   "taxaIrsBase": 0,
+   "taxaIrsExtra": 0,
+   "taxaSs": 0.11,
+   "irsJovem": "",
+   "descontosMode": "manual",
+   "descontosManual": 295.0,
+   "mealDaily": 7.63,
+   "mealDays": 21,
+   "notes": "",
+   "allocations": [
+    {
+     "parcelIndex": 0,
+     "mode": "fixo",
+     "value": 600
+    },
+    {
+     "parcelIndex": 1,
+     "mode": "fixo",
+     "value": 50
+    },
+    {
+     "parcelIndex": 2,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 3,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 4,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 5,
+     "mode": "fixo",
+     "value": 25
+    },
+    {
+     "parcelIndex": 6,
+     "mode": "fixo",
+     "value": 25
+    }
+   ]
+  },
+  {
+   "year": 2026,
+   "month": 2,
+   "label": "Fevereiro",
+   "sortOrder": 1,
+   "base": 1550,
+   "extraordinaria": 0,
+   "outrosIrsSs": 0,
+   "outrosIrs": 0,
+   "isentos": 0,
+   "taxaIrsBase": 0,
+   "taxaIrsExtra": 0,
+   "taxaSs": 0.11,
+   "irsJovem": "",
+   "descontosMode": "manual",
+   "descontosManual": 295.0,
+   "mealDaily": 7.63,
+   "mealDays": 20,
+   "notes": "",
+   "allocations": [
+    {
+     "parcelIndex": 0,
+     "mode": "fixo",
+     "value": 610
+    },
+    {
+     "parcelIndex": 1,
+     "mode": "fixo",
+     "value": 50
+    },
+    {
+     "parcelIndex": 2,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 3,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 4,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 5,
+     "mode": "fixo",
+     "value": 25
+    },
+    {
+     "parcelIndex": 6,
+     "mode": "fixo",
+     "value": 25
+    }
+   ]
+  },
+  {
+   "year": 2026,
+   "month": 3,
+   "label": "Março",
+   "sortOrder": 2,
+   "base": 1550,
+   "extraordinaria": 0,
+   "outrosIrsSs": 0,
+   "outrosIrs": 0,
+   "isentos": 0,
+   "taxaIrsBase": 0,
+   "taxaIrsExtra": 0,
+   "taxaSs": 0.11,
+   "irsJovem": "",
+   "descontosMode": "manual",
+   "descontosManual": 295.0,
+   "mealDaily": 7.63,
+   "mealDays": 22,
+   "notes": "",
+   "allocations": [
+    {
+     "parcelIndex": 0,
+     "mode": "fixo",
+     "value": 600
+    },
+    {
+     "parcelIndex": 1,
+     "mode": "fixo",
+     "value": 100
+    },
+    {
+     "parcelIndex": 2,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 3,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 4,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 5,
+     "mode": "fixo",
+     "value": 25
+    },
+    {
+     "parcelIndex": 6,
+     "mode": "fixo",
+     "value": 25
+    }
+   ]
+  },
+  {
+   "year": 2026,
+   "month": 4,
+   "label": "Abril",
+   "sortOrder": 3,
+   "base": 1550,
+   "extraordinaria": 0,
+   "outrosIrsSs": 0,
+   "outrosIrs": 0,
+   "isentos": 0,
+   "taxaIrsBase": 0,
+   "taxaIrsExtra": 0,
+   "taxaSs": 0.11,
+   "irsJovem": "",
+   "descontosMode": "manual",
+   "descontosManual": 295.0,
+   "mealDaily": 7.63,
+   "mealDays": 20,
+   "notes": "",
+   "allocations": [
+    {
+     "parcelIndex": 0,
+     "mode": "fixo",
+     "value": 580
+    },
+    {
+     "parcelIndex": 1,
+     "mode": "fixo",
+     "value": 100
+    },
+    {
+     "parcelIndex": 2,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 3,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 4,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 5,
+     "mode": "fixo",
+     "value": 25
+    },
+    {
+     "parcelIndex": 6,
+     "mode": "fixo",
+     "value": 25
+    }
+   ]
+  },
+  {
+   "year": 2026,
+   "month": 5,
+   "label": "Maio",
+   "sortOrder": 4,
+   "base": 1550,
+   "extraordinaria": 0,
+   "outrosIrsSs": 0,
+   "outrosIrs": 0,
+   "isentos": 0,
+   "taxaIrsBase": 0,
+   "taxaIrsExtra": 0,
+   "taxaSs": 0.11,
+   "irsJovem": "",
+   "descontosMode": "manual",
+   "descontosManual": 295.0,
+   "mealDaily": 7.63,
+   "mealDays": 21,
+   "notes": "",
+   "allocations": [
+    {
+     "parcelIndex": 0,
+     "mode": "fixo",
+     "value": 600
+    },
+    {
+     "parcelIndex": 1,
+     "mode": "fixo",
+     "value": 100
+    },
+    {
+     "parcelIndex": 2,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 3,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 4,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 5,
+     "mode": "fixo",
+     "value": 25
+    },
+    {
+     "parcelIndex": 6,
+     "mode": "fixo",
+     "value": 25
+    }
+   ]
+  },
+  {
+   "year": 2026,
+   "month": 6,
+   "label": "Junho",
+   "sortOrder": 5,
+   "base": 1550,
+   "extraordinaria": 400,
+   "outrosIrsSs": 0,
+   "outrosIrs": 0,
+   "isentos": 0,
+   "taxaIrsBase": 0,
+   "taxaIrsExtra": 0,
+   "taxaSs": 0.11,
+   "irsJovem": "",
+   "descontosMode": "manual",
+   "descontosManual": 360.0,
+   "mealDaily": 7.63,
+   "mealDays": 21,
+   "notes": "",
+   "allocations": [
+    {
+     "parcelIndex": 0,
+     "mode": "fixo",
+     "value": 700
+    },
+    {
+     "parcelIndex": 1,
+     "mode": "fixo",
+     "value": 100
+    },
+    {
+     "parcelIndex": 2,
+     "mode": "fixo",
+     "value": 250
+    },
+    {
+     "parcelIndex": 3,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 4,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 5,
+     "mode": "fixo",
+     "value": 50
+    },
+    {
+     "parcelIndex": 6,
+     "mode": "fixo",
+     "value": 50
+    }
+   ]
+  },
+  {
+   "year": 2026,
+   "month": 7,
+   "label": "Julho",
+   "sortOrder": 6,
+   "base": 1550,
+   "extraordinaria": 0,
+   "outrosIrsSs": 0,
+   "outrosIrs": 0,
+   "isentos": 0,
+   "taxaIrsBase": 0,
+   "taxaIrsExtra": 0,
+   "taxaSs": 0.11,
+   "irsJovem": "",
+   "descontosMode": "manual",
+   "descontosManual": 295.0,
+   "mealDaily": 7.63,
+   "mealDays": 22,
+   "notes": "",
+   "allocations": [
+    {
+     "parcelIndex": 0,
+     "mode": "fixo",
+     "value": 560
+    },
+    {
+     "parcelIndex": 1,
+     "mode": "fixo",
+     "value": 100
+    },
+    {
+     "parcelIndex": 2,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 3,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 4,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 5,
+     "mode": "fixo",
+     "value": 25
+    },
+    {
+     "parcelIndex": 6,
+     "mode": "fixo",
+     "value": 25
+    }
+   ]
+  },
+  {
+   "year": 2026,
+   "month": 8,
+   "label": "Agosto",
+   "sortOrder": 7,
+   "base": 1550,
+   "extraordinaria": 0,
+   "outrosIrsSs": 0,
+   "outrosIrs": 0,
+   "isentos": 0,
+   "taxaIrsBase": 0,
+   "taxaIrsExtra": 0,
+   "taxaSs": 0.11,
+   "irsJovem": "",
+   "descontosMode": "manual",
+   "descontosManual": 295.0,
+   "mealDaily": 7.63,
+   "mealDays": 20,
+   "notes": "",
+   "allocations": [
+    {
+     "parcelIndex": 0,
+     "mode": "fixo",
+     "value": 600
+    },
+    {
+     "parcelIndex": 1,
+     "mode": "fixo",
+     "value": 50
+    },
+    {
+     "parcelIndex": 2,
+     "mode": "fixo",
+     "value": 200
+    },
+    {
+     "parcelIndex": 3,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 4,
+     "mode": "fixo",
+     "value": 150
+    },
+    {
+     "parcelIndex": 5,
+     "mode": "fixo",
+     "value": 25
+    },
+    {
+     "parcelIndex": 6,
+     "mode": "fixo",
+     "value": 25
+    }
+   ]
+  }
+ ]
+}

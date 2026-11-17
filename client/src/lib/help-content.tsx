@@ -1,0 +1,542 @@
+import type { ReactNode } from "react";
+
+/**
+ * SM-011: conteúdo estático do centro de ajuda. Escrito em português de
+ * Portugal, sem dados pessoais nem exemplos reais. As fórmulas aqui
+ * apresentadas espelham exatamente `shared/calc.ts` — qualquer alteração ao
+ * cálculo deve ser replicada aqui.
+ */
+export type HelpSection = {
+  slug: string;
+  title: string;
+  group: string;
+  keywords?: string[];
+  body: ReactNode;
+};
+
+const P = ({ children }: { children: ReactNode }) => <p className="leading-relaxed text-sm text-foreground/90">{children}</p>;
+const H3 = ({ children }: { children: ReactNode }) => <h3 className="mt-5 text-sm font-semibold">{children}</h3>;
+const UL = ({ children }: { children: ReactNode }) => <ul className="ml-4 list-disc space-y-1.5 text-sm text-foreground/90">{children}</ul>;
+const OL = ({ children }: { children: ReactNode }) => <ol className="ml-4 list-decimal space-y-1.5 text-sm text-foreground/90">{children}</ol>;
+const CODE = ({ children }: { children: ReactNode }) => (
+  <pre className="mt-2 overflow-x-auto rounded-md border border-border bg-muted/50 p-3 text-xs leading-relaxed tnum">
+    <code>{children}</code>
+  </pre>
+);
+const KBD = ({ children }: { children: ReactNode }) => (
+  <code className="rounded bg-muted px-1.5 py-0.5 text-xs font-medium">{children}</code>
+);
+
+export const HELP_SECTIONS: HelpSection[] = [
+  {
+    slug: "comecar-rapidamente",
+    title: "Começar rapidamente",
+    group: "Introdução",
+    keywords: ["primeiro mês", "criar mês", "guia rápido", "setup"],
+    body: (
+      <>
+        <P>Sequência recomendada para configurar o primeiro mês na aplicação.</P>
+        <OL>
+          <li>Abre <KBD>Meses</KBD> e cria ou seleciona o mês a tratar.</li>
+          <li>Introduz os rendimentos e descontos; confirma o valor de líquido disponível apresentado.</li>
+          <li>Regista despesas por categoria na aba <KBD>Movimentos</KBD> do mês, ou usa a divisão por parcelas para o modelo agregado.</li>
+          <li>Distribui o dinheiro pelas parcelas, se aplicável (poupança, investimento, etc.).</li>
+          <li>Verifica o valor <em>por alocar</em> e decide se deve ficar disponível ou ser alocado a uma parcela.</li>
+          <li>Consulta o <KBD>Painel</KBD> e revê alertas, taxa de poupança e progresso das metas.</li>
+          <li>Exporta um backup JSON regularmente em <KBD>Definições, separador Backups e importação</KBD>.</li>
+        </OL>
+        <P>Todo o conteúdo desta página é genérico — não reflete dados pessoais introduzidos na aplicação.</P>
+      </>
+    ),
+  },
+  {
+    slug: "visao-geral",
+    title: "Visão geral",
+    group: "Introdução",
+    keywords: ["propósito", "fluxo mensal", "parcelas", "património"],
+    body: (
+      <>
+        <P>
+          O Partição do Salário ajuda a planear e acompanhar a divisão do rendimento líquido mensal
+          entre despesas, poupança e investimento, mês a mês.
+        </P>
+        <H3>Três conceitos distintos</H3>
+        <UL>
+          <li><strong>Fluxo mensal</strong> — o vencimento e os descontos de um mês específico, e o valor líquido disponível resultante.</li>
+          <li><strong>Parcelas</strong> — categorias de destino do dinheiro disponível (ex.: Fundos de Emergência, ETFs, Gastos Mensais), com uma regra de alocação (fixo ou percentagem) e, opcionalmente, uma meta.</li>
+          <li><strong>Património</strong> — a página <KBD>Carteira</KBD> mostra a evolução acumulada do que foi alocado a cada parcela ao longo do tempo, não apenas o mês corrente.</li>
+        </UL>
+        <P>
+          Desde a versão com movimentos individuais, cada mês pode continuar a usar apenas alocações
+          agregadas (o modelo histórico) ou registar despesas e aportes como lançamentos individuais
+          com categoria, data e nota — os dois modelos coexistem e são somados na reconciliação do mês.
+        </P>
+      </>
+    ),
+  },
+  {
+    slug: "painel",
+    title: "Painel",
+    group: "Áreas da aplicação",
+    keywords: ["kpi", "dashboard", "gráficos", "alertas", "período", "comparação"],
+    body: (
+      <>
+        <P>O Painel resume o período selecionado no filtro (mês, ano, intervalo personalizado ou preset).</P>
+        <H3>KPIs</H3>
+        <UL>
+          <li><strong>Líquido total</strong> — soma do vencimento líquido de todos os meses no período filtrado.</li>
+          <li><strong>Média mensal</strong> — líquido total dividido pelo número de meses do período.</li>
+          <li><strong>Taxa de poupança</strong> — ver <a href="#formulas-e-calculos" className="underline underline-offset-2">Fórmulas e cálculos</a>.</li>
+          <li><strong>Gastos</strong> — soma dos valores alocados/lançados à parcela do tipo "gastos" no período. É clicável: abre um painel lateral com os movimentos individuais que compõem o valor.</li>
+          <li><strong>Carga fiscal efetiva</strong> — descontos totais (IRS + Segurança Social) a dividir pelo rendimento bruto total.</li>
+          <li><strong>Por alocar</strong> — ver fórmula em <a href="#formulas-e-calculos" className="underline underline-offset-2">Fórmulas e cálculos</a>. É clicável para investigar os movimentos do período.</li>
+        </UL>
+        <H3>Comparação com o período anterior</H3>
+        <P>
+          Sempre que o período filtrado tem um equivalente imediatamente anterior com o mesmo número de
+          meses (ex.: "últimos 3 meses" compara com os 3 meses antes desses), os KPIs de líquido, taxa
+          de poupança e gastos mostram a variação percentual, com seta a indicar subida ou queda.
+        </P>
+        <H3>Alertas</H3>
+        <P>
+          Um alerta aparece sempre que o valor "por alocar" de um mês é negativo — ou seja, foi alocado
+          ou gasto mais do que o disponível nesse mês.
+        </P>
+        <H3>Gráfico "Parcelas no período"</H3>
+        <P>Cada linha da tabela é clicável e abre os movimentos individuais dessa parcela no período filtrado.</P>
+        <H3>Metas e submetas</H3>
+        <P>No cartão Metas, cada meta tem um botão independente para mostrar ou esconder todas as suas submetas. Ficam escondidas por omissão e voltam a esse estado ao recarregar. Abrir uma meta não abre as restantes.</P>
+        <P>As submetas mostram o acumulado, o objetivo, o valor em falta e o progresso, na moeda respetiva. Um aviso identifica conversões incompletas; expandir ou recolher não altera dados nem duplica os totais.</P>
+      </>
+    ),
+  },
+  {
+    slug: "meses",
+    title: "Meses",
+    group: "Áreas da aplicação",
+    keywords: ["criar mês", "duplicar", "concluir", "editar"],
+    body: (
+      <>
+        <P>A página <KBD>Meses</KBD> lista todos os meses registados, com o resumo de bruto, descontos, líquido e restante.</P>
+        <UL>
+          <li><strong>Criar</strong> — botão "Novo mês" no topo da página.</li>
+          <li><strong>Editar</strong> — clicar numa linha abre o editor com três abas: Vencimento, Divisão e Movimentos.</li>
+          <li><strong>Duplicar</strong> — disponível no menu de ações de cada mês, copia rendimentos e divisão como ponto de partida para o mês seguinte.</li>
+          <li><strong>Concluir/rever</strong> — a reconciliação do mês mostra o estado (zero, excedente ou défice) e, quando há excedente relevante, sugere uma distribuição editável antes de aplicar.</li>
+        </UL>
+      </>
+    ),
+  },
+  {
+    slug: "rendimentos-e-descontos",
+    title: "Rendimentos e descontos",
+    group: "Áreas da aplicação",
+    keywords: ["salário bruto", "irs", "segurança social", "subsídio de refeição", "líquido"],
+    body: (
+      <>
+        <P>Cada mês guarda os seguintes campos de rendimento:</P>
+        <UL>
+          <li><strong>Vencimento base</strong> (<code>base</code>)</li>
+          <li><strong>Retribuição extraordinária</strong> (<code>extraordinaria</code>)</li>
+          <li><strong>Outros rendimentos sujeitos a IRS e SS</strong> (<code>outrosIrsSs</code>)</li>
+          <li><strong>Outros rendimentos sujeitos apenas a IRS</strong> (<code>outrosIrs</code>)</li>
+          <li><strong>Rendimentos isentos</strong> (<code>isentos</code>)</li>
+        </UL>
+        <P>
+          Os descontos (Segurança Social e IRS) podem ser calculados automaticamente a partir de taxas
+          configuráveis, ou introduzidos manualmente quando o modo do mês é "manual". O subsídio de
+          refeição é diário e pode, opcionalmente, contar para o valor disponível a dividir (configurável
+          em Definições).
+        </P>
+      </>
+    ),
+  },
+  {
+    slug: "despesas-e-categorias",
+    title: "Despesas e categorias",
+    group: "Áreas da aplicação",
+    keywords: ["categoria", "orçamento mensal", "essencial", "movimentos", "transação"],
+    body: (
+      <>
+        <P>
+          As categorias criam-se em <KBD>Definições</KBD> ou diretamente na página <KBD>Orçamento</KBD>,
+          com nome, orçamento mensal e uma marcação de essencial/não essencial.
+        </P>
+        <P>
+          Ao registar um movimento do tipo "Despesa" num mês, pode escolher uma categoria existente na
+          lista ou escrever uma categoria livre. Categorias marcadas como essenciais entram no cálculo
+          de despesa essencial média, usado no runway da reserva de emergência.
+        </P>
+      </>
+    ),
+  },
+  {
+    slug: "parcelas-e-metas",
+    title: "Parcelas e metas",
+    group: "Áreas da aplicação",
+    keywords: ["alocação", "meta", "progresso", "previsão"],
+    body: (
+      <>
+        <P>
+          Cada parcela tem um tipo (gastos, poupança ou investimento), uma regra de alocação por defeito
+          (valor fixo ou percentagem do disponível) e, opcionalmente, um valor-meta e uma data-alvo.
+        </P>
+        <P>
+          O acumulado de uma parcela é a soma de tudo o que lhe foi alocado ao longo dos meses (histórico).
+          Se definires um saldo inicial, passa a ser: saldo inicial + contribuições a partir do mês da data de
+          referência (inclusive) + aportes e retiradas registados desde essa data + ajustes. Sem saldo inicial, o
+          valor continua a ser exatamente o histórico. O progresso mostra a percentagem do acumulado em relação à
+          meta definida. Os detalhes estão em &quot;Plataformas, distribuição e metas avançadas&quot;.
+        </P>
+      </>
+    ),
+  },
+  {
+    slug: "plataformas-e-metas-avancadas",
+    title: "Plataformas, distribuição e metas avançadas",
+    group: "Áreas da aplicação",
+    keywords: ["plataforma", "distribuir", "ativos", "saldo inicial", "ajuste", "submeta", "moeda", "taxa", "despesas"],
+    body: (
+      <>
+        <H3>Catálogo de plataformas e tipos</H3>
+        <P>
+          Em Definições, separador Catálogos crias, renomeias, arquivas e eliminas plataformas e tipos personalizados. Os nomes são
+          únicos sem distinguir maiúsculas, acentos ou espaços a mais. Uma plataforma em uso só pode ser arquivada: continua
+          no histórico mas deixa de aparecer em novas seleções. Os tipos personalizados herdam o comportamento base
+          (gastos, poupança, investimento; despesa, entrada, transferência, ajuste), por isso os indicadores não mudam.
+        </P>
+        <H3>Distribuir por plataformas (mês)</H3>
+        <P>
+          No editor de cada mês, separador Divisão, &quot;Distribuir por plataformas&quot; reparte o valor de uma parcela por
+          plataformas, por valor (€) ou por percentagem, nunca os dois ao mesmo tempo. Sem linhas, o valor fica todo na
+          parcela; uma distribuição parcial mostra o restante; exceder o total bloqueia a gravação. Em percentagem, os
+          valores recalculam quando a parcela muda; em valor, reduzir a parcela abaixo da soma exige corrigir primeiro.
+          Arredondamento em cêntimos por soma acumulada: distribuído + restante = total.
+        </P>
+        <H3>Distribuição por ativos</H3>
+        <P>
+          Dentro de cada plataforma distribuída podes listar ativos ou classes com nome, percentagem e nota. O valor é
+          calculado sobre o montante da plataforma e não é editável. A soma não pode exceder 100%; o que falta fica por
+          distribuir. Não há preço, quantidade nem cotação.
+        </P>
+        <H3>Saldos, ajustes, submetas e moedas</H3>
+        <UL>
+          <li>Saldo inicial: valor e data de referência. O mês da data e os seguintes contam como novos; os anteriores já estão no saldo.</li>
+          <li>Ajuste: valor com sinal, data e nota. &quot;Corrigir total&quot; regista a diferença como ajuste.</li>
+          <li>Submetas (um nível): plataforma, moeda, objetivo e prazo. Os aportes e retiradas da meta podem ser atribuídos a submetas, até ao valor do movimento.</li>
+          <li>Moedas: as taxas são manuais (1 origem = taxa × destino). Sem taxa, a submeta fica fora do total, que é marcado como incompleto.</li>
+        </UL>
+        <P>Estas distribuições e saldos são planeamento: não criam movimentos nem posições na Carteira.</P>
+        <H3>Despesas por mês e dia</H3>
+        <P>
+          O menu Despesas mostra os movimentos do mês agrupados por dia, com totais diários e do mês. É a mesma lista dos
+          Meses: editar numa vista atualiza a outra. Mudar a data move o registo para o mês correto (o mês tem de existir).
+          O total inclui despesas e retiradas e exclui transferências e aportes. Reembolsos não são compensados automaticamente.
+        </P>
+      </>
+    ),
+  },
+  {
+    slug: "orcamento-e-alertas",
+    title: "Orçamento e alertas",
+    group: "Áreas da aplicação",
+    keywords: ["real", "desvio", "limite de alerta"],
+    body: (
+      <>
+        <P>
+          A tabela "Orçamento vs. real por categoria" compara o orçamento mensal definido em cada
+          categoria com a soma real das despesas dessa categoria no período filtrado.
+        </P>
+        <UL>
+          <li><strong>Orçamento</strong> — valor mensal definido na categoria.</li>
+          <li><strong>Real</strong> — soma das despesas com essa categoria no período.</li>
+          <li><strong>Desvio</strong> — real menos orçamento, em euros e em percentagem.</li>
+          <li><strong>Alerta</strong> — assinalado quando o desvio percentual atinge ou excede o limite configurado (10% por defeito).</li>
+        </UL>
+        <P>Para investigar um desvio, use o drill-down do Painel a partir do KPI de Gastos ou de uma parcela.</P>
+      </>
+    ),
+  },
+  {
+    slug: "fecho-e-planeamento",
+    title: "Fecho e planeamento",
+    group: "Áreas da aplicação",
+    keywords: ["fecho", "transporte", "recorrências", "reservas", "simulador", "csv", "verificar dados"],
+    body: (
+      <>
+        <P>O menu "Fecho e planeamento" reúne o fecho mensal, as recorrências e reservas, o simulador de metas e a composição dos totais.</P>
+        <H3>Fecho mensal</H3>
+        <OL>
+          <li>Reveja rendimentos, despesas, distribuições e pendências.</li>
+          <li>Decida o destino do restante: transportar para o mês seguinte, reforçar uma parcela/meta ou manter como não atribuído.</li>
+          <li>Feche o mês. Um mês fechado recusa alterações financeiras; reabra-o indicando o motivo.</li>
+        </OL>
+        <P>O transporte aparece no mês seguinte como "Transporte" e nunca conta como rendimento.</P>
+        <H3>Recorrências e reservas</H3>
+        <UL>
+          <li>As recorrências criam ocorrências pendentes: confirmar cria a despesa uma única vez; ignorar retira-a.</li>
+          <li>Uma reserva não é uma despesa paga. A sugestão mensal considera o já reservado e os meses até ao prazo.</li>
+        </UL>
+        <H3>Simulador e composição</H3>
+        <P>O simulador usa contribuição mensal, reforço, pausa e prazo, sem rentabilidade, e não altera dados. A composição mostra de onde vem cada acumulado, com os registos de origem.</P>
+        <H3>Verificar dados e importar CSV</H3>
+        <P>Em Definições, separador Backups e importação, "Verificar dados" aponta erros e avisos sem corrigir nada sozinho. "Importar CSV" faz pré-visualização com erros por linha e duplicados antes de confirmar.</P>
+        <H3>Ocultar montantes</H3>
+        <P>O ícone do olho desfoca os montantes no ecrã. Não é controlo de acesso.</P>
+      </>
+    ),
+  },
+  {
+    slug: "usar-no-telemovel",
+    title: "Usar no telemóvel",
+    group: "Telemóvel e offline",
+    keywords: ["iphone", "android", "barra inferior", "dividir valores", "toque", "ecrã pequeno"],
+    body: (
+      <>
+        <P>No telemóvel, a navegação principal fica numa barra no fundo do ecrã, ao alcance do polegar.</P>
+        <H3>Barra inferior</H3>
+        <UL>
+          <li><KBD>Painel</KBD>, <KBD>Meses</KBD>, <KBD>Despesas</KBD> e <KBD>Carteira</KBD> abrem diretamente a área correspondente; o separador ativo fica destacado.</li>
+          <li><KBD>Mais</KBD> abre as restantes áreas: Fecho e planeamento, Parcelas e metas, Orçamento, Definições e esta ajuda.</li>
+          <li>Um ponto de aviso aparece em <KBD>Mais</KBD> quando existem alterações guardadas só neste dispositivo, ou um conflito para rever.</li>
+          <li>A barra esconde-se enquanto o teclado está aberto, para não tapar o campo que estás a editar.</li>
+        </UL>
+        <H3>Dividir valores por mês</H3>
+        <OL>
+          <li>Em <KBD>Meses</KBD>, toca em <KBD>Dividir valores</KBD> no cartão do mês.</li>
+          <li>A janela abre diretamente na divisão, em ecrã inteiro. O resumo de disponível, alocado e restante fica sempre visível.</li>
+          <li>Cada parcela é um cartão com o nome completo, o modo (valor fixo, percentagem ou restante), o valor e o montante calculado.</li>
+          <li>Os valores da divisão são guardados ao sair de cada campo. A distribuição por plataformas e ativos está no mesmo cartão.</li>
+          <li>Toca em <KBD>Concluir</KBD> para fechar. Um mês fechado não aceita alterações até ser reaberto.</li>
+        </OL>
+        <H3>Gráficos</H3>
+        <P>Toca num ponto do gráfico para ver os valores desse mês. No computador, basta passar o rato.</P>
+        <H3>Tablet, campos e layouts</H3>
+        <P>Os formulários adaptam as colunas ao espaço disponível no próprio cartão. Janelas e painéis respeitam a largura e a altura do ecrã; tabelas financeiras largas podem ter deslocação horizontal dentro da tabela, sem alargar a página.</P>
+        <P>A navegação lateral persistente aparece a partir de 1024 px de largura do ecrã. Os cartões personalizados empilham abaixo de 900 px de largura útil, sem alterar automaticamente as posições guardadas para computador. Guardar um layout no modo compacto continua a aplicar esse layout globalmente, conforme o aviso no editor.</P>
+      </>
+    ),
+  },
+  {
+    slug: "modo-offline",
+    title: "Modo offline e instalação",
+    group: "Telemóvel e offline",
+    keywords: ["sem internet", "pwa", "ecrã principal", "instalar", "preparar dispositivo", "cifrado", "código"],
+    body: (
+      <>
+        <P>Depois de preparado, o dispositivo permite consultar e editar os dados mesmo sem ligação.</P>
+        <H3>Preparar o dispositivo</H3>
+        <OL>
+          <li>Abre a aplicação no teu endereço HTTPS próprio (a pré-visualização incorporada pode bloquear o armazenamento offline).</li>
+          <li>Em <KBD>Definições</KBD>, define um código de acesso com pelo menos 8 caracteres e volta a entrar.</li>
+          <li>Em <KBD>Aplicação no telemóvel e offline</KBD>, toca em <KBD>Preparar este dispositivo</KBD>.</li>
+          <li>No menu do navegador, escolhe <KBD>Adicionar ao ecrã principal</KBD> para a abrir como uma aplicação.</li>
+        </OL>
+        <P>Não prepares dispositivos partilhados. A cópia local fica cifrada e o código é pedido ao abrir uma nova sessão.</P>
+        <H3>O que funciona sem internet</H3>
+        <UL>
+          <li>Consultar os dados já descarregados e as vistas calculadas a partir deles.</li>
+          <li>Editar vencimentos e divisões de meses abertos, incluindo plataformas e ativos.</li>
+          <li>Registar despesas.</li>
+        </UL>
+        <H3>O que exige ligação</H3>
+        <UL>
+          <li>Criar, duplicar ou eliminar meses; fechar ou reabrir meses.</li>
+          <li>Aplicar regras em massa, alterar catálogos, importar ficheiros e verificar dados no servidor.</li>
+          <li>Outros tipos de movimento e a edição de movimentos existentes.</li>
+        </UL>
+        <P>O navegador pode apagar o armazenamento local. Continua a exportar backups JSON regularmente.</P>
+      </>
+    ),
+  },
+  {
+    slug: "sincronizacao-e-conflitos",
+    title: "Sincronização e conflitos",
+    group: "Telemóvel e offline",
+    keywords: ["sincronizar", "conflito", "rever conflito", "fila", "duplicado", "alterações por sincronizar"],
+    body: (
+      <>
+        <P>As alterações feitas neste dispositivo ficam primeiro numa fila local cifrada e são enviadas ao servidor quando a ligação regressa.</P>
+        <UL>
+          <li>A sincronização corre sozinha ao voltar a ter internet ou ao regressar à aplicação. Também podes tocar em <KBD>Sincronizar agora</KBD>.</li>
+          <li>Cada lote é aplicado por inteiro ou não é aplicado. Repetir o envio não duplica despesas.</li>
+          <li>Se os dados do servidor mudaram entretanto, a sincronização pára e nada é perdido: as tuas alterações continuam guardadas no dispositivo.</li>
+        </UL>
+        <H3>Rever um conflito</H3>
+        <OL>
+          <li>Toca em <KBD>Rever conflito</KBD> para comparar o valor do servidor com a tua alteração local.</li>
+          <li>Se quiseres, usa <KBD>Exportar cópia</KBD> antes de decidir.</li>
+          <li>Toca em <KBD>Aplicar valores locais listados</KBD> para reaplicar só os campos mostrados; as restantes alterações do servidor mantêm-se.</li>
+          <li>Com <KBD>Cancelar</KBD>, nada é alterado. Meses entretanto fechados continuam protegidos.</li>
+        </OL>
+      </>
+    ),
+  },
+  {
+    slug: "formulas-e-calculos",
+    title: "Fórmulas e cálculos",
+    group: "Referência",
+    keywords: ["fórmula", "cálculo", "runway", "taxa de poupança", "carga fiscal"],
+    body: (
+      <>
+        <P>Estas são as fórmulas efetivamente usadas pela aplicação (correspondem a <code>shared/calc.ts</code>).</P>
+        <H3>Rendimento bruto</H3>
+        <CODE>{`brutoMes = base + extraordinaria + outrosIrsSs + outrosIrs + isentos`}</CODE>
+        <H3>Descontos (modo automático)</H3>
+        <CODE>{`ss = (base + outrosIrsSs) × taxaSs
+irs = (base + outrosIrs) × taxaIrsBase + outrosIrsSs × taxaIrsExtra
+descontos = ss + irs`}</CODE>
+        <P>No modo "manual", o valor de descontos é introduzido diretamente e substitui este cálculo.</P>
+        <H3>Vencimento líquido</H3>
+        <CODE>{`liquido = bruto - descontos - (outrosIrs, se "excluir outros IRS do líquido" estiver ativo)`}</CODE>
+        <H3>Valor disponível para dividir</H3>
+        <CODE>{`disponivel = liquido + subsidioRefeicao  (só se "incluir subsídio" estiver ativo)`}</CODE>
+        <H3>Por alocar (reconciliação do mês)</H3>
+        <CODE>{`despesasTotais = soma(movimentos do tipo "despesa" e "retirada")
+alocacoesTotais = soma(alocações fixo/percentagem) + soma(movimentos do tipo "aporte")
+porAlocar = disponivel - despesasTotais - alocacoesTotais`}</CODE>
+        <P>Transferências entre parcelas não contam para despesas nem para alocações — apenas movem saldo entre parcelas.</P>
+        <H3>Taxa de poupança</H3>
+        <CODE>{`taxaPoupanca = (alocado a poupança + alocado a investimento) / disponivel`}</CODE>
+        <H3>Carga fiscal efetiva</H3>
+        <CODE>{`cargaFiscalEfetiva = descontosTotais / brutoTotal`}</CODE>
+        <H3>Despesa essencial média e runway</H3>
+        <CODE>{`mediaDespesasEssenciais = soma(despesas essenciais nos últimos N meses) / N
+runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
+        <P>N é a janela configurável (3, 6 ou 12 meses) e o saldo elegível é a soma das parcelas marcadas como reserva de emergência.</P>
+        <H3>Meses incompletos</H3>
+        <P>
+          Um mês sem nenhum valor de rendimento preenchido entra nos totais com zero, mas continua a
+          contar para a média a menos que seja excluído do filtro de período.
+        </P>
+      </>
+    ),
+  },
+  {
+    slug: "dados-e-backups",
+    title: "Definições (dados e backups)",
+    group: "Referência",
+    keywords: ["exportar", "importar", "restaurar", "validar", "json", "excel"],
+    body: (
+      <>
+        <P>Na página <KBD>Definições</KBD>:</P>
+        <UL>
+          <li><strong>Exportar JSON</strong> — cópia completa e fiel de todos os dados, usada para restauro integral.</li>
+          <li><strong>Exportar Excel</strong> — mesma informação em formato de folha de cálculo, organizada por ano, mais uma folha de parcelas.</li>
+          <li><strong>Importar/Restaurar</strong> — carrega um ficheiro JSON exportado anteriormente e substitui os dados atuais após confirmação.</li>
+          <li><strong>Validar</strong> — verifica a estrutura de um ficheiro antes de restaurar, sem alterar dados.</li>
+        </UL>
+        <P>
+          Recomenda-se exportar um backup JSON após alterações relevantes e sempre antes de importar
+          dados novos. Guarde as exportações num local privado e protegido — o ficheiro contém todos os
+          seus dados financeiros em texto simples.
+        </P>
+      </>
+    ),
+  },
+  {
+    slug: "privacidade-e-seguranca",
+    title: "Privacidade e segurança",
+    group: "Referência",
+    keywords: ["código de acesso", "sessão", "segurança"],
+    body: (
+      <>
+        <P>
+          A aplicação é um espaço privado: os dados residem apenas nesta instância e não são partilhados
+          com terceiros pela aplicação.
+        </P>
+        <UL>
+          <li>O código de acesso protege a entrada na sessão da aplicação, mas <strong>não substitui backups independentes</strong> — não há recuperação de código esquecido sem acesso à página de Definições já autenticada.</li>
+          <li>O código é pedido sempre que a aplicação é aberta; pode ser alterado em <KBD>Definições, separador Backups e importação</KBD>.</li>
+          <li>Esta documentação nunca inclui códigos de acesso, valores pessoais, exemplos reais ou dados importados.</li>
+          <li>Guarde exportações de backup apenas em locais privados e protegidos (não em partilhas públicas ou email não encriptado).</li>
+        </UL>
+      </>
+    ),
+  },
+  {
+    slug: "perguntas-frequentes",
+    title: "Perguntas frequentes",
+    group: "Referência",
+    keywords: ["faq", "dúvidas", "erro"],
+    body: (
+      <>
+        <H3>O valor "por alocar" está negativo. O que significa?</H3>
+        <P>Foi gasto ou alocado mais do que o valor disponível nesse mês. Reveja as despesas e alocações do mês em causa, ou ajuste a divisão.</P>
+        <H3>Porque é que a taxa de poupança pode passar de 100%?</H3>
+        <P>Acontece quando o valor alocado a poupança/investimento no período excede o disponível desse período — normalmente por transferências de saldo acumulado de meses anteriores.</P>
+        <H3>Os meses antigos não têm movimentos individuais no drill-down. É um erro?</H3>
+        <P>Não. Meses criados antes da funcionalidade de movimentos individuais continuam representados apenas por alocações agregadas por parcela, sem detalhe de transação — por desenho, para não alterar dados históricos retroativamente.</P>
+        <H3>Como corrijo um valor de um mês passado?</H3>
+        <P>Abra o mês em <KBD>Meses</KBD> e edite os campos de vencimento, divisão ou movimentos diretamente. Não há bloqueio de edição de meses passados.</P>
+      </>
+    ),
+  },
+  {
+    slug: "glossario",
+    title: "Glossário",
+    group: "Referência",
+    keywords: ["definições", "termos"],
+    body: (
+      <>
+        <UL>
+          <li><strong>Líquido disponível</strong> — vencimento líquido, mais subsídio de refeição se configurado para contar.</li>
+          <li><strong>Por alocar</strong> — parte do disponível que ainda não foi gasta nem alocada a nenhuma parcela nesse mês; pode ser negativo.</li>
+          <li><strong>Alocação</strong> — regra que define quanto de cada mês vai para uma parcela, em valor fixo ou percentagem do disponível.</li>
+          <li><strong>Parcela</strong> — destino do dinheiro (ex.: Fundos de Emergência, ETFs); tem um tipo (gastos/poupança/investimento) e pode ter uma meta.</li>
+          <li><strong>Despesa essencial</strong> — despesa cuja categoria está marcada como essencial em Definições; usada no cálculo de runway.</li>
+          <li><strong>Taxa de poupança</strong> — percentagem do disponível que foi alocada a poupança ou investimento.</li>
+          <li><strong>Runway</strong> — número de meses que o saldo da reserva de emergência cobriria, ao ritmo médio de despesas essenciais.</li>
+        </UL>
+      </>
+    ),
+  },
+  {
+    slug: "notas-de-versao",
+    title: "Notas de versão",
+    group: "Referência",
+    keywords: ["changelog", "versão", "novidades"],
+    body: (
+      <>
+        <H3>1.9.1</H3>
+        <UL>
+          <li>Revisão responsiva de campos, formulários, cartões, gráficos, janelas e Ajuda em computador, tablet e telemóvel.</li>
+          <li>Submetas no Painel com acumulado, objetivo, valor em falta e progresso; botão independente por meta, recolhido por omissão.</li>
+          <li>Layouts personalizados empilhados em espaços compactos e geometria inválida normalizada para a grelha.</li>
+          <li>Sem alterações às fórmulas financeiras ou ao esquema de dados. A versão não certifica todos os navegadores ou dispositivos físicos.</li>
+        </UL>
+        <H3>1.9.0</H3>
+        <UL>
+          <li>Interface adaptada a telemóvel, com barra de navegação inferior e divisão mensal em cartões.</li>
+          <li>Modo offline opcional com cópia local cifrada, fila de alterações e revisão de conflitos.</li>
+          <li>Corrigido o erro ao atualizar um mês aberto.</li>
+        </UL>
+        <H3>P3</H3>
+        <UL>
+          <li>Catálogo de plataformas e tipos personalizados; backup versão 3 com restauro atómico.</li>
+          <li>Distribuição das parcelas mensais por plataformas e por ativos.</li>
+          <li>Saldo inicial, ajustes, submetas e conversão manual de moedas.</li>
+          <li>Menu Despesas por mês e dia.</li>
+        </UL>
+        <H3>P2</H3>
+        <UL>
+          <li>Filtros temporais consistentes entre Painel e Orçamento, com presets e comparação com o período anterior.</li>
+          <li>Drill-down de KPIs e gráficos com edição e eliminação de movimentos.</li>
+          <li>Relatório mensal arquivável em Markdown, com opção de ocultar valores.</li>
+          <li>Centro de ajuda e documentação da aplicação.</li>
+        </UL>
+        <H3>P1</H3>
+        <UL>
+          <li>Orçamento por categoria, projeção de final de ano, reserva de emergência/runway e sugestão de distribuição do excedente.</li>
+        </UL>
+        <H3>P0</H3>
+        <UL>
+          <li>Base da aplicação: meses, rendimentos, descontos, parcelas, painel e carteira.</li>
+        </UL>
+      </>
+    ),
+  },
+];
+
+export const HELP_VERSION = "1.9.1";
+export const HELP_UPDATED_AT = "2026-11-15";
