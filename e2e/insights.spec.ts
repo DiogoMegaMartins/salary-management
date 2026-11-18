@@ -119,7 +119,7 @@ test.describe("Leituras sobre o histórico", () => {
       await page.keyboard.press("Escape");
 
       const cartao = page.getByTestId("yoy-card");
-      await expect(cartao).toContainText(/\d+ mês(es)? face a \d+ mês(es)? da base/);
+      await expect(cartao).toContainText(/\d+ (mês|meses) face a \d+ (mês|meses) da base/);
       await expect(page.getByTestId("yoy-row-net")).toContainText("+");
 
       await clicar(page.getByTestId("yoy-reset"));
