@@ -2,6 +2,16 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.10.0 | 2026-11-18
+
+- **Ritmo das metas:** `goalPace` compara o ritmo dos últimos 3 meses com a data alvo (estados no ritmo, atrasada, sem ritmo, prazo passado, sem prazo, atingida). Aviso por meta e faixa no Painel.
+- **Face ao ano anterior:** `yearOverYear` e `categoryYearOverYear`; cartão no Painel (líquido, gastos, poupança, taxa) e tabela por categoria no Orçamento. Só meses com par nos dois anos.
+- **Despesas fora do padrão:** `spendAnomalies`; cartão no Painel e no Orçamento para o último mês com despesas.
+- **Relatório mensal em PDF:** gerador sem dependências (`shared/pdf.ts`, Helvetica, WinAnsi) a partir do mesmo Markdown do relatório; botão "Descarregar PDF". Mantém a opção de ocultar valores.
+- Novas fórmulas documentadas em REGRAS-DE-CALCULO.md; secção "Ritmo das metas, ano anterior e despesas fora do padrão".
+- Testes: `tests/insights.test.ts` (9), `tests/pdf.test.ts` (3, com extração de texto por `pdftotext` quando existe) e `e2e/insights.spec.ts` (4 por ambiente), mais `e2e/dados.spec.ts` (fecho, CSV e restauro).
+- Versão da aplicação, da Ajuda e de `/api/app-info` em 1.10.0. Sem alterações ao esquema de dados.
+
 ## Arquitetura documentada
 
 - `docs/ARQUITETURA.md` passa a ter diagramas Mermaid: componentes cliente/servidor/base de dados, sequência de entrada e gravação, modelo de dados (relações), camadas de proteção, modo offline e do código à produção.

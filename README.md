@@ -12,6 +12,8 @@ Aplicação web pessoal para dividir o rendimento mensal em parcelas (gastos, po
 - Definições: exportação JSON/XLSX, importação com validação e catálogos
 - Fecho mensal, recorrências, reservas, simulador de metas e composição dos totais
 - Verificação de dados, importação CSV e histórico de alterações
+- Leituras sobre o histórico: ritmo das metas face ao prazo, comparação com o ano anterior e despesas fora do padrão
+- Relatório do período em PDF ou Markdown, com opção de ocultar valores
 - Ajuda integrada e código de acesso opcional
 - Layouts responsivos em computador, tablet e telemóvel, com campos adaptados à largura do cartão e grelhas personalizadas empilhadas em espaços compactos
 

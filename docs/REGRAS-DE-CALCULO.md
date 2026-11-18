@@ -51,3 +51,27 @@ Linear, sem rentabilidade: acumulado atual + contribuição mensal (exceto pausa
 
 ### Verificação de dados
 Erros: distribuição acima do disponível, percentagens fora de 0-100 ou somas acima de 100, referências inexistentes, transferências inválidas, valores não positivos. Avisos: por distribuir, possíveis duplicados (mesma data, valor, tipo, parcela e categoria).
+
+## Ritmo das metas, ano anterior e despesas fora do padrão
+Implementadas em `shared/calc/insights.ts` e cobertas por `tests/insights.test.ts`.
+
+### Ritmo de uma meta (`goalPace`)
+- Entradas: objetivo, data alvo (`AAAA-MM` ou `AAAA-MM-DD`), acumulado, ritmo mensal e o mês de referência (hoje).
+- Em falta = objetivo − acumulado (arredondado a cêntimos). Ritmo mensal = média das contribuições dos últimos 3 meses.
+- Meses necessários = ⌈em falta ÷ ritmo⌉. Meses até ao prazo = (ano e mês do prazo) − (ano e mês de hoje); 0 no próprio mês do prazo.
+- Poupança necessária por mês = em falta ÷ máx(1, meses até ao prazo).
+- Estados: `sem_objetivo`; `atingida` (em falta ≤ 0,005); `sem_prazo`; `prazo_passado` (meses até ao prazo < 0); `sem_ritmo` (ritmo 0); `no_ritmo` (meses necessários ≤ meses até ao prazo); `atrasada` (caso contrário, com atraso = necessários − até ao prazo).
+- Mês previsto = mês de hoje + meses necessários.
+
+### Comparação com o ano anterior (`yearOverYear`)
+- Cada mês do período é emparelhado com o mesmo mês do ano anterior; meses sem par ficam de fora dos dois lados.
+- Totais por lado: líquido, gastos (parcelas de gastos), poupança e investimento, disponível. Taxa de poupança = (poupança + investimento) ÷ disponível.
+- Variação relativa = atual ÷ anterior − 1; sem valor anterior (0) e com valor atual, fica indefinida. A taxa de poupança compara-se em pontos percentuais.
+- Por categoria (`categoryYearOverYear`): despesas do tipo `expense` agrupadas por categoria (sem distinguir maiúsculas), nos meses emparelhados.
+
+### Despesas fora do padrão (`spendAnomalies`)
+- Mês analisado: o último mês do período com despesas. Histórico: até 12 meses anteriores existentes (meses sem gasto na categoria contam como 0). Sem pelo menos 3 meses anteriores, não há análise.
+- Por categoria: média e desvio-padrão (populacional) do histórico. Alerta se gasto > média + 2 × desvio, gasto ≥ 1,5 × média e gasto ≥ 20 €.
+- Categoria sem gasto no histórico (média 0): alerta `novo` se o gasto for ≥ 40 € (o dobro do mínimo).
+- Ordenação por excesso sobre a média, do maior para o menor.
+
