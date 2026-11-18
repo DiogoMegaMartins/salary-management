@@ -22,7 +22,8 @@ import { FilterBar } from "@/components/filter-bar";
 import { EditableSectionGrid, type SectionSpec } from "@/components/editable-section-grid";
 import { usePageLayout } from "@/lib/page-layout";
 import { MonthlyReportDialog } from "@/components/monthly-report-dialog";
-import { AnomaliesCard, CategoryYearOverYear } from "@/components/insights";
+import { AnomaliesCard } from "@/components/insights";
+import { CategoryYearOverYear } from "@/components/yoy";
 import {
   budgetVsRealByCategory,
   fmtEur,
@@ -320,9 +321,9 @@ export default function BudgetPage() {
           {
             id: "orc-ano-anterior",
             title: "Face ao ano anterior",
-            defaultLayout: { x: 0, y: 29, w: 6, h: 10 },
+            defaultLayout: { x: 0, y: 29, w: 6, h: 12 },
             node: (
-              <SectionCard title="Face ao ano anterior" description="Despesa por categoria no período contra os mesmos meses de há um ano">
+              <SectionCard title="Face ao ano anterior" description="Despesa por categoria; a escolha de meses e ano é a mesma do Painel">
                 <CategoryYearOverYear d={d} />
               </SectionCard>
             ),

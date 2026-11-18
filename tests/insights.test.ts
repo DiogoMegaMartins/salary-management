@@ -1,7 +1,7 @@
 // Ritmo das metas, comparação com o ano anterior e despesas fora do padrão (funções puras).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { goalPace, parseYearMonth, yearOverYear, categoryYearOverYear, spendAnomalies, expenseByCategory } from "../shared/calc";
+import { goalPace, parseYearMonth, yearOverYear, categoryYearOverYear, parcelYearOverYear, spendAnomalies, expenseByCategory } from "../shared/calc";
 
 const now = { year: 2026, month: 6 };
 
@@ -43,8 +43,8 @@ test("goalPace: prazo no próprio mês e datas AAAA-MM-DD", () => {
 
 // ---- dados sintéticos para os testes de comparação e anomalias
 const mk = (id: number, year: number, month: number) => ({ id, year, month, label: `${month}/${year}` }) as any;
-const comp = (net: number, gastos: number, poupanca: number, investimento: number, available: number) =>
-  ({ net, available, byKind: { gastos, poupanca, investimento } }) as any;
+const comp = (net: number, gastos: number, poupanca: number, investimento: number, available: number, extra: Record<string, unknown> = {}) =>
+  ({ net, gross: net * 1.25, descontos: net * 0.25, available, byKind: { gastos, poupanca, investimento }, byParcel: {}, ...extra }) as any;
 const tx = (id: number, monthId: number, value: number, category: string, type = "expense") => ({ id, monthId, value, category, type }) as any;
 
 test("yearOverYear: só compara meses com par e calcula variações", () => {
@@ -114,4 +114,51 @@ test("expenseByCategory: junta maiúsculas/minúsculas e usa 'Sem categoria'", (
   assert.equal(m.get("casa")!.total, 3.3);
   assert.equal(m.get("sem categoria")!.total, 5);
   assert.equal(m.size, 2);
+});
+
+test("yearOverYear: ano de referência fixo, escolha de meses e nunca com o próprio ano", () => {
+  const allMonths = [mk(1, 2024, 6), mk(2, 2025, 6), mk(3, 2026, 6), mk(4, 2026, 7)];
+  const allComputed = [comp(800, 300, 50, 0, 700), comp(1000, 400, 100, 0, 800), comp(1200, 500, 200, 0, 900), comp(1300, 500, 100, 0, 900)];
+  const jun26 = [allMonths[2]], c26 = [allComputed[2]];
+  const auto = yearOverYear(jun26, c26, allMonths, allComputed)!; // ano anterior = 2025
+  assert.equal(auto.previous.net, 1000);
+  const fixo = yearOverYear(jun26, c26, allMonths, allComputed, 2024)!; // comparar com 2024
+  assert.equal(fixo.previous.net, 800);
+  assert.equal(yearOverYear(jun26, c26, allMonths, allComputed, 2026), null); // o mês não se compara com ele próprio
+  assert.equal(yearOverYear([allMonths[3]], [allComputed[3]], allMonths, allComputed, 2025), null); // jul/2025 não existe
+  // vários meses escolhidos: só o que tem par entra
+  const dois = yearOverYear([allMonths[2], allMonths[3]], [allComputed[2], allComputed[3]], allMonths, allComputed, 2025)!;
+  assert.equal(dois.pairs.length, 1);
+  assert.equal(dois.current.net, 1200);
+});
+
+test("yearOverYear: bruto, descontos, carga fiscal e meses repetidos (dois dezembros) somam-se", () => {
+  const allMonths = [mk(1, 2025, 12), mk(2, 2025, 12), mk(3, 2026, 12)];
+  const allComputed = [comp(400, 0, 0, 0, 400), comp(600, 0, 0, 0, 600), comp(1500, 0, 0, 0, 1500)];
+  const y = yearOverYear([allMonths[2]], [allComputed[2]], allMonths, allComputed)!;
+  assert.equal(y.pairs.length, 1);
+  assert.equal(y.pairs[0].previous.length, 2);
+  assert.equal(y.previous.net, 1000); // 400 + 600
+  assert.equal(y.previous.gross, 1250);
+  assert.equal(y.previous.descontos, 250);
+  assert.equal(y.previous.taxRate, 0.2);
+  assert.equal(y.current.taxRate, 0.2);
+  assert.equal(y.taxRateDeltaPP, 0);
+  assert.equal(Math.round(y.delta.gross! * 100), 50);
+  assert.equal(y.delta.descontos! > 0, true);
+  // os dois meses atuais com o mesmo ano e mês contam como um par e não duplicam o anterior
+  const dup = yearOverYear([allMonths[0], allMonths[1]], [allComputed[0], allComputed[1]], [mk(0, 2024, 12), ...allMonths], [comp(100, 0, 0, 0, 100), ...allComputed])!;
+  assert.equal(dup.pairs.length, 1);
+  assert.equal(dup.previous.net, 100);
+  assert.equal(dup.current.net, 1000);
+});
+
+test("parcelYearOverYear: total por parcela, ordenado pelo maior desvio, sem parcelas vazias", () => {
+  const allMonths = [mk(1, 2025, 3), mk(2, 2026, 3)];
+  const allComputed = [comp(1, 0, 0, 0, 1, { byParcel: { 1: 100, 2: 50, 3: 0 } }), comp(1, 0, 0, 0, 1, { byParcel: { 1: 130, 2: 20, 4: 10 } })];
+  const y = yearOverYear([allMonths[1]], [allComputed[1]], allMonths, allComputed)!;
+  const rows = parcelYearOverYear([{ id: 1, name: "A" }, { id: 2, name: "B" }, { id: 3, name: "C" }, { id: 4, name: "D" }], y);
+  assert.deepEqual(rows.map((r) => [r.name, r.current, r.previous, r.delta]), [["A", 130, 100, 30], ["B", 20, 50, -30], ["D", 10, 0, 10]]);
+  assert.equal(rows[2].deltaPct, null);
+  assert.equal(Math.round(rows[0].deltaPct! * 100), 30);
 });

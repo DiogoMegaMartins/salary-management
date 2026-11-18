@@ -92,6 +92,54 @@ test.describe("Leituras sobre o histórico", () => {
     }
   });
 
+  test("escolher os meses e o ano de comparação, com a escolha guardada", async ({ page, request }) => {
+    const criados: number[] = [];
+    try {
+      for (const [year, base] of [[2025, 1000], [2026, 1200]] as const) {
+        const r = await request.post("/api/months", { headers: cabecalhosApi(), data: { year, month: 9, label: `Setembro ${year} E2E`, base } });
+        expect(r.ok()).toBe(true);
+        criados.push((await r.json()).id);
+      }
+      await page.goto("/#/");
+      await page.reload();
+      const cartao = page.getByTestId("yoy-card");
+      await expect(cartao).toBeVisible();
+      // métricas novas
+      for (const linha of ["gross", "descontos", "tax"]) await expect(page.getByTestId(`yoy-row-${linha}`)).toBeVisible();
+
+      // escolher só o último mês (Setembro 2026) e comparar com 2025
+      await clicar(page.getByTestId("yoy-months-trigger"));
+      await page.getByTestId("yoy-preset-last").click();
+      await page.keyboard.press("Escape");
+      await expect(page.getByTestId("yoy-months-trigger")).toContainText("1 mês escolhido");
+      await expect(cartao).toContainText("1 mês comparado com o mesmo mês do ano anterior");
+      await clicar(page.getByTestId("yoy-ref-select"));
+      await page.getByRole("option", { name: "Comparar com 2025" }).click();
+      await expect(cartao).toContainText("1 mês comparado com o mesmo mês de 2025");
+
+      // comparar com o próprio ano não tem sentido: aparece a explicação
+      await clicar(page.getByTestId("yoy-ref-select"));
+      await page.getByRole("option", { name: "Comparar com 2026" }).click();
+      await expect(page.getByTestId("yoy-empty")).toBeVisible();
+      await clicar(page.getByTestId("yoy-ref-select"));
+      await page.getByRole("option", { name: "Comparar com 2025" }).click();
+
+      // a escolha fica guardada e vale também no Orçamento
+      await page.reload();
+      await expect(page.getByTestId("yoy-months-trigger")).toContainText("1 mês escolhido");
+      await expect(page.getByTestId("yoy-card")).toContainText("de 2025");
+      await page.goto("/#/orcamento");
+      await expect(page.getByTestId("yoy-months-trigger")).toContainText("1 mês escolhido");
+
+      // repor volta aos meses do filtro
+      await clicar(page.getByTestId("yoy-reset"));
+      await expect(page.getByTestId("yoy-months-trigger")).toContainText("Meses do filtro");
+      await expect(page.getByTestId("yoy-reset")).toHaveCount(0);
+    } finally {
+      for (const id of criados) await request.delete(`/api/months/${id}`, { headers: cabecalhosApi() });
+    }
+  });
+
   test("descarregar o relatório em PDF", async ({ page }) => {
     await page.goto("/#/");
     await clicar(page.getByTestId("button-open-report"));

@@ -43,6 +43,8 @@ export function formatYearMonth(ym: string | null | undefined): string {
 }
 
 const ymKey = (year: number, month: number) => `${year}-${String(month).padStart(2, "0")}`;
+/** Chave `AAAA-MM` de um ano e mês. */
+export const yearMonthKey = ymKey;
 const addMonths = (year: number, month: number, n: number) => {
   const i = year * 12 + (month - 1) + n;
   return { year: Math.floor(i / 12), month: (i % 12) + 1 };
@@ -83,59 +85,107 @@ export function goalPace(i: {
 
 /* ------------------------------------------------------------ comparação com o ano anterior */
 
-export type YoYTotals = { net: number; spent: number; saved: number; available: number; savingsRate: number };
+export type YoYTotals = {
+  net: number;
+  gross: number;
+  descontos: number;
+  /** descontos ÷ bruto */
+  taxRate: number;
+  spent: number;
+  saved: number;
+  available: number;
+  savingsRate: number;
+  /** total alocado a cada parcela nos meses do lado */
+  byParcel: Record<number, number>;
+};
+
+/** Um mês (ou os meses que partilham o mesmo ano e mês) e o seu par no ano de referência. */
+export type YoYPair = { current: Month[]; previous: Month[] };
+
 export type YearOverYear = {
-  /** meses do período que têm o mesmo mês no ano anterior */
-  pairs: { current: Month; previous: Month }[];
+  /** meses do período que têm par no ano de referência (um par por ano e mês) */
+  pairs: YoYPair[];
   current: YoYTotals;
   previous: YoYTotals;
   /** variação relativa (null quando o valor anterior é 0 e o atual não) */
-  delta: { net: number | null; spent: number | null; saved: number | null };
-  /** variação da taxa de poupança em pontos percentuais (0.02 = +2 p.p.) */
+  delta: { net: number | null; gross: number | null; descontos: number | null; spent: number | null; saved: number | null };
+  /** variação da taxa de poupança e da carga fiscal em pontos percentuais (0.02 = +2 p.p.) */
   savingsRateDeltaPP: number;
+  taxRateDeltaPP: number;
 };
 
 const totalsOf = (cs: MonthComputed[]): YoYTotals => {
   const net = cs.reduce((a, x) => a + x.net, 0);
+  const gross = cs.reduce((a, x) => a + x.gross, 0);
+  const descontos = cs.reduce((a, x) => a + x.descontos, 0);
   const spent = cs.reduce((a, x) => a + x.byKind.gastos, 0);
   const saved = cs.reduce((a, x) => a + x.byKind.poupanca + x.byKind.investimento, 0);
   const available = cs.reduce((a, x) => a + x.available, 0);
-  return { net, spent, saved, available, savingsRate: available > 0 ? saved / available : 0 };
+  const byParcel: Record<number, number> = {};
+  for (const c of cs) for (const [id, v] of Object.entries(c.byParcel)) byParcel[Number(id)] = (byParcel[Number(id)] ?? 0) + v;
+  return { net, gross, descontos, taxRate: gross > 0 ? descontos / gross : 0, spent, saved, available, savingsRate: available > 0 ? saved / available : 0, byParcel };
 };
 const rel = (cur: number, prev: number) => (prev !== 0 ? cur / prev - 1 : cur !== 0 ? null : 0);
 
 /**
- * Compara os meses do período com os mesmos meses do ano anterior. Só entram os meses que existem nos
- * dois anos, para a comparação ser justa. Devolve null se nenhum mês tiver par.
+ * Compara os meses indicados com os mesmos meses de outro ano: o ano anterior de cada mês (omissão) ou um
+ * `refYear` fixo. Só entram os meses que existem nos dois lados, para a comparação ser justa. Se houver
+ * vários meses com o mesmo ano e mês (ex.: dois meses de dezembro), somam-se de cada lado. Um mês nunca é
+ * comparado com ele próprio (`refYear` igual ao seu ano). Devolve null se nenhum mês tiver par.
  */
 export function yearOverYear(
   months: Month[],
   computed: MonthComputed[],
   allMonths: Month[],
   allComputed: MonthComputed[],
+  refYear?: number | null,
 ): YearOverYear | null {
-  const index = new Map<string, number>();
-  allMonths.forEach((m, i) => index.set(ymKey(m.year, m.month), i));
-  const pairs: { current: Month; previous: Month }[] = [];
+  const index = new Map<string, number[]>();
+  allMonths.forEach((m, i) => {
+    const k = ymKey(m.year, m.month);
+    index.set(k, (index.get(k) ?? []).concat(i));
+  });
+  const groups = new Map<string, { months: Month[]; computed: MonthComputed[] }>();
+  months.forEach((m, i) => {
+    if (!computed[i]) return;
+    const k = ymKey(m.year, m.month);
+    const g = groups.get(k) ?? { months: [], computed: [] };
+    g.months.push(m);
+    g.computed.push(computed[i]);
+    groups.set(k, g);
+  });
+  const pairs: YoYPair[] = [];
   const cur: MonthComputed[] = [];
   const prev: MonthComputed[] = [];
-  months.forEach((m, i) => {
-    const j = index.get(ymKey(m.year - 1, m.month));
-    if (j == null || !computed[i]) return;
-    pairs.push({ current: m, previous: allMonths[j] });
-    cur.push(computed[i]);
-    prev.push(allComputed[j]);
-  });
+  for (const g of Array.from(groups.values())) {
+    const m = g.months[0];
+    const year = refYear ?? m.year - 1;
+    if (year === m.year) continue;
+    const idx = index.get(ymKey(year, m.month));
+    if (!idx || idx.length === 0) continue;
+    pairs.push({ current: g.months, previous: idx.map((i) => allMonths[i]) });
+    cur.push(...g.computed);
+    prev.push(...idx.map((i) => allComputed[i]));
+  }
   if (pairs.length === 0) return null;
   const current = totalsOf(cur), previous = totalsOf(prev);
   return {
     pairs,
     current,
     previous,
-    delta: { net: rel(current.net, previous.net), spent: rel(current.spent, previous.spent), saved: rel(current.saved, previous.saved) },
+    delta: {
+      net: rel(current.net, previous.net),
+      gross: rel(current.gross, previous.gross),
+      descontos: rel(current.descontos, previous.descontos),
+      spent: rel(current.spent, previous.spent),
+      saved: rel(current.saved, previous.saved),
+    },
     savingsRateDeltaPP: current.savingsRate - previous.savingsRate,
+    taxRateDeltaPP: current.taxRate - previous.taxRate,
   };
 }
+
+const idsOf = (ms: Month[]) => ms.map((m) => m.id);
 
 /** Despesa (`expense`) por categoria nos meses indicados; a chave ignora maiúsculas e espaços nas pontas. */
 export function expenseByCategory(txs: Transaction[], monthIds: Set<number>): Map<string, { name: string; total: number }> {
@@ -153,16 +203,30 @@ export function expenseByCategory(txs: Transaction[], monthIds: Set<number>): Ma
 
 export type CategoryYoYRow = { name: string; current: number; previous: number; delta: number; deltaPct: number | null };
 
-/** Despesa por categoria no período face aos mesmos meses do ano anterior (só meses com par). */
+/** Despesa por categoria no período face ao ano de referência (só meses com par). */
 export function categoryYearOverYear(txs: Transaction[], yoy: YearOverYear): CategoryYoYRow[] {
-  const cur = expenseByCategory(txs, new Set(yoy.pairs.map((p) => p.current.id)));
-  const prev = expenseByCategory(txs, new Set(yoy.pairs.map((p) => p.previous.id)));
+  const cur = expenseByCategory(txs, new Set(yoy.pairs.flatMap((p) => idsOf(p.current))));
+  const prev = expenseByCategory(txs, new Set(yoy.pairs.flatMap((p) => idsOf(p.previous))));
   const keys = Array.from(new Set(Array.from(cur.keys()).concat(Array.from(prev.keys()))));
   const rows: CategoryYoYRow[] = [];
   for (const k of keys) {
     const c = cur.get(k), p = prev.get(k);
     const current = c?.total ?? 0, previous = p?.total ?? 0;
     rows.push({ name: (c ?? p)!.name, current, previous, delta: Math.round((current - previous) * 100) / 100, deltaPct: previous > 0 ? current / previous - 1 : null });
+  }
+  return rows.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+}
+
+export type ParcelYoYRow = { id: number; name: string; color?: string; current: number; previous: number; delta: number; deltaPct: number | null };
+
+/** Total alocado a cada parcela no período face ao ano de referência. Parcelas sem valor em nenhum dos lados ficam de fora. */
+export function parcelYearOverYear(parcels: { id: number; name: string; color?: string }[], yoy: YearOverYear): ParcelYoYRow[] {
+  const rows: ParcelYoYRow[] = [];
+  for (const p of parcels) {
+    const current = Math.round((yoy.current.byParcel[p.id] ?? 0) * 100) / 100;
+    const previous = Math.round((yoy.previous.byParcel[p.id] ?? 0) * 100) / 100;
+    if (current === 0 && previous === 0) continue;
+    rows.push({ id: p.id, name: p.name, color: p.color, current, previous, delta: Math.round((current - previous) * 100) / 100, deltaPct: previous > 0 ? current / previous - 1 : null });
   }
   return rows.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
 }

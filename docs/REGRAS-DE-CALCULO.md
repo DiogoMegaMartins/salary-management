@@ -64,10 +64,12 @@ Implementadas em `shared/calc/insights.ts` e cobertas por `tests/insights.test.t
 - Mês previsto = mês de hoje + meses necessários.
 
 ### Comparação com o ano anterior (`yearOverYear`)
-- Cada mês do período é emparelhado com o mesmo mês do ano anterior; meses sem par ficam de fora dos dois lados.
-- Totais por lado: líquido, gastos (parcelas de gastos), poupança e investimento, disponível. Taxa de poupança = (poupança + investimento) ÷ disponível.
-- Variação relativa = atual ÷ anterior − 1; sem valor anterior (0) e com valor atual, fica indefinida. A taxa de poupança compara-se em pontos percentuais.
-- Por categoria (`categoryYearOverYear`): despesas do tipo `expense` agrupadas por categoria (sem distinguir maiúsculas), nos meses emparelhados.
+- Meses a comparar: os do filtro de período (omissão) ou os escolhidos no próprio cartão (qualquer ano com dados). A escolha fica guardada no dispositivo e vale no Painel e no Orçamento.
+- Ano de comparação: o ano anterior de cada mês (omissão) ou um ano fixo à escolha. Um mês nunca se compara com ele próprio.
+- Cada mês é emparelhado com o mesmo mês no ano de comparação. Meses sem par ficam de fora dos dois lados. Meses com o mesmo ano e mês (ex.: dois dezembros) contam como um par e somam-se de cada lado.
+- Totais por lado: líquido, rendimento bruto, descontos, gastos (parcelas de gastos), poupança e investimento, disponível e total alocado a cada parcela. Taxa de poupança = (poupança + investimento) ÷ disponível. Carga fiscal efetiva = descontos ÷ bruto.
+- Variação relativa = atual ÷ anterior − 1; sem valor anterior (0) e com valor atual, fica indefinida. A taxa de poupança e a carga fiscal comparam-se em pontos percentuais.
+- Por categoria (`categoryYearOverYear`): despesas do tipo `expense` agrupadas por categoria (sem distinguir maiúsculas), nos meses emparelhados. Por parcela (`parcelYearOverYear`): total alocado a cada parcela, sem as parcelas vazias nos dois lados.
 
 ### Despesas fora do padrão (`spendAnomalies`)
 - Mês analisado: o último mês do período com despesas. Histórico: até 12 meses anteriores existentes (meses sem gasto na categoria contam como 0). Sem pelo menos 3 meses anteriores, não há análise.
