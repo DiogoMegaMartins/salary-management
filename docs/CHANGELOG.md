@@ -4,7 +4,7 @@ Ordem do mais recente para o mais antigo.
 
 ## 1.11.0 | 2026-11-18
 
-- **Face ao ano anterior personalizável:** seletor de meses no próprio cartão (um, vários, todos ou nenhum, com uma só ação de selecionar/limpar) e seletor da base: ano anterior, um ano fixo ou outros meses à escolha (inclui meses do mesmo ano; com tamanhos diferentes, médias mensais). A escolha fica guardada no dispositivo (`localStorage`, validada ao ler) e vale no Painel e no Orçamento; "Repor" volta ao filtro.
+- **Comparação mensal e anual (antes "Face ao ano anterior"):** botão "Tipo de comparação" (com ano / com mês); em "com mês" escolhe-se um ano e comparam-se meses desse ano. Antes: seletor de meses no próprio cartão (um, vários, todos ou nenhum, com uma só ação de selecionar/limpar) e seletor da base: ano anterior, um ano fixo ou outros meses à escolha (inclui meses do mesmo ano; com tamanhos diferentes, médias mensais). A escolha fica guardada no dispositivo (`localStorage`, validada ao ler) e vale no Painel e no Orçamento; "Repor" volta ao filtro.
 - **Mais métricas:** rendimento bruto, descontos, carga fiscal efetiva e total alocado por parcela (`parcelYearOverYear`), além de líquido, gastos, poupança e taxa de poupança.
 - `yearOverYear` aceita `refYear`; meses com o mesmo ano e mês (dois dezembros) somam-se de cada lado e um mês nunca se compara com ele próprio. `pairs` passa a ter `current` e `previous` como listas de meses.
 - **Relatório mensal:** removida a descarga em Markdown; fica só o PDF. A exportação da Ajuda em Markdown mantém-se.

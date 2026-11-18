@@ -578,10 +578,10 @@ export default function Dashboard() {
             });
             sections.push({
               id: "ano-anterior",
-              title: "Face ao ano anterior",
+              title: "Comparação mensal e anual",
               defaultLayout: { x: 0, y: 48, w: 6, h: 16 },
               node: (
-                <SectionCard title="Face ao ano anterior" description="Escolhe os meses e o ano de comparação">
+                <SectionCard title="Comparação mensal e anual" description="Compara com um ano ou com outros meses do mesmo ano">
                   <YearOverYearCard d={d} />
                 </SectionCard>
               ),
