@@ -2,6 +2,10 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.12.4 | 2026-11-18
+
+- **Node 24 como única versão:** `engines.node` passa de `>=20.19.0` para `>=24`; `@types/node` 24.19.2 (e `undici-types` 7.24.6 no lockfile); `INSTALACAO.md` e `docs/DESENVOLVIMENTO-E-TESTES.md` atualizados. O CI já corria só em Node 24. Sem alterações ao esquema de dados.
+
 ## 1.12.3 | 2026-11-18
 
 Interface (auditoria).

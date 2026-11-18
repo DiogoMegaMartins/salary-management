@@ -1,7 +1,7 @@
 # Desenvolvimento e testes
 
 ## Requisitos
-Node.js 20+ e npm.
+Node.js 24 e npm (é a única versão suportada e a que o CI usa).
 
 ## Comandos
 | Comando | Função |

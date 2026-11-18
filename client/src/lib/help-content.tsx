@@ -636,6 +636,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.12.4</H3>
+        <UL>
+          <li>A aplicação passa a exigir Node 24 (antes aceitava Node 20): <code>engines</code>, tipos (<code>@types/node</code> 24) e instruções de instalação atualizados. Sem alterações à interface, às fórmulas nem ao esquema de dados.</li>
+        </UL>
         <H3>1.12.3</H3>
         <UL>
           <li>Uma ação que falha (apagar, duplicar, aplicar sugestão) mostra sempre um aviso; se os dados não carregarem, aparece o erro com "Tentar de novo" em vez de ficar a carregar.</li>
@@ -719,5 +723,5 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
   },
 ];
 
-export const HELP_VERSION = "1.12.3";
+export const HELP_VERSION = "1.12.4";
 export const HELP_UPDATED_AT = "2026-11-18";
