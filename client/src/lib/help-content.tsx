@@ -221,8 +221,8 @@ export const HELP_SECTIONS: HelpSection[] = [
           parcela. O primeiro botão, <em>Tipo de comparação</em>, tem duas opções: <em>Comparar com ano</em> e <em>Comparar com mês</em>.
         </P>
         <UL>
-          <li><strong>Comparar com ano:</strong> o segundo botão mostra todos os anos e os respetivos meses, para escolheres os meses a comparar (com uma só ação para <em>Selecionar todos</em> ou <em>Limpar seleção</em>). Depois escolhes o ano de comparação: o anterior (automático) ou um ano à escolha. Só entram os meses que existem nos dois lados.</li>
-          <li><strong>Comparar com mês:</strong> escolhes um ano e o segundo botão mostra só os meses desse ano. Escolhes os meses a comparar e os meses da base (por exemplo, agosto face a julho). Se os dois lados tiverem tamanhos diferentes, compara médias mensais.</li>
+          <li><strong>Comparar com ano:</strong> o segundo botão tem primeiro os anos e, por baixo, os meses do ano escolhido (com <em>Selecionar todos</em> ou <em>Limpar seleção</em>). O terceiro botão lista só os outros anos. Sem escolha de ano, compara com o ano anterior de cada mês.</li>
+          <li><strong>Comparar com mês:</strong> escolhes um ano, depois os meses de <em>Base (inicial)</em> e a seguir os de <em>Comparação (final)</em>. A variação vai da base para a comparação; com tamanhos diferentes, compara médias mensais.</li>
           <li><strong>Memória:</strong> a escolha fica guardada neste dispositivo e vale também no Orçamento. <em>Repor</em> volta aos meses do filtro e ao ano anterior.</li>
         </UL>
         <P>Se nenhum dos meses escolhidos tiver par no ano de comparação, o cartão explica porquê.</P>
@@ -636,6 +636,12 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.12.0</H3>
+        <UL>
+          <li>Comparação mensal e anual: em <em>Comparar com ano</em> escolhes primeiro o ano e depois os meses; o ano de comparação só mostra os outros anos.</li>
+          <li>Em <em>Comparar com mês</em> aparecem primeiro os meses de base (iniciais) e depois os de comparação (finais); a variação lê-se da base para a comparação.</li>
+          <li>Removida a opção "ano anterior" do ano de comparação. Sem alterações às fórmulas financeiras nem ao esquema de dados.</li>
+        </UL>
         <H3>1.11.0</H3>
         <UL>
           <li>Comparação mensal e anual: escolha do tipo de comparação, dos meses a comparar e do ano de comparação, com a escolha guardada e partilhada entre o Painel e o Orçamento.</li>
@@ -692,5 +698,5 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
   },
 ];
 
-export const HELP_VERSION = "1.11.0";
+export const HELP_VERSION = "1.12.0";
 export const HELP_UPDATED_AT = "2026-11-18";

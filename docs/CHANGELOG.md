@@ -2,6 +2,12 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.12.0 | 2026-11-18
+
+- **Comparar com ano:** o botão de meses tem primeiro o filtro de ano e depois os meses desse ano; o ano de comparação lista só os outros anos (sem a opção "ano anterior"; sem escolha de ano continua a comparar com o ano anterior de cada mês).
+- **Comparar com mês:** primeiro os meses de base (iniciais), depois os de comparação (finais); tabelas com colunas "Base" e "Comparação" (no modo ano, uma coluna por ano).
+- `YoYSelection` ganha `year`. Versão da aplicação, da Ajuda e de `/api/app-info` em 1.12.0. Sem alterações ao esquema de dados.
+
 ## 1.11.0 | 2026-11-18
 
 - **Comparação mensal e anual (antes "Face ao ano anterior"):** botão "Tipo de comparação" (com ano / com mês); em "com mês" escolhe-se um ano e comparam-se meses desse ano. Antes: seletor de meses no próprio cartão (um, vários, todos ou nenhum, com uma só ação de selecionar/limpar) e seletor da base: ano anterior, um ano fixo ou outros meses à escolha (inclui meses do mesmo ano; com tamanhos diferentes, médias mensais). A escolha fica guardada no dispositivo (`localStorage`, validada ao ler) e vale no Painel e no Orçamento; "Repor" volta ao filtro.
