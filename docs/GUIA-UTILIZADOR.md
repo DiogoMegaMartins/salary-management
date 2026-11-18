@@ -5,6 +5,12 @@ Visão geral do período escolhido nos filtros (período, ano, meses, tipo, parc
 
 No cartão Metas, usa o botão de cada meta para mostrar ou esconder todas as suas submetas. Começam escondidas, incluindo depois de recarregar; abrir uma meta não abre as outras. Cada submeta mostra o acumulado, o objetivo, o valor em falta e o progresso na moeda respetiva, com aviso quando falta uma taxa de conversão. Este controlo só muda a apresentação.
 
+Mais leituras no Painel (versão 1.10.0):
+- **Ritmo das metas:** numa meta com objetivo e data alvo, um aviso diz quando, ao ritmo dos últimos 3 meses, o objetivo só chega depois do prazo, em que mês chega e quanto seria preciso poupar por mês. As metas fora do ritmo ficam resumidas numa faixa no topo.
+- **Face ao ano anterior:** líquido, gastos, poupança e taxa de poupança dos meses do período contra os mesmos meses de há um ano (só meses com par).
+- **Despesas fora do padrão:** categorias do último mês com despesas bem acima do habitual (precisa de 3 meses anteriores).
+- **Relatório mensal:** botão no cabeçalho; descarrega em PDF ou Markdown, com opção de ocultar valores.
+
 ## Meses
 Cada mês tem rendimento bruto, subsídio de alimentação, descontos (segurança social e IRS) e a alocação por parcela (valor fixo ou percentagem). Pode duplicar um mês, aplicar as regras por omissão das parcelas e guardar a alocação atual como regras. A distribuição por plataforma e por ativos dentro de cada parcela é planeamento: não cria movimentos.
 
@@ -25,6 +31,7 @@ Acumulado por parcela ao longo do tempo, por ano e por plataforma. Os totais inc
 
 ## Orçamento
 Orçado vs real por categoria, projeção até ao fim do ano, runway da reserva de emergência (parcelas marcadas nas definições) e sugestão de distribuição de excedente.
+Em baixo, a despesa por categoria face ao ano anterior e as categorias do último mês que fugiram ao habitual (como no Painel).
 
 ## Definições (antiga página Dados e backups)
 Organizada em cinco separadores; o último separador aberto fica lembrado nesta sessão.

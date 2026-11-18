@@ -320,7 +320,7 @@ export default function BudgetPage() {
           {
             id: "orc-ano-anterior",
             title: "Face ao ano anterior",
-            defaultLayout: { x: 0, y: 29, w: 6, h: 12 },
+            defaultLayout: { x: 0, y: 29, w: 6, h: 10 },
             node: (
               <SectionCard title="Face ao ano anterior" description="Despesa por categoria no período contra os mesmos meses de há um ano">
                 <CategoryYearOverYear d={d} />
@@ -330,9 +330,9 @@ export default function BudgetPage() {
           {
             id: "orc-padrao",
             title: "Despesas fora do padrão",
-            defaultLayout: { x: 6, y: 29, w: 6, h: 12 },
+            defaultLayout: { x: 6, y: 29, w: 6, h: 10 },
             node: (
-              <SectionCard title="Despesas fora do padrão" description="O último mês do período contra o habitual de cada categoria">
+              <SectionCard title="Despesas fora do padrão" description="O último mês com despesas do período contra o habitual de cada categoria">
                 <AnomaliesCard d={d} />
               </SectionCard>
             ),

@@ -578,7 +578,7 @@ export default function Dashboard() {
             sections.push({
               id: "ano-anterior",
               title: "Face ao ano anterior",
-              defaultLayout: { x: 0, y: 48, w: 6, h: 9 },
+              defaultLayout: { x: 0, y: 48, w: 6, h: 8 },
               node: (
                 <SectionCard title="Face ao ano anterior" description="Os meses do período contra os mesmos meses de há um ano">
                   <YearOverYearCard d={d} />
@@ -588,9 +588,9 @@ export default function Dashboard() {
             sections.push({
               id: "fora-do-padrao",
               title: "Despesas fora do padrão",
-              defaultLayout: { x: 6, y: 48, w: 6, h: 9 },
+              defaultLayout: { x: 6, y: 48, w: 6, h: 8 },
               node: (
-                <SectionCard title="Despesas fora do padrão" description="O último mês do período contra o habitual de cada categoria">
+                <SectionCard title="Despesas fora do padrão" description="O último mês com despesas do período contra o habitual de cada categoria">
                   <AnomaliesCard d={d} />
                 </SectionCard>
               ),

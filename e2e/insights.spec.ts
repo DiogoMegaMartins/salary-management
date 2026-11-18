@@ -26,6 +26,7 @@ test.describe("Leituras sobre o histórico", () => {
       const r = await request.patch(`/api/parcels/${meta.id}`, { headers: cabecalhosApi(), data: { targetAmount: 1_000_000, targetDate: "2020-01" } });
       expect(r.ok()).toBe(true);
       await page.goto("/#/");
+      await page.reload(); // os dados foram alterados pela API: recarrega o estado
       await expect(page.getByTestId("goals-off-pace")).toBeVisible();
       const linha = page.getByTestId(`dashboard-goal-pace-${meta.id}`);
       await expect(linha).toBeVisible();
@@ -56,6 +57,7 @@ test.describe("Leituras sobre o histórico", () => {
       await novo(alvo, 300);
 
       await page.goto("/#/");
+      await page.reload(); // os dados foram alterados pela API: recarrega o estado
       const item = page.getByTestId("anomaly-anomalia-e2e");
       await expect(item).toBeVisible();
       await expect(item).toContainText("300,00");

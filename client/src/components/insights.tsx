@@ -163,15 +163,24 @@ export function CategoryYearOverYear({ d }: { d: Derived }) {
 
 /* ------------------------------------------------------------ despesas fora do padrão */
 
-/** Despesas do último mês do período que fogem ao habitual de cada categoria. */
+/** Despesas do último mês do período (com despesas registadas) que fogem ao habitual de cada categoria. */
 export function AnomaliesCard({ d }: { d: Derived }) {
-  const target = d.months.length > 0 ? d.months[d.months.length - 1] : null;
   const result = useMemo(() => {
+    const withSpend = new Set(d.allTransactions.filter((t) => t.type === "expense").map((t) => t.monthId));
+    const target = [...d.months].reverse().find((m) => withSpend.has(m.id)) ?? null;
     if (!target) return null;
     const priorWithData = d.allMonths.filter((m) => m.year * 12 + m.month < target.year * 12 + target.month).length;
-    return { priorWithData, items: spendAnomalies(d.allTransactions, d.allMonths, target.id) };
-  }, [d.allMonths, d.allTransactions, target]);
-  if (!target || !result) return null;
+    return { target, priorWithData, items: spendAnomalies(d.allTransactions, d.allMonths, target.id) };
+  }, [d.allMonths, d.allTransactions, d.months]);
+  if (!result) {
+    return (
+      <p className="flex items-start gap-2 py-4 text-xs text-muted-foreground" data-testid="anomalies-nospend">
+        <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+        Sem despesas registadas no período para comparar com o habitual.
+      </p>
+    );
+  }
+  const target = result.target;
   const label = target.label || `${target.month}/${target.year}`;
 
   if (result.priorWithData < 3) {

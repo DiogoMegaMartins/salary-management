@@ -79,7 +79,9 @@ sequenceDiagram
 | `server/db.ts` | Ligação SQLite/Drizzle, criação e migração do esquema, `httpError` e `roundCents` |
 | `server/backup.ts` | Cópias automáticas da base de dados |
 | `shared/schema.ts` | Tabelas Drizzle e tipos |
-| `shared/calc.ts` e `shared/calc/` | Cálculos puros; `calc.ts` reexporta `month`, `budget`, `distribution`, `goals` e `expenses` |
+| `shared/calc.ts` e `shared/calc/` | Cálculos puros; `calc.ts` reexporta `month`, `budget`, `distribution`, `goals`, `expenses` e `insights` (ritmo das metas, ano anterior, despesas fora do padrão) |
+| `shared/pdf.ts` | Gerador de PDF a partir de Markdown simples, sem dependências; usado pelo relatório mensal |
+| `client/src/components/insights.tsx` | Cartões do Painel e do Orçamento: ano anterior, despesas fora do padrão e linha de ritmo das metas |
 | `tests/` | Testes node:test (cálculos, integridade, API, segurança, offline, layout) |
 | `e2e/` | Testes de interface com Playwright |
 | `script/build.ts` | Build do cliente (Vite) e do servidor (esbuild, `dist/index.cjs`) |

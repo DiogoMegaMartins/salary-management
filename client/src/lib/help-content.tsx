@@ -208,6 +208,30 @@ export const HELP_SECTIONS: HelpSection[] = [
         <H3>Metas e submetas</H3>
         <P>No cartão Metas, cada meta tem um botão independente para mostrar ou esconder todas as suas submetas. Ficam escondidas por omissão e voltam a esse estado ao recarregar. Abrir uma meta não abre as restantes.</P>
         <P>As submetas mostram o acumulado, o objetivo, o valor em falta e o progresso, na moeda respetiva. Um aviso identifica conversões incompletas; expandir ou recolher não altera dados nem duplica os totais.</P>
+        <H3>Ritmo das metas</H3>
+        <P>
+          Quando uma meta tem objetivo e <KBD>Data alvo</KBD>, o cartão Metas compara o ritmo dos últimos 3 meses com o prazo.
+          Se, a esse ritmo, o objetivo só chega depois do prazo, aparece um aviso a dizer em que mês chega e quanto seria preciso
+          poupar por mês para chegar a tempo. Também avisa quando não há contribuições recentes ou o prazo já passou. As metas fora do
+          ritmo ficam resumidas numa faixa no topo do Painel. Sem data alvo, a meta mostra só o tempo estimado.
+        </P>
+        <H3>Face ao ano anterior</H3>
+        <P>
+          Compara o líquido, os gastos, a poupança e a taxa de poupança dos meses do período com os mesmos meses de há um ano.
+          Só entram os meses que existem nos dois anos, para a comparação ser justa. Sem esses pares, o cartão explica porquê.
+        </P>
+        <H3>Despesas fora do padrão</H3>
+        <P>
+          Olha para o último mês do período com despesas e assinala as categorias que ficaram bem acima do habitual: mais de duas
+          vezes o desvio dos até 12 meses anteriores, pelo menos 1,5 vezes a média e acima de 20 €. Uma categoria sem gasto nos meses
+          anteriores aparece como <em>Novo</em> a partir de 40 €. São precisos pelo menos 3 meses anteriores com dados.
+        </P>
+        <H3>Relatório mensal em PDF</H3>
+        <P>
+          O botão <KBD>Relatório mensal</KBD> (no Painel e no Orçamento) gera uma fotografia do período filtrado, em PDF ou Markdown, com os
+          indicadores, o orçamento contra o real, as parcelas e os meses incluídos. O ficheiro é criado no teu dispositivo e a opção
+          <em> Ocultar valores de património</em> troca os montantes por marcadores.
+        </P>
       </>
     ),
   },
@@ -356,6 +380,11 @@ export const HELP_SECTIONS: HelpSection[] = [
           <li><strong>Alerta</strong> — assinalado quando o desvio percentual atinge ou excede o limite configurado (10% por defeito).</li>
         </UL>
         <P>Para investigar um desvio, use o drill-down do Painel a partir do KPI de Gastos ou de uma parcela.</P>
+        <H3>Face ao ano anterior e despesas fora do padrão</H3>
+        <P>
+          Em baixo, o Orçamento mostra a despesa por categoria contra os mesmos meses do ano anterior (com a variação em euros e em
+          percentagem) e as categorias do último mês que fugiram ao habitual. Funcionam como no Painel.
+        </P>
       </>
     ),
   },
@@ -601,6 +630,15 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.10.0</H3>
+        <UL>
+          <li>Ritmo das metas: aviso quando, ao ritmo atual, uma meta não chega ao objetivo na data alvo, com o que seria preciso poupar por mês.</li>
+          <li>Comparação com o ano anterior no Painel e no Orçamento (por indicador e por categoria).</li>
+          <li>Despesas fora do padrão: categorias do último mês bem acima do habitual.</li>
+          <li>Relatório mensal também em PDF.</li>
+          <li>Rotas da API validadas com esquemas formais: pedidos com campos desconhecidos ou identificadores inválidos são recusados.</li>
+          <li>Sem alterações às fórmulas financeiras ou ao esquema de dados.</li>
+        </UL>
         <H3>1.9.1</H3>
         <UL>
           <li>Revisão responsiva de campos, formulários, cartões, gráficos, janelas e Ajuda em computador, tablet e telemóvel.</li>
@@ -641,5 +679,5 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
   },
 ];
 
-export const HELP_VERSION = "1.9.1";
+export const HELP_VERSION = "1.10.0";
 export const HELP_UPDATED_AT = "2026-11-18";
