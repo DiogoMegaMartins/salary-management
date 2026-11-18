@@ -1,4 +1,5 @@
 import type { Category, Month } from "@shared/schema";
+import { markdownToPdf } from "@shared/pdf";
 import type { Derived } from "@/lib/app";
 import {
   budgetVsRealByCategory,
@@ -151,6 +152,28 @@ function monthRowLabel(m: Month) {
 
 export function downloadMarkdown(content: string, filename: string) {
   const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/** PDF do relatório: o mesmo conteúdo do Markdown, gerado no navegador (sem pedidos ao servidor). */
+export function buildMonthlyReportPdf(
+  d: Derived,
+  categories: Category[],
+  opts: ReportOptions,
+): Uint8Array {
+  return markdownToPdf(buildMonthlyReportMarkdown(d, categories, opts), {
+    title: `Relatório mensal — ${d.periodLabel}`,
+    footer: "Partição do Salário",
+  });
+}
+
+export function downloadPdf(bytes: Uint8Array, filename: string) {
+  const blob = new Blob([bytes as BlobPart], { type: "application/pdf" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

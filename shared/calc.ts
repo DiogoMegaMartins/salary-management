@@ -7,3 +7,4 @@ export * from "./calc/budget";
 export * from "./calc/distribution";
 export * from "./calc/goals";
 export * from "./calc/expenses";
+export * from "./calc/insights";

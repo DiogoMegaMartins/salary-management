@@ -1,5 +1,5 @@
 import { goalCtx } from "@/components/goal-panel";
-import { goalBreakdown, monthKeyOf, monthLabelShort } from "@shared/calc";
+import { goalBreakdown, goalPace, monthKeyOf, monthLabelShort } from "@shared/calc";
 import type { useAppState, useDerived } from "@/lib/app";
 
 type Derived = NonNullable<ReturnType<typeof useDerived>>;
@@ -10,7 +10,7 @@ type AppData = NonNullable<ReturnType<typeof useAppState>["data"]>;
  * séries dos gráficos, peso por parcela, alertas de divisão e progresso das metas.
  * Função pura sobre o estado derivado; devolve `null` enquanto não há dados.
  */
-export function buildDashboardModel(d: Derived | null | undefined, data: AppData | undefined) {
+export function buildDashboardModel(d: Derived | null | undefined, data: AppData | undefined, today: Date = new Date()) {
   if (!d) return null;
   const c = d.computed;
   const n = c.length || 1;
@@ -98,8 +98,16 @@ export function buildDashboardModel(d: Derived | null | undefined, data: AppData
       const pace =
         recent.length > 0 ? recent.reduce((a, x) => a + (x.byParcel[p.id] ?? 0), 0) / recent.length : 0;
       const missing = Math.max(0, (p.targetAmount ?? 0) - acc);
+      const paceInfo = goalPace({
+        targetAmount: p.targetAmount,
+        targetDate: p.targetDate,
+        accumulated: acc,
+        pacePerMonth: pace,
+        now: { year: today.getFullYear(), month: today.getMonth() + 1 },
+      });
       return {
         parcel: p,
+        paceInfo,
         subs: breakdown?.subs ?? [],
         incomplete: breakdown?.incomplete ?? false,
         missingRates: breakdown?.missing ?? [],

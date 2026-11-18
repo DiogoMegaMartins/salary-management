@@ -31,6 +31,7 @@ import { MonthlyReportDialog } from "@/components/monthly-report-dialog";
 import { EditableSectionGrid, type SectionSpec } from "@/components/editable-section-grid";
 import { usePageLayout } from "@/lib/page-layout";
 import { buildDashboardModel } from "@/lib/dashboard-model";
+import { AnomaliesCard, GoalPaceLine, YearOverYearCard } from "@/components/insights";
 
 export default function Dashboard() {
   const isMobile = useIsMobile();
@@ -88,6 +89,20 @@ export default function Dashboard() {
               </span>
             </div>
           )}
+
+          {(() => {
+            const offPace = model.goals.filter((g) => !g.incomplete && ["atrasada", "sem_ritmo", "prazo_passado"].includes(g.paceInfo.status));
+            if (offPace.length === 0) return null;
+            return (
+              <div className="flex flex-wrap items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm" data-testid="goals-off-pace">
+                <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                <span className="font-medium">
+                  {offPace.length} {offPace.length === 1 ? "meta fora do ritmo" : "metas fora do ritmo"}:
+                </span>
+                <span className="text-muted-foreground">{offPace.map((g) => g.parcel.name).join(", ")}</span>
+              </div>
+            );
+          })()}
 
           {(() => {
             const kpiNodes: { id: string; title: string; node: React.ReactNode }[] = [
@@ -453,6 +468,13 @@ export default function Dashboard() {
                             ? `Faltam ${formatGoalMoney(g.missing, g.parcel.currency || "EUR")} · ~${g.monthsLeft} ${g.monthsLeft === 1 ? "mês" : "meses"} ao ritmo de ${formatGoalMoney(g.pace, g.parcel.currency || "EUR")}/mês`
                             : `Faltam ${formatGoalMoney(g.missing, g.parcel.currency || "EUR")} · sem contribuições recentes`}
                       </p>
+                      {!g.incomplete && (
+                        <GoalPaceLine
+                          pace={g.paceInfo}
+                          money={(n) => formatGoalMoney(n, g.parcel.currency || "EUR")}
+                          testId={`dashboard-goal-pace-${g.parcel.id}`}
+                        />
+                      )}
                       {g.subs.length > 0 && (
                         <>
                           <Button
@@ -551,6 +573,26 @@ export default function Dashboard() {
               </div>
             </div>
             </SectionCard>
+              ),
+            });
+            sections.push({
+              id: "ano-anterior",
+              title: "Face ao ano anterior",
+              defaultLayout: { x: 0, y: 48, w: 6, h: 9 },
+              node: (
+                <SectionCard title="Face ao ano anterior" description="Os meses do período contra os mesmos meses de há um ano">
+                  <YearOverYearCard d={d} />
+                </SectionCard>
+              ),
+            });
+            sections.push({
+              id: "fora-do-padrao",
+              title: "Despesas fora do padrão",
+              defaultLayout: { x: 6, y: 48, w: 6, h: 9 },
+              node: (
+                <SectionCard title="Despesas fora do padrão" description="O último mês do período contra o habitual de cada categoria">
+                  <AnomaliesCard d={d} />
+                </SectionCard>
               ),
             });
             return (
