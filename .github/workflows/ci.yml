@@ -1,10 +1,6 @@
 name: CI
 on:
   push:
-    # commits só de documentação não gastam minutos de Actions
-    paths-ignore:
-      - "**.md"
-      - "docs/**"
   workflow_dispatch:
 concurrency:
   group: ci-${{ github.ref }}
@@ -12,8 +8,34 @@ concurrency:
 permissions:
   contents: read
 jobs:
+  # Deteta commits só de documentação. Os jobs abaixo ficam "skipped" (conta como verde nas verificações
+  # obrigatórias e não gasta minutos), em vez de não existirem como com `paths-ignore`.
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      docs_only: ${{ steps.diff.outputs.docs_only }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: diff
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          docs_only=false
+          if [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            other=$(git diff --name-only "$BEFORE" "$AFTER" | grep -Ev '\.md$|^docs/' || true)
+            [ -z "$other" ] && docs_only=true
+          fi
+          echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
+          echo "docs_only=$docs_only"
   check:
     name: check
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -26,6 +48,8 @@ jobs:
       - run: npm run check
   test:
     name: test
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -38,6 +62,8 @@ jobs:
       - run: npm test
   build:
     name: build
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -68,6 +94,8 @@ jobs:
           exit 1
   e2e:
     name: e2e
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
