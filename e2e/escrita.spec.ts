@@ -1,17 +1,6 @@
-import { expect, test, type Locator } from "@playwright/test";
-import { entrar } from "./helpers";
+import { expect, test } from "@playwright/test";
+import { clicar, entrar, sufixo } from "./helpers";
 
-// Cada projeto (computador, telemóvel) usa nomes e anos próprios para não colidir na mesma base de dados.
-/**
- * No telemóvel, um botão encostado ao fundo do ecrã pode ficar sob a barra de navegação e o clique
- * não chega a ele. Centrar o botão antes de clicar reproduz o que uma pessoa faz ao deslocar a página.
- */
-async function clicar(alvo: Locator) {
-  await alvo.evaluate((el) => el.scrollIntoView({ block: "center" }));
-  await alvo.click();
-}
-
-const sufixo = (nome: string) => (nome === "telemovel" ? "T" : "D");
 
 test.describe("Fluxos de escrita", () => {
   test.beforeEach(async ({ page }) => {
