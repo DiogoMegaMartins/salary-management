@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import {
   MONTH_NAMES,
   categoryYearOverYear,
+  compareMonthSets,
   fmtEur,
   fmtPct,
   parcelYearOverYear,
@@ -40,19 +41,100 @@ export function useYoYComparison(d: Derived) {
     });
     return { months, computed };
   }, [sel, d.months, d.computed, d.allMonths, d.allComputed]);
-  const refYear = sel.refYear === "auto" ? null : sel.refYear;
+  const free = sel.refYear === "meses";
+  const refYear = typeof sel.refYear === "number" ? sel.refYear : null;
+  const base = useMemo(() => {
+    const keys = new Set(sel.compareMonths);
+    const months: Derived["allMonths"] = [];
+    const computed: Derived["allComputed"] = [];
+    d.allMonths.forEach((m, i) => {
+      if (keys.has(yearMonthKey(m.year, m.month))) {
+        months.push(m);
+        computed.push(d.allComputed[i]);
+      }
+    });
+    return { months, computed };
+  }, [sel.compareMonths, d.allMonths, d.allComputed]);
   const yoy = useMemo(
-    () => yearOverYear(chosen.months, chosen.computed, d.allMonths, d.allComputed, refYear),
-    [chosen, d.allMonths, d.allComputed, refYear],
+    () =>
+      free
+        ? compareMonthSets(chosen.months, chosen.computed, base.months, base.computed)
+        : yearOverYear(chosen.months, chosen.computed, d.allMonths, d.allComputed, refYear),
+    [free, chosen, base, d.allMonths, d.allComputed, refYear],
   );
-  return { sel, setSel, yoy, refYear, chosenCount: chosen.months.length };
+  return { sel, setSel, yoy, refYear, free, chosenCount: free ? Math.min(chosen.months.length, base.months.length) : chosen.months.length };
 }
 
 /* ------------------------------------------------------------------ controlos */
 
+type ByYear = (readonly [number, number[]])[];
+
+/** Seletor de meses com uma única ação "Selecionar todos / Limpar seleção". */
+function MonthPicker({
+  byYear,
+  checked,
+  allKeys,
+  onChange,
+  label,
+  ariaLabel,
+  testid,
+}: {
+  byYear: ByYear;
+  checked: (key: string) => boolean;
+  allKeys: string[];
+  onChange: (keys: string[]) => void;
+  label: string;
+  ariaLabel: string;
+  testid: string;
+}) {
+  const current = allKeys.filter(checked);
+  const all = allKeys.length > 0 && current.length === allKeys.length;
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs" data-testid={`${testid}-trigger`} aria-label={ariaLabel}>
+          <CalendarRange className="h-3.5 w-3.5" aria-hidden="true" />
+          {label}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-72 space-y-3 p-3" data-testid={`${testid}-panel`}>
+        <Button type="button" variant="secondary" size="sm" className="h-7 text-xs" data-testid={`${testid}-toggle-all`} onClick={() => onChange(all ? [] : allKeys)}>
+          {all ? "Limpar seleção" : "Selecionar todos"}
+        </Button>
+        <div className="max-h-64 space-y-3 overflow-y-auto pr-1">
+          {byYear.map(([year, months]) => (
+            <fieldset key={year}>
+              <legend className="mb-1 text-xs font-semibold text-muted-foreground">{year}</legend>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                {months.map((m) => {
+                  const key = yearMonthKey(year, m);
+                  const id = `${testid}-m-${key}`;
+                  return (
+                    <label key={key} htmlFor={id} className="flex min-h-8 cursor-pointer items-center gap-2 text-sm">
+                      <Checkbox
+                        id={id}
+                        data-testid={`${testid}-month-${key}`}
+                        checked={checked(key)}
+                        onCheckedChange={(v) => onChange(v === true ? Array.from(new Set(current.concat(key))) : current.filter((k) => k !== key))}
+                      />
+                      {MONTH_NAMES[m - 1]}
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+const countLabel = (n: number) => (n === 0 ? "Nenhum mês" : `${n} ${n === 1 ? "mês" : "meses"}`);
+
 export function YoYControls({ d, sel, setSel }: { d: Derived; sel: YoYSelection; setSel: (s: YoYSelection) => void }) {
   // um mês por ano e mês (dois dezembros contam como um)
-  const byYear = useMemo(() => {
+  const byYear = useMemo<ByYear>(() => {
     const out = new Map<number, number[]>();
     for (const m of d.allMonths) {
       const list = out.get(m.year) ?? [];
@@ -61,81 +143,25 @@ export function YoYControls({ d, sel, setSel }: { d: Derived; sel: YoYSelection;
     }
     return Array.from(out.entries()).sort((a, b) => b[0] - a[0]).map(([y, ms]) => [y, ms.sort((a, b) => a - b)] as const);
   }, [d.allMonths]);
-  const last = d.allMonths[d.allMonths.length - 1];
   const years = byYear.map(([y]) => y);
-  const selectedKeys = new Set(sel.months);
+  const allKeys = byYear.flatMap(([y, ms]) => ms.map((m) => yearMonthKey(y, m)));
   const filterKeys = Array.from(new Set(d.months.map((m) => yearMonthKey(m.year, m.month))));
-
-  const setMonths = (keys: string[]) => setSel({ ...sel, mode: "manual", months: keys });
-  const toggle = (key: string, on: boolean) => {
-    // ao tocar na lista a partir do filtro, começa-se pelos meses do filtro
-    const base = sel.mode === "manual" ? sel.months : filterKeys;
-    setMonths(on ? Array.from(new Set(base.concat(key))) : base.filter((k) => k !== key));
-  };
-  const label =
-    sel.mode === "manual"
-      ? sel.months.length === 0
-        ? "Nenhum mês"
-        : `${sel.months.length} ${sel.months.length === 1 ? "mês escolhido" : "meses escolhidos"}`
-      : "Meses do filtro";
-  const checked = (key: string) => (sel.mode === "manual" ? selectedKeys.has(key) : filterKeys.includes(key));
+  const free = sel.refYear === "meses";
 
   return (
     <div className="flex flex-wrap items-center gap-2" data-testid="yoy-controls">
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs" data-testid="yoy-months-trigger" aria-label="Escolher meses a comparar">
-            <CalendarRange className="h-3.5 w-3.5" aria-hidden="true" />
-            {label}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent align="start" className="w-72 space-y-3 p-3" data-testid="yoy-months-panel">
-          <div className="flex flex-wrap gap-1.5">
-            <Button type="button" variant="secondary" size="sm" className="h-7 text-xs" data-testid="yoy-preset-filter" onClick={() => setSel({ ...sel, mode: "filtro", months: [] })}>
-              Meses do filtro
-            </Button>
-            {last && (
-              <Button type="button" variant="secondary" size="sm" className="h-7 text-xs" data-testid="yoy-preset-last" onClick={() => setMonths([yearMonthKey(last.year, last.month)])}>
-                Último mês
-              </Button>
-            )}
-            {byYear[0] && (
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className="h-7 text-xs"
-                data-testid="yoy-preset-year"
-                onClick={() => setMonths(byYear[0][1].map((m) => yearMonthKey(byYear[0][0], m)))}
-              >
-                Ano {byYear[0][0]}
-              </Button>
-            )}
-          </div>
-          <div className="max-h-64 space-y-3 overflow-y-auto pr-1">
-            {byYear.map(([year, months]) => (
-              <fieldset key={year}>
-                <legend className="mb-1 text-xs font-semibold text-muted-foreground">{year}</legend>
-                <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-                  {months.map((m) => {
-                    const key = yearMonthKey(year, m);
-                    const id = `yoy-m-${key}`;
-                    return (
-                      <label key={key} htmlFor={id} className="flex min-h-8 cursor-pointer items-center gap-2 text-sm">
-                        <Checkbox id={id} data-testid={`yoy-month-${key}`} checked={checked(key)} onCheckedChange={(v) => toggle(key, v === true)} />
-                        {MONTH_NAMES[m - 1]}
-                      </label>
-                    );
-                  })}
-                </div>
-              </fieldset>
-            ))}
-          </div>
-        </PopoverContent>
-      </Popover>
+      <MonthPicker
+        byYear={byYear}
+        allKeys={allKeys}
+        checked={(key) => (sel.mode === "manual" ? sel.months.includes(key) : filterKeys.includes(key))}
+        onChange={(keys) => setSel({ ...sel, mode: "manual", months: keys })}
+        label={sel.mode === "manual" ? countLabel(sel.months.length) : countLabel(filterKeys.length)}
+        ariaLabel="Escolher meses a comparar"
+        testid="yoy-months"
+      />
 
-      <Select value={String(sel.refYear)} onValueChange={(v) => setSel({ ...sel, refYear: v === "auto" ? "auto" : Number(v) })}>
-        <SelectTrigger className="h-8 w-auto min-w-44 gap-2 text-xs" data-testid="yoy-ref-select" aria-label="Ano de comparação">
+      <Select value={String(sel.refYear)} onValueChange={(v) => setSel({ ...sel, refYear: v === "auto" ? "auto" : v === "meses" ? "meses" : Number(v) })}>
+        <SelectTrigger className="h-8 w-auto min-w-44 gap-2 text-xs" data-testid="yoy-ref-select" aria-label="Comparar com">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -145,8 +171,21 @@ export function YoYControls({ d, sel, setSel }: { d: Derived; sel: YoYSelection;
               Comparar com {y}
             </SelectItem>
           ))}
+          <SelectItem value="meses">Comparar com outros meses</SelectItem>
         </SelectContent>
       </Select>
+
+      {free && (
+        <MonthPicker
+          byYear={byYear}
+          allKeys={allKeys}
+          checked={(key) => sel.compareMonths.includes(key)}
+          onChange={(keys) => setSel({ ...sel, compareMonths: keys })}
+          label={`Base: ${countLabel(sel.compareMonths.length).toLowerCase()}`}
+          ariaLabel="Escolher meses de comparação"
+          testid="yoy-base"
+        />
+      )}
 
       {(sel.mode !== "filtro" || sel.refYear !== "auto") && (
         <Button type="button" variant="ghost" size="sm" className="h-8 gap-1 text-xs" data-testid="yoy-reset" onClick={() => setSel(DEFAULT_YOY_SELECTION)}>
@@ -158,11 +197,13 @@ export function YoYControls({ d, sel, setSel }: { d: Derived; sel: YoYSelection;
   );
 }
 
-function Empty({ manual, noMonths }: { manual: boolean; noMonths: boolean }) {
+function Empty({ manual, noMonths, free }: { manual: boolean; noMonths: boolean; free?: boolean }) {
   return (
     <p className="flex items-start gap-2 py-3 text-xs text-muted-foreground" data-testid="yoy-empty">
       <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-      {noMonths
+      {free && noMonths
+        ? "Escolhe pelo menos um mês de cada lado: os meses a comparar e os meses da base."
+        : noMonths
         ? "Não há meses escolhidos. Escolhe pelo menos um mês."
         : manual
           ? "Nenhum dos meses escolhidos tem o mesmo mês no ano de comparação. Muda o ano ou os meses."
@@ -171,7 +212,12 @@ function Empty({ manual, noMonths }: { manual: boolean; noMonths: boolean }) {
   );
 }
 
-function summary(n: number, refYear: number | null) {
+function summary(n: number, refYear: number | null, yoy?: { kind?: string; divisor?: { current: number; previous: number }; pairs: { current: unknown[]; previous: unknown[] }[] }) {
+  if (yoy?.kind === "livre") {
+    const p = yoy.pairs[0];
+    const base = `${p.current.length} ${p.current.length === 1 ? "mês" : "meses"} face a ${p.previous.length} ${p.previous.length === 1 ? "mês" : "meses"} da base.`;
+    return yoy.divisor ? `${base} Como os lados têm tamanhos diferentes, os valores são médias mensais.` : base;
+  }
   const meses = n === 1 ? "mês comparado" : "meses comparados";
   const com = refYear == null ? (n === 1 ? "o mesmo mês do ano anterior" : "os mesmos meses do ano anterior") : n === 1 ? `o mesmo mês de ${refYear}` : `os mesmos meses de ${refYear}`;
   return `${n} ${meses} com ${com}. Meses sem par ficam de fora.`;
@@ -180,16 +226,16 @@ function summary(n: number, refYear: number | null) {
 /* ---------------------------------------------------------------------- cartões */
 
 export function YearOverYearCard({ d }: { d: Derived }) {
-  const { sel, setSel, yoy, refYear, chosenCount } = useYoYComparison(d);
+  const { sel, setSel, yoy, refYear, chosenCount, free } = useYoYComparison(d);
   const parcels = useMemo(() => (yoy ? parcelYearOverYear(d.allParcels, yoy) : []), [d.allParcels, yoy]);
   return (
     <div data-testid="yoy-card" className="space-y-3">
       <YoYControls d={d} sel={sel} setSel={setSel} />
       {!yoy ? (
-        <Empty manual={sel.mode === "manual"} noMonths={chosenCount === 0} />
+        <Empty manual={sel.mode === "manual"} noMonths={chosenCount === 0} free={free} />
       ) : (
         <>
-          <p className="text-xs text-muted-foreground">{summary(yoy.pairs.length, refYear)}</p>
+          <p className="text-xs text-muted-foreground">{summary(yoy.pairs.length, refYear, yoy)}</p>
           <MetricsTable yoy={yoy} />
           {parcels.length > 0 && (
             <div data-testid="yoy-parcels">
@@ -272,16 +318,16 @@ function MetricsTable({ yoy }: { yoy: NonNullable<ReturnType<typeof useYoYCompar
 
 /** Despesa por categoria face ao ano de comparação (Orçamento); usa a mesma escolha do Painel. */
 export function CategoryYearOverYear({ d }: { d: Derived }) {
-  const { sel, setSel, yoy, refYear, chosenCount } = useYoYComparison(d);
+  const { sel, setSel, yoy, refYear, chosenCount, free } = useYoYComparison(d);
   const rows = useMemo(() => (yoy ? categoryYearOverYear(d.allTransactions, yoy).slice(0, 10) : []), [d.allTransactions, yoy]);
   return (
     <div className="space-y-3" data-testid="yoy-categories-card">
       <YoYControls d={d} sel={sel} setSel={setSel} />
       {!yoy ? (
-        <Empty manual={sel.mode === "manual"} noMonths={chosenCount === 0} />
+        <Empty manual={sel.mode === "manual"} noMonths={chosenCount === 0} free={free} />
       ) : (
         <>
-          <p className="text-xs text-muted-foreground">{summary(yoy.pairs.length, refYear)}</p>
+          <p className="text-xs text-muted-foreground">{summary(yoy.pairs.length, refYear, yoy)}</p>
           {rows.length === 0 ? (
             <p className="py-2 text-xs text-muted-foreground">Sem despesas com categoria nos meses comparados.</p>
           ) : (

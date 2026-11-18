@@ -7,9 +7,15 @@ import { useCallback, useEffect, useState } from "react";
  * - `manual`: usa os meses `AAAA-MM` escolhidos (qualquer ano com dados).
  * - `refYear`: `auto` = ano anterior de cada mês; ou um ano fixo.
  */
-export type YoYSelection = { mode: "filtro" | "manual"; months: string[]; refYear: "auto" | number };
+export type YoYSelection = {
+  mode: "filtro" | "manual";
+  months: string[];
+  /** `auto`/ano fixo = mesmos meses de outro ano; `meses` = grupo livre `compareMonths` (pode ser do mesmo ano) */
+  refYear: "auto" | "meses" | number;
+  compareMonths: string[];
+};
 
-export const DEFAULT_YOY_SELECTION: YoYSelection = { mode: "filtro", months: [], refYear: "auto" };
+export const DEFAULT_YOY_SELECTION: YoYSelection = { mode: "filtro", months: [], refYear: "auto", compareMonths: [] };
 
 const KEY = "sm-yoy-selection-v1";
 const EVENT = "sm:yoy-selection";
@@ -20,9 +26,10 @@ export function parseYoYSelection(raw: unknown): YoYSelection {
     const o = typeof raw === "string" ? JSON.parse(raw) : raw;
     if (!o || typeof o !== "object") return DEFAULT_YOY_SELECTION;
     const v = o as Record<string, unknown>;
-    const months = Array.isArray(v.months) ? v.months.filter((m): m is string => typeof m === "string" && /^\d{4}-\d{2}$/.test(m)) : [];
-    const ref = typeof v.refYear === "number" && Number.isInteger(v.refYear) && v.refYear >= 1900 && v.refYear <= 2200 ? v.refYear : "auto";
-    return { mode: v.mode === "manual" ? "manual" : "filtro", months: Array.from(new Set(months)).sort(), refYear: ref };
+    const list = (x: unknown) =>
+      Array.from(new Set(Array.isArray(x) ? x.filter((m): m is string => typeof m === "string" && /^\d{4}-\d{2}$/.test(m)) : [])).sort();
+    const ref = v.refYear === "meses" ? "meses" : typeof v.refYear === "number" && Number.isInteger(v.refYear) && v.refYear >= 1900 && v.refYear <= 2200 ? v.refYear : "auto";
+    return { mode: v.mode === "manual" ? "manual" : "filtro", months: list(v.months), refYear: ref, compareMonths: list(v.compareMonths) };
   } catch {
     return DEFAULT_YOY_SELECTION;
   }

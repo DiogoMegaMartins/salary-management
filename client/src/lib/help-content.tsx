@@ -222,7 +222,7 @@ export const HELP_SECTIONS: HelpSection[] = [
           ser justa.
         </P>
         <UL>
-          <li><strong>Meses:</strong> por omissão, os do filtro de período. O botão de meses permite escolher um ou vários, de qualquer ano, ou usar os atalhos <em>Meses do filtro</em>, <em>Último mês</em> e <em>Ano</em>.</li>
+          <li><strong>Meses:</strong> por omissão, os do filtro de período. O botão de meses permite escolher um ou vários, de qualquer ano, e tem uma só ação para <em>Selecionar todos</em> ou <em>Limpar seleção</em>. Em <em>Comparar com outros meses</em> escolhes também os meses da base, o que permite comparar meses do mesmo ano (se os dois lados tiverem tamanhos diferentes, compara médias mensais).</li>
           <li><strong>Ano de comparação:</strong> o ano anterior (automático) ou um ano à escolha, por exemplo 2024.</li>
           <li><strong>Memória:</strong> a escolha fica guardada neste dispositivo e vale também no Orçamento. <em>Repor</em> volta aos meses do filtro e ao ano anterior.</li>
         </UL>

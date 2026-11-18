@@ -1,7 +1,7 @@
 // Ritmo das metas, comparação com o ano anterior e despesas fora do padrão (funções puras).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { goalPace, parseYearMonth, yearOverYear, categoryYearOverYear, parcelYearOverYear, spendAnomalies, expenseByCategory } from "../shared/calc";
+import { goalPace, parseYearMonth, yearOverYear, compareMonthSets, categoryYearOverYear, parcelYearOverYear, spendAnomalies, expenseByCategory } from "../shared/calc";
 
 const now = { year: 2026, month: 6 };
 
@@ -161,4 +161,17 @@ test("parcelYearOverYear: total por parcela, ordenado pelo maior desvio, sem par
   assert.deepEqual(rows.map((r) => [r.name, r.current, r.previous, r.delta]), [["A", 130, 100, 30], ["B", 20, 50, -30], ["D", 10, 0, 10]]);
   assert.equal(rows[2].deltaPct, null);
   assert.equal(Math.round(rows[0].deltaPct! * 100), 30);
+});
+
+test("compareMonthSets: meses do mesmo ano, médias quando os tamanhos diferem", () => {
+  const mk = (id: number, month: number) => ({ id, year: 2026, month } as any);
+  const cm = (net: number) => ({ net, gross: net, descontos: 0, available: net, byKind: { gastos: 0, poupanca: 0, investimento: 0 }, byParcel: {} } as any);
+  assert.equal(compareMonthSets([], [], [mk(1, 1)], [cm(100)]), null);
+  const igual = compareMonthSets([mk(2, 2)], [cm(120)], [mk(1, 1)], [cm(100)])!;
+  assert.ok(Math.abs(igual.delta.net! - 0.2) < 1e-9);
+  assert.equal(igual.divisor, undefined);
+  const media = compareMonthSets([mk(2, 2), mk(3, 3)], [cm(100), cm(100)], [mk(1, 1)], [cm(100)])!;
+  assert.equal(media.current.net, 100);
+  assert.ok(Math.abs(media.delta.net!) < 1e-9);
+  assert.deepEqual(media.divisor, { current: 2, previous: 1 });
 });
