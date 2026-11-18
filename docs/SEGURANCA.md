@@ -11,6 +11,7 @@
 
 ## Medidas
 - Meses, parcelas, categorias e definições validados no servidor (tipos, limites, campos desconhecidos recusados).
+- Catálogos (plataformas e tipos), saldos e ajustes, submetas, atribuições, taxas, recorrências, reservas e fecho/reabertura de mês têm esquema zod nas rotas (`server/route-schemas.ts`): tipos, limites e valores permitidos; campos desconhecidos e identificadores de rota inválidos dão 400. As regras de domínio (duplicados, moedas, saldos) ficam no armazenamento.
 - Limite de corpo de 1 MB (50 MB só em importações, 10 MB na sincronização offline).
 - Validação de transações, importações e catálogos; SQL só via Drizzle.
 - Content-Security-Policy estrita em produção (`default-src 'self'`, sem scripts inline; estilos inline permitidos; sem `frame-ancestors`, porque a pré-visualização da plataforma usa uma moldura).
@@ -20,7 +21,6 @@
 - `npm audit --omit=dev` (dependências de produção) sem avisos à data de 2026-11-17; corre semanalmente no workflow `audit.yml`. As ferramentas de build podem ter avisos sem correção (ex.: `picomatch`, ReDoS em extglobs); não entram em produção. `xlsx` vem da distribuição oficial SheetJS (não do registo npm) e só é usado para exportar.
 - SQLite local não é persistência durável de produção.
 - A cópia offline é cifrada com uma chave derivada do código de acesso.
-- Catálogos, submetas, taxas e recorrências já validam na camada de armazenamento; falta esquema formal nessas rotas.
 
 ## Sessão de acesso
 A sessão fica em sessionStorage do separador, expira após 30 minutos sem atividade, ao fechar o separador ou com 401.
