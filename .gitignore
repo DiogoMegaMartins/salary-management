@@ -23,3 +23,7 @@ pre-import-backup-*.json
 
 # Cache de ferramentas locais
 .impeccable/
+
+# Testes de interface (Playwright)
+test-results/
+playwright-report/
