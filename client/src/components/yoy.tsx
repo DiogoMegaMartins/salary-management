@@ -23,6 +23,9 @@ const GOOD = "text-emerald-700 dark:text-emerald-400";
 const BAD = "text-destructive";
 /** Cor da variação: `upIsGood` indica se subir é bom (rendimento, poupança) ou mau (gastos, descontos). */
 const tone = (x: number | null, upIsGood: boolean) => (x == null || Math.abs(x) < 0.0005 ? "text-muted-foreground" : (x > 0) === upIsGood ? GOOD : BAD);
+const eurSigned = (x: number) => `${x >= 0 ? "+" : "−"}${fmtEur(Math.abs(x))}`;
+/** Variação em euros e em percentagem: "+143,00 € (+20,0%)" */
+const eurPct = (delta: number, pct: number | null) => `${eurSigned(delta)}${pct != null ? ` (${pctSigned(pct)})` : ""}`;
 const pp = (x: number) => `${x >= 0 ? "+" : ""}${(x * 100).toFixed(1).replace(".", ",")} p.p.`;
 
 /** Meses e ano de referência em uso: a escolha guardada ou, sem ela, os meses do filtro. */
@@ -330,13 +333,14 @@ export function YearOverYearCard({ d }: { d: Derived }) {
 function MetricsTable({ yoy, parcels }: { yoy: YoYData; parcels: ReturnType<typeof parcelYearOverYear> }) {
   const cols = colsOf(yoy);
   type Row = { id: string; label: string; cur: string; prev: string; delta: number | null; text?: string; upIsGood: boolean };
+  const withText = (cur: number, prev: number, pct: number | null) => eurPct(Math.round((cur - prev) * 100) / 100, pct);
   const rows: Row[] = [
-    { id: "net", label: "Líquido", cur: fmtEur(yoy.current.net), prev: fmtEur(yoy.previous.net), delta: yoy.delta.net, upIsGood: true },
-    { id: "gross", label: "Rendimento bruto", cur: fmtEur(yoy.current.gross), prev: fmtEur(yoy.previous.gross), delta: yoy.delta.gross, upIsGood: true },
-    { id: "descontos", label: "Descontos (IRS e SS)", cur: fmtEur(yoy.current.descontos), prev: fmtEur(yoy.previous.descontos), delta: yoy.delta.descontos, upIsGood: false },
+    { id: "net", label: "Líquido", cur: fmtEur(yoy.current.net), prev: fmtEur(yoy.previous.net), delta: yoy.delta.net, text: withText(yoy.current.net, yoy.previous.net, yoy.delta.net), upIsGood: true },
+    { id: "gross", label: "Rendimento bruto", cur: fmtEur(yoy.current.gross), prev: fmtEur(yoy.previous.gross), delta: yoy.delta.gross, text: withText(yoy.current.gross, yoy.previous.gross, yoy.delta.gross), upIsGood: true },
+    { id: "descontos", label: "Descontos (IRS e SS)", cur: fmtEur(yoy.current.descontos), prev: fmtEur(yoy.previous.descontos), delta: yoy.delta.descontos, text: withText(yoy.current.descontos, yoy.previous.descontos, yoy.delta.descontos), upIsGood: false },
     { id: "tax", label: "Carga fiscal efetiva", cur: fmtPct(yoy.current.taxRate), prev: fmtPct(yoy.previous.taxRate), delta: yoy.taxRateDeltaPP, text: pp(yoy.taxRateDeltaPP), upIsGood: false },
-    { id: "spent", label: "Gastos", cur: fmtEur(yoy.current.spent), prev: fmtEur(yoy.previous.spent), delta: yoy.delta.spent, upIsGood: false },
-    { id: "saved", label: "Poupança e investimento", cur: fmtEur(yoy.current.saved), prev: fmtEur(yoy.previous.saved), delta: yoy.delta.saved, upIsGood: true },
+    { id: "spent", label: "Gastos", cur: fmtEur(yoy.current.spent), prev: fmtEur(yoy.previous.spent), delta: yoy.delta.spent, text: withText(yoy.current.spent, yoy.previous.spent, yoy.delta.spent), upIsGood: false },
+    { id: "saved", label: "Poupança e investimento", cur: fmtEur(yoy.current.saved), prev: fmtEur(yoy.previous.saved), delta: yoy.delta.saved, text: withText(yoy.current.saved, yoy.previous.saved, yoy.delta.saved), upIsGood: true },
     { id: "rate", label: "Taxa de poupança", cur: fmtPct(yoy.current.savingsRate), prev: fmtPct(yoy.previous.savingsRate), delta: yoy.savingsRateDeltaPP, text: pp(yoy.savingsRateDeltaPP), upIsGood: true },
   ];
   return (
@@ -362,15 +366,15 @@ function MetricsTable({ yoy, parcels }: { yoy: YoYData; parcels: ReturnType<type
           ))}
         </tbody>
         {parcels.length > 0 && (
-          <tbody data-testid="yoy-parcels">
-            <tr className="border-t border-border">
-              <th colSpan={4} className="pb-1 pt-3 text-left text-xs font-semibold text-muted-foreground">
+          <tbody data-testid="yoy-parcels" className="border-t-2 border-border">
+            <tr className="bg-muted/50">
+              <th colSpan={4} scope="colgroup" className="pb-1.5 pt-4 text-left text-xs font-semibold uppercase tracking-wide text-foreground">
                 Total alocado por parcela
               </th>
             </tr>
             {parcels.map((r) => (
-              <tr key={r.id} className="border-t border-border" data-testid={`yoy-parcel-${r.id}`}>
-                <td className="py-1.5 pr-3">
+              <tr key={r.id} className="border-t border-border/60" data-testid={`yoy-parcel-${r.id}`}>
+                <td className="py-1.5 pl-4 pr-3">
                   <span className="inline-flex items-center gap-2">
                     {r.color && <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: r.color }} />}
                     {r.name}
@@ -378,11 +382,7 @@ function MetricsTable({ yoy, parcels }: { yoy: YoYData; parcels: ReturnType<type
                 </td>
                 <td className="tnum py-1.5 pr-3">{fmtEur(cols.swap ? r.previous : r.current)}</td>
                 <td className="tnum py-1.5 pr-3 text-muted-foreground">{fmtEur(cols.swap ? r.current : r.previous)}</td>
-                <td className="tnum py-1.5 font-medium text-muted-foreground">
-                  {r.delta >= 0 ? "+" : ""}
-                  {fmtEur(r.delta)}
-                  {r.deltaPct != null && ` (${pctSigned(r.deltaPct)})`}
-                </td>
+                <td className="tnum py-1.5 font-medium text-muted-foreground">{eurPct(r.delta, r.deltaPct)}</td>
               </tr>
             ))}
           </tbody>
