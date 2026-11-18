@@ -2,6 +2,13 @@
 
 Ordem do mais recente para o mais antigo.
 
+## Arquitetura documentada
+
+- `docs/ARQUITETURA.md` passa a ter diagramas Mermaid: componentes cliente/servidor/base de dados, sequência de entrada e gravação, modelo de dados (relações), camadas de proteção, modo offline e do código à produção.
+- `docs/MODELO-DE-DADOS.md`: corrigida a relação de `allocation_assets` (liga a `allocations` e a `platforms`) e documentada a tabela `offline_receipts`.
+- `docs/API.md`: regras de validação das rotas. `docs/DESENVOLVIMENTO-E-TESTES.md`: secção Pipeline e ramos.
+- Ajuda da aplicação: nova secção "Como a aplicação funciona", com diagrama.
+
 ## Ficheiros grandes divididos
 
 - `shared/calc.ts` passa a reexportar cinco módulos em `shared/calc/` (`month`, `budget`, `distribution`, `goals`, `expenses`). Os imports `@shared/calc` não mudam.
