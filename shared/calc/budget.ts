@@ -23,24 +23,33 @@ export type CategoryBudgetRow = {
   transactions: Transaction[];
 };
 
+/** Chave de comparação de categorias. */
+export const catKey = (s: string) => s.trim().toLowerCase();
+
 export function budgetVsRealByCategory(
   txs: Transaction[],
   cats: Category[],
   alertThresholdPct = 10,
 ): CategoryBudgetRow[] {
   const expenseTxs = txs.filter((t) => t.type === "expense");
+  // a categoria compara-se sem maiúsculas nem espaços nas pontas ("supermercado" = "Supermercado")
   const byName = new Map<string, Transaction[]>();
+  const display = new Map<string, string>();
   for (const t of expenseTxs) {
-    const key = (t.category || "(sem categoria)").trim();
-    if (!byName.has(key)) byName.set(key, []);
+    const label = (t.category || "(sem categoria)").trim();
+    const key = catKey(label);
+    if (!byName.has(key)) {
+      byName.set(key, []);
+      display.set(key, label);
+    }
     byName.get(key)!.push(t);
   }
   const rows: CategoryBudgetRow[] = [];
   const seen = new Set<string>();
 
   for (const c of cats.filter((c) => c.active)) {
-    const list = byName.get(c.name) ?? [];
-    seen.add(c.name);
+    const list = byName.get(catKey(c.name)) ?? [];
+    seen.add(catKey(c.name));
     const real = list.reduce((a, t) => a + t.value, 0);
     const budget = c.monthlyBudget;
     const desvioEUR = real - budget;
@@ -58,9 +67,10 @@ export function budgetVsRealByCategory(
     });
   }
   // categorias usadas em transacoes mas sem entrada gerida (texto livre)
-  for (const name of Array.from(byName.keys())) {
-    if (seen.has(name)) continue;
-    const list = byName.get(name)!;
+  for (const key of Array.from(byName.keys())) {
+    if (seen.has(key)) continue;
+    const name = display.get(key) ?? key;
+    const list = byName.get(key)!;
     const real = list.reduce((a: number, t: Transaction) => a + t.value, 0);
     rows.push({
       category: null,
@@ -125,7 +135,11 @@ export function projectYearEnd(
     mediaMensalSelecionada = vals.length ? vals.reduce((a, v) => a + v, 0) / vals.length : 0;
   }
 
-  const mesesRestantes = 12 - completed.length - (currentMonthId != null ? 1 : 0);
+  // meses que faltam no calendário (não o nº de linhas de mês registadas): depois do mês corrente
+  // ou, sem mês corrente neste ano, depois do último mês registado
+  const current = yearMonths.find((m) => m.id === currentMonthId);
+  const lastMonthNumber = current ? current.month : yearMonths.reduce((a, m) => Math.max(a, m.month), 0);
+  const mesesRestantes = 12 - lastMonthNumber;
   const projecaoAnual = poupancaAcumulada + mediaMensalSelecionada * Math.max(mesesRestantes, 0);
   const diferenca = projecaoAnual - goal;
 
@@ -159,11 +173,11 @@ export function computeEssentialExpensesByMonth(
   txs: Transaction[],
   cats: Category[],
 ): Record<number, number> {
-  const essentialNames = new Set(cats.filter((c) => c.essential).map((c) => c.name));
+  const essentialNames = new Set(cats.filter((c) => c.essential).map((c) => catKey(c.name)));
   const out: Record<number, number> = {};
   for (const t of txs) {
     if (t.type !== "expense") continue;
-    if (!essentialNames.has((t.category || "").trim())) continue;
+    if (!essentialNames.has(catKey(t.category || ""))) continue;
     out[t.monthId] = (out[t.monthId] ?? 0) + t.value;
   }
   return out;
@@ -259,10 +273,13 @@ export function suggestSurplusDistribution(
       !goalParcels.some((g) => g.id === p.id),
   );
   if (remaining > 0 && otherParcels.length > 0) {
-    const share = remaining / otherParcels.length;
-    for (const p of otherParcels) {
-      items.push({ parcelId: p.id, parcelName: p.name, amount: share, reason: "outra_parcela" });
-    }
+    // divisão em cêntimos: o resto vai para as primeiras parcelas, para a soma fechar a zero
+    const cents = Math.round(remaining * 100);
+    const base = Math.floor(cents / otherParcels.length);
+    const extra = cents - base * otherParcels.length;
+    otherParcels.forEach((p, i) => {
+      items.push({ parcelId: p.id, parcelName: p.name, amount: (base + (i < extra ? 1 : 0)) / 100, reason: "outra_parcela" });
+    });
     remaining = 0;
   }
 

@@ -244,8 +244,21 @@ export type CategoryYoYRow = { name: string; current: number; previous: number; 
 
 /** Despesa por categoria no período face ao ano de referência (só meses com par). */
 export function categoryYearOverYear(txs: Transaction[], yoy: YearOverYear): CategoryYoYRow[] {
-  const cur = expenseByCategory(txs, new Set(yoy.pairs.flatMap((p) => idsOf(p.current))));
-  const prev = expenseByCategory(txs, new Set(yoy.pairs.flatMap((p) => idsOf(p.previous))));
+  // por par: se o mesmo mês de referência emparelha com vários meses atuais, conta uma vez por par,
+  // tal como os totais (assim categorias e totais somam os mesmos meses de cada lado)
+  const cur = new Map<string, { name: string; total: number }>();
+  const prev = new Map<string, { name: string; total: number }>();
+  const add = (into: Map<string, { name: string; total: number }>, from: Map<string, { name: string; total: number }>) => {
+    for (const [k, v] of Array.from(from.entries())) {
+      const row = into.get(k) ?? { name: v.name, total: 0 };
+      row.total = Math.round((row.total + v.total) * 100) / 100;
+      into.set(k, row);
+    }
+  };
+  for (const p of yoy.pairs) {
+    add(cur, expenseByCategory(txs, new Set(idsOf(p.current))));
+    add(prev, expenseByCategory(txs, new Set(idsOf(p.previous))));
+  }
   const keys = Array.from(new Set(Array.from(cur.keys()).concat(Array.from(prev.keys()))));
   const rows: CategoryYoYRow[] = [];
   const dc = yoy.divisor?.current ?? 1, dp = yoy.divisor?.previous ?? 1;

@@ -179,6 +179,14 @@ export const storage = {
       db.select().from(reserves).where(eq(reserves.parcelId, id)).all().length;
     if (used > 0)
       throw httpError(409, `A parcela tem ${used} movimento(s), recorrência(s) ou reserva(s) associados. Arquiva-a em vez de eliminar.`);
+    const closedWithValue = db
+      .select()
+      .from(allocations)
+      .where(eq(allocations.parcelId, id))
+      .all()
+      .filter((a) => Number(a.value) > 0 && db.select().from(months).where(eq(months.id, a.monthId)).get()?.status === "fechado").length;
+    if (closedWithValue > 0)
+      throw httpError(409, `A parcela tem alocação em ${closedWithValue} mês(es) fechado(s). Arquiva-a em vez de eliminar, ou reabre esses meses.`);
     for (const a of db.select().from(allocations).where(eq(allocations.parcelId, id)).all()) {
       db.delete(allocationAssets).where(eq(allocationAssets.allocationId, a.id)).run();
       db.delete(allocationPlatforms).where(eq(allocationPlatforms.allocationId, a.id)).run();
@@ -260,6 +268,8 @@ export const storage = {
       if (m.year !== y || m.month !== mo) {
         const target = db.select().from(months).where(and(eq(months.year, y), eq(months.month, mo))).get();
         if (!target) throw httpError(409, `Não existe o mês ${String(mo).padStart(2, "0")}/${y}. Cria esse mês antes de usar esta data.`);
+        // a data pode deslocar o movimento para outro mês: esse mês também tem de estar aberto
+        if (target.status === "fechado") throw httpError(423, "O mês da data indicada está fechado. Reabre-o para alterar valores.");
         out.monthId = target.id;
       }
     }

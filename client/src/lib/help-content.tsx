@@ -636,6 +636,13 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.12.1</H3>
+        <UL>
+          <li>Um movimento com data num mês fechado já não é movido para esse mês: o servidor recusa e pede para o reabrir.</li>
+          <li>Reconciliação: "Aplicar como lançamentos" usa uma data dentro do mês reconciliado, por isso o mês fecha a zero e o mês seguinte não é afetado.</li>
+          <li>Não é possível eliminar uma parcela com alocação em meses fechados (arquiva-se); a divisão do excedente fecha a zero ao cêntimo.</li>
+          <li>Categorias comparam-se sem maiúsculas; a projeção anual conta os meses do calendário; as datas de "hoje" usam o fuso local; na comparação com ano fixo, as categorias somam os mesmos meses que os totais.</li>
+        </UL>
         <H3>1.12.0</H3>
         <UL>
           <li>Comparação mensal e anual: em <em>Comparar com ano</em> escolhes primeiro o ano e depois os meses; o ano de comparação só mostra os outros anos.</li>
@@ -698,5 +705,5 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
   },
 ];
 
-export const HELP_VERSION = "1.12.0";
+export const HELP_VERSION = "1.12.1";
 export const HELP_UPDATED_AT = "2026-11-18";

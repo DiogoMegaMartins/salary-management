@@ -1,3 +1,4 @@
+import { localToday } from "@/lib/utils";
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,7 @@ export function TransactionsPanel({
   const [note, setNote] = useState("");
   // data por omissão: hoje, se cair no mês que se está a editar; senão o dia 1 desse mês
   const [date, setDate] = useState(() => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = localToday();
     const m = data?.months.find((x) => x.id === monthId);
     if (!m) return today;
     const prefix = `${m.year}-${String(m.month).padStart(2, "0")}`;

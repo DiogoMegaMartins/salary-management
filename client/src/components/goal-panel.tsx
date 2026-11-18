@@ -1,3 +1,4 @@
+import { localToday } from "@/lib/utils";
 import { useMemo, useState } from "react";
 import { ChevronDown, ChevronRight, Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ import { errMsg } from "@/components/catalogs";
 import { fmtEur, goalBreakdown, monthKeyOf, type GoalBreakdown } from "@shared/calc";
 import type { Parcel } from "@shared/schema";
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => localToday();
 /** Aceita "1250,5" e "1250.5"; devolve null se inválido (nunca converte em silêncio para 0). */
 const num = (s: string): number | null => {
   const t = s.trim().replace(",", ".");

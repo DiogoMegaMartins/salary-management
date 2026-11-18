@@ -77,3 +77,10 @@ Implementadas em `shared/calc/insights.ts` e cobertas por `tests/insights.test.t
 - Categoria sem gasto no histórico (média 0): alerta `novo` se o gasto for ≥ 40 € (o dobro do mínimo).
 - Ordenação por excesso sobre a média, do maior para o menor.
 
+
+## Regras acrescentadas na 1.12.1
+
+- Categorias comparam-se sem maiúsculas nem espaços nas pontas ("supermercado" = "Supermercado"), no orçamento e nas despesas essenciais.
+- Projeção de fim de ano: meses restantes = 12 − mês corrente (ou, sem mês corrente no ano, o último mês registado).
+- Sugestão de excedente: dividida em cêntimos; o resto vai para as primeiras parcelas e a soma fecha a zero.
+- Uma data num mês fechado nunca desloca um movimento para esse mês (423). Eliminar uma parcela com alocação em meses fechados é recusado (409).
