@@ -34,11 +34,13 @@ import {
   type ProjectionMethod,
 } from "@shared/calc";
 import { cn } from "@/lib/utils";
+import { useConfirm } from "@/components/confirm";
 
 export default function BudgetPage() {
   const { data, isLoading } = useAppState();
   const d = useDerived(data);
   const save = useSave();
+  const { ask, dialog: confirmDialog } = useConfirm();
   const pageLayout = usePageLayout(data?.settings ?? ({} as any), "orcamento");
   const [addingCategory, setAddingCategory] = useState(false);
   const [draft, setDraft] = useState({ name: "", monthlyBudget: "", essential: false });
@@ -300,7 +302,8 @@ export default function BudgetPage() {
                           variant="ghost"
                           size="icon"
                           className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                          onClick={() => save.deleteCategory.mutate(row.category!.id)}
+                          aria-label={`Eliminar a categoria ${row.categoryName}`}
+                          onClick={() => ask(`Eliminar a categoria ${row.categoryName}?`).then((ok) => ok && save.deleteCategory.mutate(row.category!.id))}
                           data-testid={`button-delete-category-${row.category.id}`}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -399,6 +402,7 @@ export default function BudgetPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {confirmDialog}
     </AppShell>
   );
 }

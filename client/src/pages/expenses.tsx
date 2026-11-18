@@ -71,6 +71,16 @@ export default function ExpensesPage() {
     });
   }, [data, month, cat, parcel, platform, search]);
 
+  if (data && !isLoading && sorted.length === 0) {
+    return (
+      <AppShell title="Despesas" subtitle="Despesas por mês e dia">
+        <div className="flex h-[50vh] flex-col items-center justify-center gap-2 text-center" data-testid="expenses-empty">
+          <p className="text-sm font-medium">Ainda não há meses</p>
+          <p className="text-xs text-muted-foreground">Cria um mês em <a className="underline" href="#/meses">Meses</a> para registar despesas.</p>
+        </div>
+      </AppShell>
+    );
+  }
   if (isLoading || !data || !month || !view) {
     return (
       <AppShell title="Despesas" subtitle="Despesas por mês e dia">

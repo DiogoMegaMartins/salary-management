@@ -1,4 +1,5 @@
-import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { MutationCache, QueryClient, QueryFunction } from "@tanstack/react-query";
+import { toast } from "@/hooks/use-toast";
 import { configureOffline, offlineRequest, lockOffline } from "./offline";
 
 const API_BASE = "__PORT_5000__".startsWith("__") ? "" : "__PORT_5000__";
@@ -115,7 +116,27 @@ export const getQueryFn: <T>(options: {
     return await res.json();
   };
 
+/** Mensagem útil de erros do tipo `409: {"message":"..."}`. */
+function errorText(err: any): string {
+  const raw = String(err?.message ?? "Erro inesperado");
+  const i = raw.indexOf("{");
+  if (i >= 0) {
+    try {
+      const j = JSON.parse(raw.slice(i));
+      return j.message ?? j.error ?? raw;
+    } catch { /* texto simples */ }
+  }
+  return raw.replace(/^\d{3}:\s*/, "");
+}
+
 export const queryClient = new QueryClient({
+  // Uma ação que falha nunca fica em silêncio: as mutações com `onError` próprio tratam do aviso, as restantes mostram-no aqui.
+  mutationCache: new MutationCache({
+    onError: (error, _vars, _ctx, mutation) => {
+      if (mutation.options.onError) return;
+      toast({ title: "Não foi possível concluir", description: errorText(error), variant: "destructive" });
+    },
+  }),
   defaultOptions: {
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),

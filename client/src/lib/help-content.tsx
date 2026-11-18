@@ -636,6 +636,14 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.12.3</H3>
+        <UL>
+          <li>Uma ação que falha (apagar, duplicar, aplicar sugestão) mostra sempre um aviso; se os dados não carregarem, aparece o erro com "Tentar de novo" em vez de ficar a carregar.</li>
+          <li>Fechar o editor de mês com alterações por guardar pede confirmação; eliminar um movimento ou uma categoria também.</li>
+          <li>Definições: um campo de taxa esvaziado ou sem alteração já não grava 0%.</li>
+          <li>Acessibilidade: filtros de Tipo e Parcelas utilizáveis só com o teclado, campos do mês ligados aos rótulos, linhas de parcela do Painel acessíveis por teclado e melhor contraste nos avisos.</li>
+          <li>Despesas e Fecho mensal explicam o que fazer quando ainda não há meses.</li>
+        </UL>
         <H3>1.12.2</H3>
         <UL>
           <li>Segurança: o código de acesso é verificado antes de ler o corpo dos pedidos; limite de tentativas por IP (IPv6 por /64) e global; a verificação já não bloqueia o servidor.</li>
@@ -711,5 +719,5 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
   },
 ];
 
-export const HELP_VERSION = "1.12.2";
+export const HELP_VERSION = "1.12.3";
 export const HELP_UPDATED_AT = "2026-11-18";

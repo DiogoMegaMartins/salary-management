@@ -58,6 +58,12 @@ function MonthClosing() {
   const history = useQuery<any[]>({ queryKey: ["/api/closures"], staleTime: 0 });
   const pend = useQuery<any[]>({ queryKey: ["/api/recurring/pending"], staleTime: 0 });
   const verify = useQuery<any>({ queryKey: ["/api/verify"], staleTime: 0 });
+  if (data && d && !month)
+    return (
+      <p className="py-10 text-center text-sm text-muted-foreground" data-testid="closing-empty">
+        Ainda não há meses. Cria um mês em <a className="underline" href="#/meses">Meses</a> para fazer o fecho.
+      </p>
+    );
   if (!data || !d || !month) return <Skeleton className="h-64 rounded-lg" />;
 
   const txs = data.transactions.filter((t) => t.monthId === month.id);
@@ -363,7 +369,7 @@ function Composition() {
                   </div>
                 ))}
                 <div className="flex justify-between border-t border-border pt-1 font-semibold"><span>Acumulado</span><span className="tnum">{fmtEur(c.accumulated)}</span></div>
-                {b.incomplete && <p className="text-xs text-amber-600">Falta taxa de conversão ({b.missing.join(", ")}): total incompleto.</p>}
+                {b.incomplete && <p className="text-xs text-amber-700 dark:text-amber-400">Falta taxa de conversão ({b.missing.join(", ")}): total incompleto.</p>}
                 {c.check !== 0 && <p className="text-xs text-destructive" data-testid="composition-mismatch">Diferença de composição: {fmtEur(c.check)}.</p>}
               </div>
             )}

@@ -2,9 +2,8 @@ import { useFilters, PERIOD_PRESETS, type Derived } from "@/lib/app";
 import { MONTH_NAMES, KINDS } from "@shared/calc";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ChevronDown, RotateCcw } from "lucide-react";
 import { useState } from "react";
 
@@ -105,17 +104,18 @@ export function FilterBar({ d, showParcels = true }: { d: Derived; showParcels?:
           {KINDS.map((k) => {
             const checked = f.kinds === null || f.kinds.includes(k.value);
             return (
-              <label key={k.value} className="flex cursor-pointer items-center gap-2 rounded px-1.5 py-1.5 text-sm hover:bg-accent">
-                <Checkbox
-                  checked={checked}
-                  onCheckedChange={(v) => {
-                    const current = f.kinds ?? KINDS.map((x) => x.value as string);
-                    const next = v ? [...current, k.value] : current.filter((x) => x !== k.value);
-                    f.setKinds(next.length === KINDS.length ? null : next);
-                  }}
-                />
+              <DropdownMenuCheckboxItem
+                key={k.value}
+                checked={checked}
+                onSelect={(e) => e.preventDefault()}
+                onCheckedChange={(v) => {
+                  const current = f.kinds ?? KINDS.map((x) => x.value as string);
+                  const next = v ? [...current, k.value] : current.filter((x) => x !== k.value);
+                  f.setKinds(next.length === KINDS.length ? null : next);
+                }}
+              >
                 {k.label}
-              </label>
+              </DropdownMenuCheckboxItem>
             );
           })}
         </DropdownMenuContent>
@@ -136,22 +136,20 @@ export function FilterBar({ d, showParcels = true }: { d: Derived; showParcels?:
               .map((p) => {
                 const checked = f.parcelIds === null || f.parcelIds.includes(p.id);
                 return (
-                  <label
+                  <DropdownMenuCheckboxItem
                     key={p.id}
-                    className="flex cursor-pointer items-center gap-2 rounded px-1.5 py-1.5 text-sm hover:bg-accent"
+                    checked={checked}
+                    onSelect={(e) => e.preventDefault()}
+                    onCheckedChange={(v) => {
+                      const all = d.allParcels.filter((x) => !x.archived).map((x) => x.id);
+                      const current = f.parcelIds ?? all;
+                      const next = v ? [...current, p.id] : current.filter((x) => x !== p.id);
+                      f.setParcelIds(next.length === all.length ? null : next);
+                    }}
                   >
-                    <Checkbox
-                      checked={checked}
-                      onCheckedChange={(v) => {
-                        const all = d.allParcels.filter((x) => !x.archived).map((x) => x.id);
-                        const current = f.parcelIds ?? all;
-                        const next = v ? [...current, p.id] : current.filter((x) => x !== p.id);
-                        f.setParcelIds(next.length === all.length ? null : next);
-                      }}
-                    />
-                    <span className="h-2.5 w-2.5 rounded-full" style={{ background: p.color }} />
+                    <span className="mr-2 inline-block h-2.5 w-2.5 rounded-full align-middle" style={{ background: p.color }} />
                     <span className="truncate">{p.name}</span>
-                  </label>
+                  </DropdownMenuCheckboxItem>
                 );
               })}
           </DropdownMenuContent>

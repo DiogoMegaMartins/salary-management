@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Download, FileSpreadsheet, Lock, ShieldCheck, Upload } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -476,15 +476,25 @@ function Field({
   step?: number;
   onSave: (v: number) => void;
 }) {
+  const id = useId();
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <Label htmlFor={id} className="text-xs text-muted-foreground">{label}</Label>
       <div className="relative">
         <Input
+          id={id}
           type="number"
           step={step}
           defaultValue={Number(value.toFixed(4))}
-          onBlur={(e) => onSave(Number(e.target.value))}
+          onBlur={(e) => {
+            // campo vazio ou sem alteração não grava (esvaziar não pode virar 0%)
+            const v = e.target.value.trim();
+            if (v === "" || Number(v) === Number(value.toFixed(4))) {
+              e.target.value = String(Number(value.toFixed(4)));
+              return;
+            }
+            onSave(Number(v));
+          }}
           className="tnum h-9 pr-8 text-sm"
         />
         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">

@@ -11,6 +11,7 @@ import type { Transaction } from "@shared/schema";
 import { TRANSACTION_TYPES, TX_NATURES } from "@shared/schema";
 import { CreateTypeDialog } from "@/components/catalogs";
 import { fmtEur } from "@shared/calc";
+import { useConfirm } from "@/components/confirm";
 import { Plus, ArrowRightLeft } from "lucide-react";
 import { NumberField } from "@/components/months/number-field";
 
@@ -26,6 +27,7 @@ export function TransactionsPanel({
   const save = useSave();
   const { toast } = useToast();
   const { data } = useAppState();
+  const { ask, dialog: confirmDialog } = useConfirm();
   const categories = (data?.categories ?? []).filter((c) => c.active);
   const [adding, setAdding] = useState(false);
   const [type, setType] = useState<string>("expense");
@@ -292,7 +294,8 @@ export function TransactionsPanel({
                     variant="ghost"
                     size="icon"
                     className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                    onClick={() => save.deleteTransaction.mutate(t.id)}
+                    aria-label={`Eliminar ${label} de ${fmtEur(t.value)}`}
+                    onClick={() => ask(`Eliminar ${label} de ${fmtEur(t.value)}?`, "Esta ação não se pode desfazer.").then((ok) => ok && save.deleteTransaction.mutate(t.id))}
                     data-testid={`button-delete-transaction-${t.id}`}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -303,6 +306,7 @@ export function TransactionsPanel({
           })}
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

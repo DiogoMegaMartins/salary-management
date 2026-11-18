@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -70,11 +70,13 @@ export function NumberField({
     setDraft(formatNumberForInput(final));
   };
 
+  const id = useId();
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <Label htmlFor={id} className="text-xs text-muted-foreground">{label}</Label>
       <div className="relative">
         <Input
+          id={id}
           type="text"
           inputMode="decimal"
           value={draft}
