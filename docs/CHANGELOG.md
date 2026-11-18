@@ -9,6 +9,13 @@ Ordem do mais recente para o mais antigo.
 - O cálculo dos números do Painel sai de `dashboard.tsx` para `client/src/lib/dashboard-model.ts` (`buildDashboardModel`).
 - Sem alterações de comportamento: mesmos 129 testes.
 
+## Esquemas formais nas rotas
+
+- Plataformas, tipos de parcela e de movimento, saldos e ajustes, submetas, atribuições, taxas de conversão, recorrências, reservas e fecho/reabertura de mês passam a validar o pedido com esquemas zod (`server/route-schemas.ts`): tipos, limites e valores permitidos.
+- Campos desconhecidos no corpo e identificadores de rota inválidos (`/api/platforms/abc`) dão 400 em vez de serem ignorados. Os campos obrigatórios e as regras de domínio continuam na camada de armazenamento, com as mesmas mensagens.
+- `destination` do fecho de mês só aceita `transportar`, `reforcar` ou `manter` (antes, um valor desconhecido era tratado como `manter`).
+- Testes novos em `tests/route-schemas.test.ts`.
+
 ## Saldos e ajustes com o mesmo cartão das submetas
 
 - O histórico de saldos e ajustes usa agora o mesmo cartão das submetas (nome, informação, valor e ícones nas mesmas posições) e ganhou o ícone de **editar**: valor, data e nota podem ser corrigidos sem apagar e voltar a criar. O tipo (saldo inicial ou ajuste) e a meta/submetas não mudam.

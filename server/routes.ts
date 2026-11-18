@@ -1,4 +1,10 @@
 import { hashCode, verifyCode, isHashed, makeLimiter, publicState, publicSettings, MIN_CODE_LENGTH } from "./access";
+import {
+  idParamSchema, platformCreateSchema, platformPatchSchema, parcelTypeCreateSchema, parcelTypePatchSchema,
+  txTypeCreateSchema, txTypePatchSchema, goalEntryCreateSchema, goalEntryPatchSchema, subgoalCreateSchema, subgoalPatchSchema,
+  contributionLinkCreateSchema, fxRateCreateSchema, recurringSchema, reserveSchema, reservePaySchema, occurrenceKeySchema,
+  closeMonthSchema, reopenMonthSchema,
+} from "./route-schemas";
 import { settingsPatchSchema, monthCreateSchema, monthPatchSchema, parcelCreateSchema, parcelPatchSchema, categoryCreateSchema, issueMessage } from "./validation";
 import type { ZodType } from "zod";
 import * as evo8 from "./evo08";
@@ -24,6 +30,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   const parse = <T>(schema: ZodType<T>, body: unknown): T => {
     const r = schema.safeParse(body ?? {});
     if (!r.success) throw httpError(400, issueMessage(r.error));
+    return r.data;
+  };
+  /** Identificador de rota (`/:id`): inteiro positivo, senão 400. */
+  const pid = (v: unknown): number => {
+    const r = idParamSchema.safeParse(v);
+    if (!r.success) throw httpError(400, "Identificador inválido.");
     return r.data;
   };
 
@@ -150,28 +162,28 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   };
   /* --------------------------------- metas: saldos, submetas, taxas (EVO-04) */
-  app.post("/api/goal-entries", guard((req) => storage.createGoalEntry(req.body ?? {})));
-  app.patch("/api/goal-entries/:id", guard((req) => storage.updateGoalEntry(Number(req.params.id), req.body ?? {})));
-  app.delete("/api/goal-entries/:id", guard((req) => (storage.deleteGoalEntry(Number(req.params.id)), { ok: true })));
-  app.post("/api/subgoals", guard((req) => storage.createSubgoal(req.body ?? {})));
-  app.patch("/api/subgoals/:id", guard((req) => storage.updateSubgoal(Number(req.params.id), req.body ?? {})));
-  app.delete("/api/subgoals/:id", guard((req) => (storage.deleteSubgoal(Number(req.params.id)), { ok: true })));
-  app.post("/api/contribution-links", guard((req) => storage.createContributionLink(req.body ?? {})));
-  app.delete("/api/contribution-links/:id", guard((req) => (storage.deleteContributionLink(Number(req.params.id)), { ok: true })));
-  app.post("/api/fx-rates", guard((req) => storage.createFxRate(req.body ?? {})));
-  app.delete("/api/fx-rates/:id", guard((req) => (storage.deleteFxRate(Number(req.params.id)), { ok: true })));
+  app.post("/api/goal-entries", guard((req) => storage.createGoalEntry(parse(goalEntryCreateSchema, req.body))));
+  app.patch("/api/goal-entries/:id", guard((req) => storage.updateGoalEntry(pid(req.params.id), parse(goalEntryPatchSchema, req.body))));
+  app.delete("/api/goal-entries/:id", guard((req) => (storage.deleteGoalEntry(pid(req.params.id)), { ok: true })));
+  app.post("/api/subgoals", guard((req) => storage.createSubgoal(parse(subgoalCreateSchema, req.body))));
+  app.patch("/api/subgoals/:id", guard((req) => storage.updateSubgoal(pid(req.params.id), parse(subgoalPatchSchema, req.body))));
+  app.delete("/api/subgoals/:id", guard((req) => (storage.deleteSubgoal(pid(req.params.id)), { ok: true })));
+  app.post("/api/contribution-links", guard((req) => storage.createContributionLink(parse(contributionLinkCreateSchema, req.body))));
+  app.delete("/api/contribution-links/:id", guard((req) => (storage.deleteContributionLink(pid(req.params.id)), { ok: true })));
+  app.post("/api/fx-rates", guard((req) => storage.createFxRate(parse(fxRateCreateSchema, req.body))));
+  app.delete("/api/fx-rates/:id", guard((req) => (storage.deleteFxRate(pid(req.params.id)), { ok: true })));
 
   app.put("/api/months/:monthId/parcels/:parcelId/distribution/:platformId/assets", guard((req) =>
     storage.setAssets(Number(req.params.monthId), Number(req.params.parcelId), Number(req.params.platformId), req.body?.lines ?? [])));
-  app.post("/api/platforms", guard((req) => storage.createPlatform(req.body ?? {})));
-  app.patch("/api/platforms/:id", guard((req) => storage.updatePlatform(Number(req.params.id), req.body ?? {})));
-  app.delete("/api/platforms/:id", guard((req) => (storage.deletePlatform(Number(req.params.id)), { ok: true })));
-  app.post("/api/parcel-types", guard((req) => storage.createParcelType(req.body ?? {})));
-  app.patch("/api/parcel-types/:id", guard((req) => storage.updateParcelType(Number(req.params.id), req.body ?? {})));
-  app.delete("/api/parcel-types/:id", guard((req) => (storage.deleteParcelType(Number(req.params.id)), { ok: true })));
-  app.post("/api/tx-types", guard((req) => storage.createTxType(req.body ?? {})));
-  app.patch("/api/tx-types/:id", guard((req) => storage.updateTxType(Number(req.params.id), req.body ?? {})));
-  app.delete("/api/tx-types/:id", guard((req) => (storage.deleteTxType(Number(req.params.id)), { ok: true })));
+  app.post("/api/platforms", guard((req) => storage.createPlatform(parse(platformCreateSchema, req.body))));
+  app.patch("/api/platforms/:id", guard((req) => storage.updatePlatform(pid(req.params.id), parse(platformPatchSchema, req.body))));
+  app.delete("/api/platforms/:id", guard((req) => (storage.deletePlatform(pid(req.params.id)), { ok: true })));
+  app.post("/api/parcel-types", guard((req) => storage.createParcelType(parse(parcelTypeCreateSchema, req.body))));
+  app.patch("/api/parcel-types/:id", guard((req) => storage.updateParcelType(pid(req.params.id), parse(parcelTypePatchSchema, req.body))));
+  app.delete("/api/parcel-types/:id", guard((req) => (storage.deleteParcelType(pid(req.params.id)), { ok: true })));
+  app.post("/api/tx-types", guard((req) => storage.createTxType(parse(txTypeCreateSchema, req.body))));
+  app.patch("/api/tx-types/:id", guard((req) => storage.updateTxType(pid(req.params.id), parse(txTypePatchSchema, req.body))));
+  app.delete("/api/tx-types/:id", guard((req) => (storage.deleteTxType(pid(req.params.id)), { ok: true })));
   app.delete("/api/parcels/:id", guard((req) => (storage.deleteParcel(Number(req.params.id)), { ok: true })));
 
   /* ------------------------------------------------------------- meses */
@@ -328,21 +340,21 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.get("/api/verify", h(() => evo8.verifyData()));
   app.get("/api/change-log", h(() => evo8.listChangeLog()));
   app.get("/api/months/:id/summary", h((r) => evo8.monthSummary(Number(r.params.id))));
-  app.post("/api/months/:id/close", h((r) => evo8.closeMonth(Number(r.params.id), r.body ?? {})));
-  app.post("/api/months/:id/reopen", h((r) => evo8.reopenMonth(Number(r.params.id), String(r.body?.note ?? ""))));
+  app.post("/api/months/:id/close", h((r) => evo8.closeMonth(pid(r.params.id), parse(closeMonthSchema, r.body ?? {}) as any)));
+  app.post("/api/months/:id/reopen", h((r) => evo8.reopenMonth(pid(r.params.id), parse(reopenMonthSchema, r.body ?? {}).note ?? "")));
   app.get("/api/closures", h((r) => evo8.closureHistory(r.query.monthId ? Number(r.query.monthId) : undefined)));
   app.get("/api/recurring", h(() => evo8.listRecurring()));
-  app.post("/api/recurring", h((r) => evo8.saveRecurring(r.body ?? {})));
-  app.patch("/api/recurring/:id", h((r) => evo8.saveRecurring(r.body ?? {}, Number(r.params.id))));
-  app.delete("/api/recurring/:id", h((r) => evo8.deleteRecurring(Number(r.params.id))));
+  app.post("/api/recurring", h((r) => evo8.saveRecurring(parse(recurringSchema, r.body))));
+  app.patch("/api/recurring/:id", h((r) => evo8.saveRecurring(parse(recurringSchema, r.body), pid(r.params.id))));
+  app.delete("/api/recurring/:id", h((r) => evo8.deleteRecurring(pid(r.params.id))));
   app.get("/api/recurring/pending", h(() => evo8.pending()));
-  app.post("/api/recurring/confirm", h((r) => evo8.confirmOccurrence(String(r.body?.key ?? ""))));
-  app.post("/api/recurring/skip", h((r) => evo8.skipOccurrence(String(r.body?.key ?? ""))));
+  app.post("/api/recurring/confirm", h((r) => evo8.confirmOccurrence(parse(occurrenceKeySchema, r.body).key)));
+  app.post("/api/recurring/skip", h((r) => evo8.skipOccurrence(parse(occurrenceKeySchema, r.body).key)));
   app.get("/api/reserves", h(() => evo8.listReserves()));
-  app.post("/api/reserves", h((r) => evo8.saveReserve(r.body ?? {})));
-  app.patch("/api/reserves/:id", h((r) => evo8.saveReserve(r.body ?? {}, Number(r.params.id))));
-  app.delete("/api/reserves/:id", h((r) => evo8.deleteReserve(Number(r.params.id))));
-  app.post("/api/reserves/:id/pay", h((r) => evo8.payReserve(Number(r.params.id), r.body ?? {})));
+  app.post("/api/reserves", h((r) => evo8.saveReserve(parse(reserveSchema, r.body))));
+  app.patch("/api/reserves/:id", h((r) => evo8.saveReserve(parse(reserveSchema, r.body), pid(r.params.id))));
+  app.delete("/api/reserves/:id", h((r) => evo8.deleteReserve(pid(r.params.id))));
+  app.post("/api/reserves/:id/pay", h((r) => evo8.payReserve(pid(r.params.id), parse(reservePaySchema, r.body))));
   app.post("/api/import/csv/preview", h((r) => evo8.csvPreview(r.body ?? {})));
   app.post("/api/import/csv", h((r) => evo8.csvImport(r.body ?? {})));
 
