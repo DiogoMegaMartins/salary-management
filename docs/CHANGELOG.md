@@ -2,6 +2,13 @@
 
 Ordem do mais recente para o mais antigo.
 
+## Ficheiros grandes divididos
+
+- `shared/calc.ts` passa a reexportar cinco módulos em `shared/calc/` (`month`, `budget`, `distribution`, `goals`, `expenses`). Os imports `@shared/calc` não mudam.
+- `server/storage.ts` perde a ligação e o esquema (`server/db.ts`) e os métodos de catálogos e de metas (`server/storage-catalogs.ts`, `server/storage-goals.ts`), compostos de volta no objeto `storage`. `storage`, `db`, `sqlite`, `httpError`, `roundCents`, `dataDir` e `dbPath` continuam exportados por `server/storage.ts`.
+- O cálculo dos números do Painel sai de `dashboard.tsx` para `client/src/lib/dashboard-model.ts` (`buildDashboardModel`).
+- Sem alterações de comportamento: mesmos 129 testes.
+
 ## Esquemas formais nas rotas
 
 - Plataformas, tipos de parcela e de movimento, saldos e ajustes, submetas, atribuições, taxas de conversão, recorrências, reservas e fecho/reabertura de mês passam a validar o pedido com esquemas zod (`server/route-schemas.ts`): tipos, limites e valores permitidos.
