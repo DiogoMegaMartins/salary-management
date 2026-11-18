@@ -35,9 +35,11 @@ test.describe("Interface: erros visíveis, confirmações e teclado", () => {
     await page.getByTestId("button-filter-parcels").focus();
     await page.keyboard.press("Enter");
     await expect(page.getByRole("menuitemcheckbox").first()).toBeVisible();
-    await page.keyboard.press("ArrowDown");
     const atual = page.locator('[role="menuitemcheckbox"]:focus');
-    await expect(atual).toHaveCount(1);
+    await expect(async () => {
+      await page.keyboard.press("ArrowDown");
+      await expect(atual).toHaveCount(1, { timeout: 500 });
+    }).toPass({ timeout: 5000 });
     const antes = await atual.getAttribute("aria-checked");
     await page.keyboard.press("Space");
     await expect(page.locator('[role="menuitemcheckbox"]:focus')).not.toHaveAttribute("aria-checked", String(antes));

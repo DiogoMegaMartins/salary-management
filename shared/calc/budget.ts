@@ -1,5 +1,5 @@
 /** Orçamento versus real, projeção anual, runway e sugestão de excedente. */
-import type { Allocation, Category, Month, Parcel, Settings, Transaction } from "../schema";
+import type { Category, Month, Parcel, Transaction } from "../schema";
 import { sortMonths } from "./month";
 
 /* =========================================================== P1 =========== */

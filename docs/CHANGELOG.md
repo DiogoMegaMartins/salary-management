@@ -2,6 +2,16 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.12.5 | 2026-11-18
+
+Limpeza e bundle (auditoria).
+
+- `shared/constants.ts` com `TRANSACTION_TYPES` e `TX_NATURES`; o cliente deixa de importar valores de `shared/schema.ts`, por isso `drizzle-orm`, `drizzle-zod` e `zod` saem do pacote inicial.
+- Removidos: os `insert*Schema` e tipos `Insert*` (sem uso), `drizzle-zod`, `@tailwindcss/typography`, `@radix-ui/react-tooltip` e `ui/tooltip.tsx`, o alias `@assets`, `transactionsOfMonth`, `monthKey` e cerca de 40 imports e variáveis sem uso. `noUnusedLocals` ligado no `tsconfig.json` (o `npm run check` apanha novos casos).
+- Documentação: `INSTALACAO.md` fundido no README (requisitos e tabela de variáveis de ambiente); documentos históricos movidos para `docs/historico/`; `API.md` com `GET /health` e `POST /offline/sync`.
+- CI: cache do Chromium do Playwright e `timeout-minutes` por job (menos minutos de Actions).
+- Sem alterações ao esquema de dados.
+
 ## 1.12.4 | 2026-11-18
 
 - **Node 24 como única versão:** `engines.node` passa de `>=20.19.0` para `>=24`; `@types/node` 24.19.2 (e `undici-types` 7.24.6 no lockfile); `INSTALACAO.md` e `docs/DESENVOLVIMENTO-E-TESTES.md` atualizados. O CI já corria só em Node 24. Sem alterações ao esquema de dados.
@@ -189,7 +199,7 @@ Publicação confirmada pela plataforma em 2026-11-15 no endereço https://salar
 - Layouts personalizados: empilhamento abaixo de 900 px úteis, sem reescrita automática das coordenadas guardadas; normalização de geometrias inválidas e quatro testes de regressão.
 - Ajuda: correção da largura do índice/artigos; instruções sobre grelhas, campos, tabelas largas e o controlo independente das submetas.
 - Metadados: versão da Ajuda e de `/api/app-info` alinhadas em 1.9.1; sem alterações ao esquema, aos registos ou às fórmulas financeiras.
-- Evidência e limitações: [revisão responsiva](revisao-responsiva-2026-11-15.md).
+- Evidência e limitações: [revisão responsiva](historico/revisao-responsiva-2026-11-15.md).
 
 ## Alterações anteriores
 

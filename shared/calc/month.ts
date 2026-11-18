@@ -1,5 +1,5 @@
 /** Cálculo do mês: rendimentos, descontos, disponível, reconciliação, formatação e ordenação. */
-import type { Allocation, Category, Month, Parcel, Settings, Transaction } from "../schema";
+import type { Allocation, Month, Parcel, Settings, Transaction } from "../schema";
 
 export const MONTH_NAMES = [
   "Janeiro",
@@ -77,10 +77,6 @@ export function allocationAmount(a: Allocation, available: number): number {
  *   alocacoesTotais = allocations (fixo/percentagem) + aportes (contribution)
  *   transferencias entre parcelas nao contam para nenhum dos dois totais
  */
-export function transactionsOfMonth(monthId: number, txs: Transaction[]): Transaction[] {
-  return txs.filter((t) => t.monthId === monthId);
-}
-
 export function despesasExtraOf(txs: Transaction[]): number {
   return txs
     .filter((t) => t.type === "expense" || t.type === "withdrawal")
@@ -186,10 +182,6 @@ export function fmtPct(n: number, digits = 1): string {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
   }).format(stripNegativeZero(n, digits + 2));
-}
-
-export function monthKey(m: Month): string {
-  return `${m.year}-${String(m.month).padStart(2, "0")}`;
 }
 
 export function monthLabelShort(m: Month): string {

@@ -23,7 +23,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSave } from "@/lib/app";
 import { fmtEur } from "@shared/calc";
-import { TRANSACTION_TYPES, type Transaction } from "@shared/schema";
+import { TRANSACTION_TYPES } from "@shared/constants";
+import type { Transaction } from "@shared/schema";
 
 /**
  * SM-009: painel lateral de drill-down. Recebe um subconjunto de transações

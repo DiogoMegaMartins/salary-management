@@ -6,7 +6,6 @@ import { rm, readFile } from "node:fs/promises";
 // which helps cold start times
 const allowlist = [
   "drizzle-orm",
-  "drizzle-zod",
   "express",
   "xlsx", // só em devDependencies: vai dentro do bundle
   "zod",

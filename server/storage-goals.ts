@@ -1,7 +1,7 @@
 /** Saldos iniciais, ajustes, submetas, atribuições de aportes e taxas de conversão (EVO-04). */
-import type { Platform, ParcelType, TxType, Subgoal, GoalEntry, ContributionLink, FxRate } from "@shared/schema";
-import { eq, and } from "drizzle-orm";
-import { allocations, months, parcels, settings, transactions, platforms, parcelPlatforms, parcelTypes, txTypes, allocationPlatforms, subgoals, goalEntries, contributionLinks, fxRates, normName } from "@shared/schema";
+import type { Subgoal, GoalEntry, ContributionLink, FxRate } from "@shared/schema";
+import { eq } from "drizzle-orm";
+import { parcels, transactions, platforms, subgoals, goalEntries, contributionLinks, fxRates, normName } from "@shared/schema";
 import { db, sqlite, httpError, roundCents } from "./db";
 
 export const goalMethods = {

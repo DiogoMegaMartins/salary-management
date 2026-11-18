@@ -4,7 +4,6 @@ import { useHashLocation } from "wouter/use-hash-location";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { FiltersProvider, ThemeProvider } from "@/lib/app";
 import NotFound from "@/pages/not-found";
 // cada ecrã é um ficheiro à parte, descarregado só quando se abre (o SW pré-guarda-os todos para uso offline)
@@ -40,20 +39,18 @@ function AppRouter() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <ThemeProvider>
-          <FiltersProvider>
-            <Toaster />
-            <AccessGate>
-              <Router hook={useHashLocation}>
-                <Suspense fallback={<div className="p-6 text-sm text-muted-foreground" role="status">A carregar…</div>}>
-                  <AppRouter />
-                </Suspense>
-              </Router>
-            </AccessGate>
-          </FiltersProvider>
-        </ThemeProvider>
-      </TooltipProvider>
+      <ThemeProvider>
+        <FiltersProvider>
+          <Toaster />
+          <AccessGate>
+            <Router hook={useHashLocation}>
+              <Suspense fallback={<div className="p-6 text-sm text-muted-foreground" role="status">A carregar…</div>}>
+                <AppRouter />
+              </Suspense>
+            </Router>
+          </AccessGate>
+        </FiltersProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

@@ -6,6 +6,8 @@ Se existir código de acesso, enviar o cabeçalho `x-codigo-acesso` em todos os 
 | Área | Endpoints |
 |---|---|
 | Acesso | `GET /auth/status`, `POST /auth` ({code}) |
+| Saúde | `GET /health` (sem autenticação nem dados; usado pela plataforma e pelo CI) |
+| Cópia offline | `POST /offline/sync` |
 | Estado | `GET /state`, `PATCH /settings` |
 | Parcelas | `POST /parcels`, `PATCH /parcels/:id`, `DELETE /parcels/:id` |
 | Meses | `POST /months`, `PATCH /months/:id`, `DELETE /months/:id`, `POST /months/:id/duplicate`, `POST /months/:id/apply-rules`, `POST /months/:id/save-as-rules`, `PATCH /months/:id/reconciliation` |

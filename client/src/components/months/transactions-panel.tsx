@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useAppState, useSave } from "@/lib/app";
 import type { Transaction } from "@shared/schema";
-import { TRANSACTION_TYPES, TX_NATURES } from "@shared/schema";
+import { TRANSACTION_TYPES, TX_NATURES } from "@shared/constants";
 import { CreateTypeDialog } from "@/components/catalogs";
 import { fmtEur } from "@shared/calc";
 import { useConfirm } from "@/components/confirm";
