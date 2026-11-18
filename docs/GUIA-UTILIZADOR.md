@@ -7,7 +7,7 @@ No cartão Metas, usa o botão de cada meta para mostrar ou esconder todas as su
 
 Mais leituras no Painel (versão 1.10.0):
 - **Ritmo das metas:** numa meta com objetivo e data alvo, um aviso diz quando, ao ritmo dos últimos 3 meses, o objetivo só chega depois do prazo, em que mês chega e quanto seria preciso poupar por mês. As metas fora do ritmo ficam resumidas numa faixa no topo.
-- **Face ao ano anterior:** líquido, gastos, poupança e taxa de poupança dos meses do período contra os mesmos meses de há um ano (só meses com par).
+- **Face ao ano anterior:** líquido, rendimento bruto, descontos, carga fiscal, gastos, poupança, taxa de poupança e total por parcela, contra o mesmo período de outro ano. Escolhes os meses (um, vários ou os do filtro) e o ano de comparação (o anterior ou outro à escolha). A escolha fica guardada neste dispositivo e vale também no Orçamento; "Repor" volta ao filtro. Só entram meses com par.
 - **Despesas fora do padrão:** categorias do último mês com despesas bem acima do habitual (precisa de 3 meses anteriores).
 - **Relatório mensal:** botão no cabeçalho; descarrega em PDF, com opção de ocultar valores.
 

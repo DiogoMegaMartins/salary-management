@@ -217,9 +217,16 @@ export const HELP_SECTIONS: HelpSection[] = [
         </P>
         <H3>Face ao ano anterior</H3>
         <P>
-          Compara o líquido, os gastos, a poupança e a taxa de poupança dos meses do período com os mesmos meses de há um ano.
-          Só entram os meses que existem nos dois anos, para a comparação ser justa. Sem esses pares, o cartão explica porquê.
+          Compara o líquido, o rendimento bruto, os descontos, a carga fiscal, os gastos, a poupança, a taxa de poupança e o total por
+          parcela dos meses escolhidos com os mesmos meses de outro ano. Só entram os meses que existem nos dois lados, para a comparação
+          ser justa.
         </P>
+        <UL>
+          <li><strong>Meses:</strong> por omissão, os do filtro de período. O botão de meses permite escolher um ou vários, de qualquer ano, ou usar os atalhos <em>Meses do filtro</em>, <em>Último mês</em> e <em>Ano</em>.</li>
+          <li><strong>Ano de comparação:</strong> o ano anterior (automático) ou um ano à escolha, por exemplo 2024.</li>
+          <li><strong>Memória:</strong> a escolha fica guardada neste dispositivo e vale também no Orçamento. <em>Repor</em> volta aos meses do filtro e ao ano anterior.</li>
+        </UL>
+        <P>Se nenhum dos meses escolhidos tiver par no ano de comparação, o cartão explica porquê.</P>
         <H3>Despesas fora do padrão</H3>
         <P>
           Olha para o último mês do período com despesas e assinala as categorias que ficaram bem acima do habitual: mais de duas
@@ -630,6 +637,13 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.11.0</H3>
+        <UL>
+          <li>Face ao ano anterior: escolha dos meses a comparar e do ano de comparação, com a escolha guardada e partilhada entre o Painel e o Orçamento.</li>
+          <li>Novas métricas na comparação: rendimento bruto, descontos, carga fiscal efetiva e total por parcela.</li>
+          <li>Relatório mensal: a descarga em Markdown foi removida; fica só o PDF.</li>
+          <li>Sem alterações às fórmulas financeiras nem ao esquema de dados.</li>
+        </UL>
         <H3>1.10.0</H3>
         <UL>
           <li>Ritmo das metas: aviso quando, ao ritmo atual, uma meta não chega ao objetivo na data alvo, com o que seria preciso poupar por mês.</li>
@@ -679,5 +693,5 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
   },
 ];
 
-export const HELP_VERSION = "1.10.0";
+export const HELP_VERSION = "1.11.0";
 export const HELP_UPDATED_AT = "2026-11-18";

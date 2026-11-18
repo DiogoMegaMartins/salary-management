@@ -2,6 +2,15 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.11.0 | 2026-11-18
+
+- **Face ao ano anterior personalizável:** seletor de meses no próprio cartão (um, vários, os do filtro, último mês ou ano) e seletor do ano de comparação (ano anterior automático ou um ano fixo). A escolha fica guardada no dispositivo (`localStorage`, validada ao ler) e vale no Painel e no Orçamento; "Repor" volta ao filtro.
+- **Mais métricas:** rendimento bruto, descontos, carga fiscal efetiva e total alocado por parcela (`parcelYearOverYear`), além de líquido, gastos, poupança e taxa de poupança.
+- `yearOverYear` aceita `refYear`; meses com o mesmo ano e mês (dois dezembros) somam-se de cada lado e um mês nunca se compara com ele próprio. `pairs` passa a ter `current` e `previous` como listas de meses.
+- **Relatório mensal:** removida a descarga em Markdown; fica só o PDF. A exportação da Ajuda em Markdown mantém-se.
+- Testes: 3 novos em `tests/insights.test.ts` (ano fixo, meses repetidos, por parcela) e 1 de interface (`e2e/insights.spec.ts`) para a escolha, a memória e o "Repor".
+- Versão da aplicação, da Ajuda e de `/api/app-info` em 1.11.0. Sem alterações ao esquema de dados.
+
 ## 1.10.0 | 2026-11-18
 
 - **Ritmo das metas:** `goalPace` compara o ritmo dos últimos 3 meses com a data alvo (estados no ritmo, atrasada, sem ritmo, prazo passado, sem prazo, atingida). Aviso por meta e faixa no Painel.

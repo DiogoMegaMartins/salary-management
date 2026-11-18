@@ -31,7 +31,8 @@ import { MonthlyReportDialog } from "@/components/monthly-report-dialog";
 import { EditableSectionGrid, type SectionSpec } from "@/components/editable-section-grid";
 import { usePageLayout } from "@/lib/page-layout";
 import { buildDashboardModel } from "@/lib/dashboard-model";
-import { AnomaliesCard, GoalPaceLine, YearOverYearCard } from "@/components/insights";
+import { AnomaliesCard, GoalPaceLine } from "@/components/insights";
+import { YearOverYearCard } from "@/components/yoy";
 
 export default function Dashboard() {
   const isMobile = useIsMobile();
@@ -578,9 +579,9 @@ export default function Dashboard() {
             sections.push({
               id: "ano-anterior",
               title: "Face ao ano anterior",
-              defaultLayout: { x: 0, y: 48, w: 6, h: 8 },
+              defaultLayout: { x: 0, y: 48, w: 6, h: 16 },
               node: (
-                <SectionCard title="Face ao ano anterior" description="Os meses do período contra os mesmos meses de há um ano">
+                <SectionCard title="Face ao ano anterior" description="Escolhe os meses e o ano de comparação">
                   <YearOverYearCard d={d} />
                 </SectionCard>
               ),
