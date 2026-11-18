@@ -109,16 +109,21 @@ test.describe("Leituras sobre o histórico", () => {
       await expect(page.getByTestId("yoy-year-select")).toBeVisible();
       await expect(page.getByTestId("yoy-ref-select")).toHaveCount(0);
 
-      await clicar(page.getByTestId("yoy-months-trigger"));
-      await expect(page.getByTestId("yoy-months-panel").locator("fieldset")).toHaveCount(1); // só o ano escolhido
-      await page.getByTestId("yoy-months-month-2026-08").click();
-      await page.keyboard.press("Escape");
+      // primeiro a base (inicial), depois a comparação (final)
+      const ordem = await page.getByTestId("yoy-controls").locator("[data-testid$='-trigger']").evaluateAll((els) => els.map((e) => e.getAttribute("data-testid")));
+      expect(ordem.indexOf("yoy-base-trigger")).toBeLessThan(ordem.indexOf("yoy-months-trigger"));
       await clicar(page.getByTestId("yoy-base-trigger"));
+      await expect(page.getByTestId("yoy-base-panel").locator("fieldset")).toHaveCount(1); // só o ano escolhido
       await page.getByTestId("yoy-base-month-2026-07").click();
+      await page.keyboard.press("Escape");
+      await clicar(page.getByTestId("yoy-months-trigger"));
+      await page.getByTestId("yoy-months-month-2026-08").click();
       await page.keyboard.press("Escape");
 
       const cartao = page.getByTestId("yoy-card");
-      await expect(cartao).toContainText(/\d+ (mês|meses) face a \d+ (mês|meses) da base/);
+      await expect(cartao).toContainText(/\d+ (mês|meses) de comparação face a \d+ (mês|meses) de base/);
+      await expect(cartao.locator("thead th").nth(1)).toHaveText("Base");
+      await expect(cartao.locator("thead th").nth(2)).toHaveText("Comparação");
       await expect(page.getByTestId("yoy-row-net")).toContainText("+");
 
       await clicar(page.getByTestId("yoy-reset"));
@@ -145,11 +150,11 @@ test.describe("Leituras sobre o histórico", () => {
 
       // escolher só o último mês (Setembro 2026) e comparar com 2025
       await clicar(page.getByTestId("yoy-months-trigger"));
+      await page.getByTestId("yoy-months-year-2026").click(); // primeiro o ano, depois os meses
       const todos = page.getByTestId("yoy-months-toggle-all");
-      await todos.click();
       await expect(todos).toHaveText("Limpar seleção");
       await todos.click();
-      await expect(page.getByTestId("yoy-months-trigger")).toContainText("Nenhum mês");
+      await expect(page.getByTestId("yoy-months-trigger")).toContainText("nenhum mês");
       await expect(page.getByTestId("yoy-empty")).toBeVisible();
       await page.getByTestId("yoy-months-month-2026-09").click();
       await page.keyboard.press("Escape");
@@ -159,12 +164,13 @@ test.describe("Leituras sobre o histórico", () => {
       await page.getByRole("option", { name: "Comparar com 2025" }).click();
       await expect(cartao).toContainText("1 mês comparado com o mesmo mês de 2025");
 
-      // comparar com o próprio ano não tem sentido: aparece a explicação
+      // o ano escolhido não aparece como ano de comparação
       await clicar(page.getByTestId("yoy-ref-select"));
-      await page.getByRole("option", { name: "Comparar com 2026" }).click();
-      await expect(page.getByTestId("yoy-empty")).toBeVisible();
-      await clicar(page.getByTestId("yoy-ref-select"));
-      await page.getByRole("option", { name: "Comparar com 2025" }).click();
+      await expect(page.getByRole("option", { name: "Comparar com 2026" })).toHaveCount(0);
+      await expect(page.getByRole("option", { name: "Comparar com ano anterior" })).toHaveCount(0);
+      await page.keyboard.press("Escape");
+      await expect(cartao.locator("thead th").nth(1)).toHaveText("2026");
+      await expect(cartao.locator("thead th").nth(2)).toHaveText("2025");
 
       // a escolha fica guardada e vale também no Orçamento
       await page.reload();

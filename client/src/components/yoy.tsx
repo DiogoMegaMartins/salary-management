@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { CalendarRange, Info, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -78,6 +78,7 @@ function MonthPicker({
   label,
   ariaLabel,
   testid,
+  header,
 }: {
   byYear: ByYear;
   checked: (key: string) => boolean;
@@ -86,6 +87,8 @@ function MonthPicker({
   label: string;
   ariaLabel: string;
   testid: string;
+  /** conteúdo acima da lista (ex.: escolha do ano) */
+  header?: ReactNode;
 }) {
   const current = allKeys.filter(checked);
   const all = allKeys.length > 0 && current.length === allKeys.length;
@@ -98,6 +101,7 @@ function MonthPicker({
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-72 space-y-3 p-3" data-testid={`${testid}-panel`}>
+        {header}
         <Button type="button" variant="secondary" size="sm" className="h-7 text-xs" data-testid={`${testid}-toggle-all`} onClick={() => onChange(all ? [] : allKeys)}>
           {all ? "Limpar seleção" : "Selecionar todos"}
         </Button>
@@ -147,14 +151,44 @@ export function YoYControls({ d, sel, setSel }: { d: Derived; sel: YoYSelection;
   const allKeys = byYear.flatMap(([y, ms]) => ms.map((m) => yearMonthKey(y, m)));
   const filterKeys = Array.from(new Set(d.months.map((m) => yearMonthKey(m.year, m.month))));
   const free = sel.refYear === "meses";
+  // ano mostrado no painel de meses: o escolhido ou, sem escolha, o mais recente
   const year = sel.year != null && years.includes(sel.year) ? sel.year : years[0];
   const yearOnly = useMemo<ByYear>(() => byYear.filter(([y]) => y === year), [byYear, year]);
   const yearKeys = yearOnly.flatMap(([y, ms]) => ms.map((m) => yearMonthKey(y, m)));
   const setType = (v: string) =>
     v === "mes"
       ? setSel({ ...sel, mode: "manual", months: [], compareMonths: [], refYear: "meses", year })
-      : setSel({ ...sel, refYear: "auto", compareMonths: [] });
+      : setSel({ ...sel, refYear: "auto", compareMonths: [], months: sel.mode === "manual" ? sel.months.filter((k) => yearKeys.includes(k)) : [] });
   const setYear = (v: string) => setSel({ ...sel, mode: "manual", months: [], compareMonths: [], year: Number(v) });
+  /** ano de comparação: nunca o próprio ano escolhido */
+  const otherYears = years.filter((y) => y !== year);
+  const refValue = typeof sel.refYear === "number" && sel.refYear !== year ? String(sel.refYear) : "";
+  const pickYear = (y: number) =>
+    setSel({
+      ...sel,
+      mode: "manual",
+      year: y,
+      months: byYear.filter(([yy]) => yy === y).flatMap(([yy, ms]) => ms.map((m) => yearMonthKey(yy, m))),
+      refYear: sel.refYear === y ? "auto" : sel.refYear,
+    });
+  const yearChips = (
+    <div className="flex flex-wrap gap-1.5" role="group" aria-label="Ano" data-testid="yoy-months-years">
+      {years.map((y) => (
+        <Button
+          key={y}
+          type="button"
+          size="sm"
+          variant={y === year ? "default" : "outline"}
+          aria-pressed={y === year}
+          className="h-7 px-2.5 text-xs"
+          data-testid={`yoy-months-year-${y}`}
+          onClick={() => pickYear(y)}
+        >
+          {y}
+        </Button>
+      ))}
+    </div>
+  );
 
   return (
     <div className="flex flex-wrap items-center gap-2" data-testid="yoy-controls">
@@ -185,40 +219,40 @@ export function YoYControls({ d, sel, setSel }: { d: Derived; sel: YoYSelection;
           <MonthPicker
             byYear={yearOnly}
             allKeys={yearKeys}
-            checked={(key) => sel.months.includes(key)}
-            onChange={(keys) => setSel({ ...sel, mode: "manual", months: keys })}
-            label={countLabel(sel.mode === "manual" ? sel.months.length : 0)}
-            ariaLabel="Escolher meses a comparar"
-            testid="yoy-months"
+            checked={(key) => sel.compareMonths.includes(key)}
+            onChange={(keys) => setSel({ ...sel, compareMonths: keys })}
+            label={`Base (inicial): ${countLabel(sel.compareMonths.length).toLowerCase()}`}
+            ariaLabel="Escolher os meses de base (iniciais)"
+            testid="yoy-base"
           />
           <MonthPicker
             byYear={yearOnly}
             allKeys={yearKeys}
-            checked={(key) => sel.compareMonths.includes(key)}
-            onChange={(keys) => setSel({ ...sel, compareMonths: keys })}
-            label={`Base: ${countLabel(sel.compareMonths.length).toLowerCase()}`}
-            ariaLabel="Escolher meses de comparação"
-            testid="yoy-base"
+            checked={(key) => sel.months.includes(key)}
+            onChange={(keys) => setSel({ ...sel, mode: "manual", months: keys })}
+            label={`Comparação (final): ${countLabel(sel.mode === "manual" ? sel.months.length : 0).toLowerCase()}`}
+            ariaLabel="Escolher os meses de comparação (finais)"
+            testid="yoy-months"
           />
         </>
       ) : (
         <>
           <MonthPicker
-            byYear={byYear}
-            allKeys={allKeys}
+            byYear={yearOnly}
+            allKeys={yearKeys}
             checked={(key) => (sel.mode === "manual" ? sel.months.includes(key) : filterKeys.includes(key))}
-            onChange={(keys) => setSel({ ...sel, mode: "manual", months: keys })}
-            label={sel.mode === "manual" ? countLabel(sel.months.length) : countLabel(filterKeys.length)}
-            ariaLabel="Escolher anos e meses a comparar"
+            onChange={(keys) => setSel({ ...sel, mode: "manual", year, months: keys })}
+            label={sel.mode === "manual" ? `${year}: ${countLabel(sel.months.length).toLowerCase()}` : countLabel(filterKeys.length)}
+            ariaLabel="Escolher o ano e os meses a comparar"
             testid="yoy-months"
+            header={yearChips}
           />
-          <Select value={String(sel.refYear)} onValueChange={(v) => setSel({ ...sel, refYear: v === "auto" ? "auto" : Number(v) })}>
+          <Select value={refValue} onValueChange={(v) => setSel({ ...sel, refYear: Number(v) })}>
             <SelectTrigger className="h-8 w-auto min-w-44 gap-2 text-xs" data-testid="yoy-ref-select" aria-label="Ano de comparação">
-              <SelectValue />
+              <SelectValue placeholder="Ano de comparação" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="auto">Comparar com o ano anterior</SelectItem>
-              {years.map((y) => (
+              {otherYears.map((y) => (
                 <SelectItem key={y} value={String(y)}>
                   Comparar com {y}
                 </SelectItem>
@@ -243,7 +277,7 @@ function Empty({ manual, noMonths, free }: { manual: boolean; noMonths: boolean;
     <p className="flex items-start gap-2 py-3 text-xs text-muted-foreground" data-testid="yoy-empty">
       <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
       {free && noMonths
-        ? "Escolhe pelo menos um mês de cada lado: os meses a comparar e os meses da base."
+        ? "Escolhe pelo menos um mês de cada lado: os meses de base (iniciais) e os de comparação (finais)."
         : noMonths
         ? "Não há meses escolhidos. Escolhe pelo menos um mês."
         : manual
@@ -256,7 +290,7 @@ function Empty({ manual, noMonths, free }: { manual: boolean; noMonths: boolean;
 function summary(n: number, refYear: number | null, yoy?: { kind?: string; divisor?: { current: number; previous: number }; pairs: { current: unknown[]; previous: unknown[] }[] }) {
   if (yoy?.kind === "livre") {
     const p = yoy.pairs[0];
-    const base = `${p.current.length} ${p.current.length === 1 ? "mês" : "meses"} face a ${p.previous.length} ${p.previous.length === 1 ? "mês" : "meses"} da base.`;
+    const base = `${p.current.length} ${p.current.length === 1 ? "mês" : "meses"} de comparação face a ${p.previous.length} ${p.previous.length === 1 ? "mês" : "meses"} de base.`;
     return yoy.divisor ? `${base} Como os lados têm tamanhos diferentes, os valores são médias mensais.` : base;
   }
   const meses = n === 1 ? "mês comparado" : "meses comparados";
@@ -266,9 +300,19 @@ function summary(n: number, refYear: number | null, yoy?: { kind?: string; divis
 
 /* ---------------------------------------------------------------------- cartões */
 
+type YoYData = NonNullable<ReturnType<typeof useYoYComparison>["yoy"]>;
+const yearsLabel = (ms: { year: number }[]) => Array.from(new Set(ms.map((m) => m.year))).sort().join(", ");
+/** Cabeçalhos e ordem das colunas: base (inicial) antes da comparação (final); no modo ano, cada coluna é o seu ano. */
+function colsOf(yoy: YoYData) {
+  if (yoy.kind === "livre") return { swap: true, first: "Base", second: "Comparação" };
+  return { swap: false, first: yearsLabel(yoy.pairs.flatMap((p) => p.current)), second: yearsLabel(yoy.pairs.flatMap((p) => p.previous)) };
+}
+
+
 export function YearOverYearCard({ d }: { d: Derived }) {
   const { sel, setSel, yoy, refYear, chosenCount, free } = useYoYComparison(d);
   const parcels = useMemo(() => (yoy ? parcelYearOverYear(d.allParcels, yoy) : []), [d.allParcels, yoy]);
+  const cols = yoy ? colsOf(yoy) : { swap: false, first: "", second: "" };
   return (
     <div data-testid="yoy-card" className="space-y-3">
       <YoYControls d={d} sel={sel} setSel={setSel} />
@@ -286,8 +330,8 @@ export function YearOverYearCard({ d }: { d: Derived }) {
                   <thead>
                     <tr className="text-left text-xs text-muted-foreground">
                       <th className="py-1 pr-3 font-medium">Parcela</th>
-                      <th className="py-1 pr-3 text-right font-medium">Agora</th>
-                      <th className="py-1 pr-3 text-right font-medium">Comparação</th>
+                      <th className="py-1 pr-3 text-right font-medium">{cols.first}</th>
+                      <th className="py-1 pr-3 text-right font-medium">{cols.second}</th>
                       <th className="py-1 text-right font-medium">Variação</th>
                     </tr>
                   </thead>
@@ -300,8 +344,8 @@ export function YearOverYearCard({ d }: { d: Derived }) {
                             {r.name}
                           </span>
                         </td>
-                        <td className="tnum py-1.5 pr-3 text-right">{fmtEur(r.current)}</td>
-                        <td className="tnum py-1.5 pr-3 text-right text-muted-foreground">{fmtEur(r.previous)}</td>
+                        <td className="tnum py-1.5 pr-3 text-right">{fmtEur(cols.swap ? r.previous : r.current)}</td>
+                        <td className="tnum py-1.5 pr-3 text-right text-muted-foreground">{fmtEur(cols.swap ? r.current : r.previous)}</td>
                         <td className="tnum py-1.5 text-right font-medium text-muted-foreground">
                           {r.delta >= 0 ? "+" : ""}
                           {fmtEur(r.delta)}
@@ -320,7 +364,8 @@ export function YearOverYearCard({ d }: { d: Derived }) {
   );
 }
 
-function MetricsTable({ yoy }: { yoy: NonNullable<ReturnType<typeof useYoYComparison>["yoy"]> }) {
+function MetricsTable({ yoy }: { yoy: YoYData }) {
+  const cols = colsOf(yoy);
   type Row = { id: string; label: string; cur: string; prev: string; delta: number | null; text?: string; upIsGood: boolean };
   const rows: Row[] = [
     { id: "net", label: "Líquido", cur: fmtEur(yoy.current.net), prev: fmtEur(yoy.previous.net), delta: yoy.delta.net, upIsGood: true },
@@ -337,8 +382,8 @@ function MetricsTable({ yoy }: { yoy: NonNullable<ReturnType<typeof useYoYCompar
         <thead>
           <tr className="text-left text-xs text-muted-foreground">
             <th className="py-1 pr-3 font-medium">Indicador</th>
-            <th className="py-1 pr-3 text-right font-medium">Agora</th>
-            <th className="py-1 pr-3 text-right font-medium">Comparação</th>
+            <th className="py-1 pr-3 text-right font-medium">{cols.first}</th>
+            <th className="py-1 pr-3 text-right font-medium">{cols.second}</th>
             <th className="py-1 text-right font-medium">Variação</th>
           </tr>
         </thead>
@@ -346,8 +391,8 @@ function MetricsTable({ yoy }: { yoy: NonNullable<ReturnType<typeof useYoYCompar
           {rows.map((r) => (
             <tr key={r.id} className="border-t border-border" data-testid={`yoy-row-${r.id}`}>
               <td className="py-1.5 pr-3">{r.label}</td>
-              <td className="tnum py-1.5 pr-3 text-right">{r.cur}</td>
-              <td className="tnum py-1.5 pr-3 text-right text-muted-foreground">{r.prev}</td>
+              <td className="tnum py-1.5 pr-3 text-right">{cols.swap ? r.prev : r.cur}</td>
+              <td className="tnum py-1.5 pr-3 text-right text-muted-foreground">{cols.swap ? r.cur : r.prev}</td>
               <td className={cn("tnum py-1.5 text-right font-medium", tone(r.delta, r.upIsGood))}>{r.text ?? pctSigned(r.delta)}</td>
             </tr>
           ))}
@@ -361,6 +406,7 @@ function MetricsTable({ yoy }: { yoy: NonNullable<ReturnType<typeof useYoYCompar
 export function CategoryYearOverYear({ d }: { d: Derived }) {
   const { sel, setSel, yoy, refYear, chosenCount, free } = useYoYComparison(d);
   const rows = useMemo(() => (yoy ? categoryYearOverYear(d.allTransactions, yoy).slice(0, 10) : []), [d.allTransactions, yoy]);
+  const cols = yoy ? colsOf(yoy) : { swap: false, first: "", second: "" };
   return (
     <div className="space-y-3" data-testid="yoy-categories-card">
       <YoYControls d={d} sel={sel} setSel={setSel} />
@@ -377,8 +423,8 @@ export function CategoryYearOverYear({ d }: { d: Derived }) {
                 <thead>
                   <tr className="text-left text-xs text-muted-foreground">
                     <th className="py-1 pr-3 font-medium">Categoria</th>
-                    <th className="py-1 pr-3 text-right font-medium">Agora</th>
-                    <th className="py-1 pr-3 text-right font-medium">Comparação</th>
+                    <th className="py-1 pr-3 text-right font-medium">{cols.first}</th>
+                    <th className="py-1 pr-3 text-right font-medium">{cols.second}</th>
                     <th className="py-1 text-right font-medium">Variação</th>
                   </tr>
                 </thead>
@@ -386,8 +432,8 @@ export function CategoryYearOverYear({ d }: { d: Derived }) {
                   {rows.map((r) => (
                     <tr key={r.name} className="border-t border-border">
                       <td className="py-1.5 pr-3">{r.name}</td>
-                      <td className="tnum py-1.5 pr-3 text-right">{fmtEur(r.current)}</td>
-                      <td className="tnum py-1.5 pr-3 text-right text-muted-foreground">{fmtEur(r.previous)}</td>
+                      <td className="tnum py-1.5 pr-3 text-right">{fmtEur(cols.swap ? r.previous : r.current)}</td>
+                      <td className="tnum py-1.5 pr-3 text-right text-muted-foreground">{fmtEur(cols.swap ? r.current : r.previous)}</td>
                       <td className={cn("tnum py-1.5 text-right font-medium", tone(r.delta, false))}>
                         {r.delta >= 0 ? "+" : ""}
                         {fmtEur(r.delta)}
