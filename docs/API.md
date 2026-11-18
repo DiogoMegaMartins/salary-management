@@ -34,6 +34,8 @@ Se existir código de acesso, enviar o cabeçalho `x-codigo-acesso` em todos os 
 Mês fechado: criar, editar ou eliminar movimentos, alocações, distribuições, ativos e o próprio mês devolve 423. `status` e `carryIn` só mudam pelo fecho/reabertura.
 
 ## Notas
+- Validação: o corpo dos pedidos de plataformas, tipos, saldos e ajustes, submetas, atribuições, taxas, recorrências, reservas e fecho/reabertura de mês é validado por esquemas zod (`server/route-schemas.ts`). Campos desconhecidos, tipos errados e identificadores de rota inválidos (`/api/platforms/abc`) dão 400. Campos obrigatórios em falta e regras de domínio (nome duplicado, moeda, saldo) dão a mensagem do armazenamento, em português.
+- Fecho de mês: `destination` só aceita `transportar`, `reforcar` ou `manter`.
 - Todos os erros devolvem `{ "message": "..." }`. Pedidos que alteram dados exigem o cabeçalho `x-sm-client: 1`.
 - `DELETE /parcels/:id` devolve 409 se a parcela tiver movimentos, recorrências ou reservas.
 - `GET /state` não inclui `changeLog`; usar `GET /change-log`. `GET /export/json` inclui-o.

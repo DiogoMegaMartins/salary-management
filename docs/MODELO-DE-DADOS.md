@@ -21,7 +21,7 @@ Definido em `shared/schema.ts`. Datas são texto `AAAA-MM-DD`. Valores novos em 
 | `schema_migrations` | migrações idempotentes |
 
 ## Relações principais
-`months` 1-N `allocations` N-1 `parcels`; `allocations` 1-N `allocation_platforms` 1-N `allocation_assets`; `parcels` 1-N `subgoals` 1-N `goal_entries`; `transactions` N-1 `months` e N-1 `parcels` (origem e destino).
+`months` 1-N `allocations` N-1 `parcels`; `allocations` 1-N `allocation_platforms` (por plataforma) e `allocations` 1-N `allocation_assets` (por ativo, com `platform_id`); `parcels` 1-N `subgoals` 1-N `goal_entries`; `transactions` N-1 `months` e N-1 `parcels` (origem e destino).
 
 ## Migrações
 As tabelas são criadas com `CREATE TABLE IF NOT EXISTS` no arranque; nada existente é apagado. Detalhes em [EVOLUCAO-EVO01-07.md](EVOLUCAO-EVO01-07.md).
@@ -37,4 +37,7 @@ As tabelas são criadas com `CREATE TABLE IF NOT EXISTS` no arranque; nada exist
 | `recurring_expenses`, `recurrence_skips` | recorrências e ocorrências ignoradas |
 | `reserves` | reservas para despesas futuras |
 | `import_batches` | impressão digital de ficheiros CSV importados |
+| `offline_receipts` | recibos dos lotes do modo offline já aplicados (idempotência de `/api/offline/sync`); criada em `server/offline.ts` |
 Impacto: nenhum dado existente é alterado; meses antigos ficam `aberto` com transporte 0.
+
+As ligações entre tabelas são lógicas (colunas `*_id`), sem chaves estrangeiras SQL. Diagrama em [ARQUITETURA.md](ARQUITETURA.md).

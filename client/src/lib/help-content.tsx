@@ -27,6 +27,73 @@ const KBD = ({ children }: { children: ReactNode }) => (
   <code className="rounded bg-muted px-1.5 py-0.5 text-xs font-medium">{children}</code>
 );
 
+/** Diagrama simples da arquitetura; usa as cores do tema para funcionar em claro e escuro. */
+function ArchitectureDiagram() {
+  const box = { fill: "hsl(var(--card))", stroke: "hsl(var(--border))", strokeWidth: 1.5 } as const;
+  const pill = { fill: "hsl(var(--muted))", stroke: "none" } as const;
+  const accent = { stroke: "hsl(var(--primary))", strokeWidth: 2, fill: "none" } as const;
+  const label = { fill: "currentColor", fontSize: 13 } as const;
+  const title = { fill: "currentColor", fontSize: 14, fontWeight: 600 } as const;
+  const small = { fill: "hsl(var(--muted-foreground))", fontSize: 12 } as const;
+  return (
+    <figure className="mt-3 text-foreground">
+      <svg viewBox="0 0 720 350" role="img" aria-labelledby="arq-titulo arq-desc" className="h-auto w-full">
+        <title id="arq-titulo">Arquitetura da aplicação</title>
+        <desc id="arq-desc">
+          O navegador ou telemóvel fala com o servidor por pedidos à API. O servidor valida os pedidos e grava numa base de dados SQLite
+          com cópias automáticas. Com a cópia offline ativa, as alterações feitas sem ligação seguem em lote ao voltar a ligação.
+        </desc>
+        <defs>
+          <marker id="arq-seta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="hsl(var(--primary))" />
+          </marker>
+        </defs>
+
+        <rect x="10" y="10" width="290" height="250" rx="10" {...box} />
+        <text x="26" y="34" {...title}>Navegador ou telemóvel</text>
+        <rect x="26" y="48" width="258" height="34" rx="6" {...pill} />
+        <text x="38" y="70" {...label}>Interface (ecrãs e gráficos)</text>
+        <rect x="26" y="90" width="258" height="34" rx="6" {...pill} />
+        <text x="38" y="112" {...label}>Cálculos dos valores no ecrã</text>
+        <rect x="26" y="132" width="258" height="34" rx="6" {...pill} />
+        <text x="38" y="154" {...label}>Cópia offline cifrada (opcional)</text>
+        <rect x="26" y="174" width="258" height="34" rx="6" {...pill} />
+        <text x="38" y="196" {...label}>Ficheiros da app guardados</text>
+        <text x="26" y="236" {...small}>Sem dados financeiros nesses ficheiros.</text>
+
+        <rect x="420" y="10" width="290" height="160" rx="10" {...box} />
+        <text x="436" y="34" {...title}>Servidor</text>
+        <rect x="436" y="48" width="258" height="34" rx="6" {...pill} />
+        <text x="448" y="70" {...label}>Código de acesso e limites</text>
+        <rect x="436" y="90" width="258" height="34" rx="6" {...pill} />
+        <text x="448" y="112" {...label}>Validação dos pedidos</text>
+        <rect x="436" y="132" width="258" height="26" rx="6" {...pill} />
+        <text x="448" y="150" {...label}>Regras e gravação</text>
+
+        <rect x="420" y="210" width="290" height="100" rx="10" {...box} />
+        <text x="436" y="234" {...title}>Base de dados SQLite</text>
+        <text x="436" y="262" {...label}>Os teus dados (um só ficheiro)</text>
+        <text x="436" y="286" {...label}>Cópias automáticas diárias</text>
+
+        <path d="M300 70 H416" {...accent} markerEnd="url(#arq-seta)" />
+        <text x="308" y="62" {...small}>pedidos</text>
+        <path d="M416 120 H300" {...accent} markerEnd="url(#arq-seta)" />
+        <text x="318" y="138" {...small}>respostas</text>
+        <path d="M300 158 H416" {...accent} strokeDasharray="5 4" markerEnd="url(#arq-seta)" />
+        <text x="308" y="180" {...small}>lote sem ligação</text>
+        <path d="M565 170 V206" {...accent} markerEnd="url(#arq-seta)" />
+
+        <rect x="10" y="280" width="290" height="60" rx="10" {...box} />
+        <text x="26" y="304" {...title}>Mesmas fórmulas</text>
+        <text x="26" y="324" {...small}>Ecrã e servidor usam o mesmo código.</text>
+      </svg>
+      <figcaption className="mt-2 text-xs text-muted-foreground">
+        As setas seguem o sentido da informação. A seta tracejada só existe com a cópia offline ativa.
+      </figcaption>
+    </figure>
+  );
+}
+
 export const HELP_SECTIONS: HelpSection[] = [
   {
     slug: "comecar-rapidamente",
@@ -71,6 +138,40 @@ export const HELP_SECTIONS: HelpSection[] = [
           agregadas (o modelo histórico) ou registar despesas e aportes como lançamentos individuais
           com categoria, data e nota — os dois modelos coexistem e são somados na reconciliação do mês.
         </P>
+      </>
+    ),
+  },
+  {
+    slug: "como-funciona",
+    title: "Como a aplicação funciona",
+    group: "Introdução",
+    keywords: ["arquitetura", "diagrama", "servidor", "base de dados", "sqlite", "offline", "backup", "segurança"],
+    body: (
+      <>
+        <P>
+          A aplicação é uma só peça: o servidor entrega o ecrã que vês e guarda os dados numa base de dados SQLite.
+          Não usa serviços externos para os teus dados.
+        </P>
+        <ArchitectureDiagram />
+        <H3>O caminho de uma alteração</H3>
+        <OL>
+          <li>Ao abrir, a interface pede ao servidor o estado completo e calcula no ecrã os totais, gráficos e metas.</li>
+          <li>Quando guardas algo (uma despesa, um mês, um saldo), a interface envia um pedido ao servidor.</li>
+          <li>O servidor confirma o código de acesso, valida o pedido e só depois grava. Se algo estiver errado, devolve uma mensagem em português e não grava nada.</li>
+          <li>Com a gravação feita, a interface volta a pedir o estado e atualiza o ecrã.</li>
+        </OL>
+        <H3>Sem ligação</H3>
+        <P>
+          Com a cópia offline ativa (<KBD>Definições</KBD>), as alterações feitas sem ligação ficam numa fila cifrada com o teu código de acesso.
+          Ao voltar a ligação seguem em lote; se houver conflitos, a aplicação pede-te que os reveja antes de aplicar.
+        </P>
+        <H3>Proteção e cópias</H3>
+        <UL>
+          <li>O código de acesso fica guardado só como impressão digital e há limite de tentativas erradas.</li>
+          <li>Os pedidos que alteram dados são validados no servidor, que recusa campos que não conhece.</li>
+          <li>O servidor faz cópias automáticas da base de dados (por omissão, uma por dia, guardando as últimas sete). Só protegem se a pasta das cópias sobreviver às republicações.</li>
+          <li>Exporta um backup JSON regularmente em <KBD>Definições, separador Backups e importação</KBD>. É a cópia que guardas fora da aplicação.</li>
+        </UL>
       </>
     ),
   },
@@ -541,4 +642,4 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
 ];
 
 export const HELP_VERSION = "1.9.1";
-export const HELP_UPDATED_AT = "2026-11-15";
+export const HELP_UPDATED_AT = "2026-11-18";
