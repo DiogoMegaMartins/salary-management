@@ -1,3 +1,4 @@
+import { localToday } from "@/lib/utils";
 import { useMemo, useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/layout";
@@ -79,7 +80,7 @@ export default function ExpensesPage() {
   }
   const ym = `${month.year}-${pad(month.month)}`;
   const last = new Date(Date.UTC(month.year, month.month, 0)).getUTCDate();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localToday();
   const defaultDate = today.startsWith(ym) ? today : `${ym}-01`;
   const categories = data.categories.filter((c) => c.active).map((c) => c.name);
   const usedCats = Array.from(new Set(data.transactions.filter((t) => t.monthId === month.id).map((t) => t.category.trim()).filter(Boolean)));

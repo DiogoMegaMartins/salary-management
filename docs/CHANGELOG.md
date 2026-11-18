@@ -2,6 +2,20 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.12.1 | 2026-11-18
+
+Correções financeiras da auditoria.
+
+- **Mês fechado:** `normalizeTransaction` recusa (423) um movimento cuja data o deslocaria para um mês fechado, na criação e na edição.
+- **Reconciliação:** "Aplicar como lançamentos" usa uma data dentro do mês reconciliado (`dateInMonth`).
+- **Parcelas:** eliminar uma parcela com alocação (valor > 0) em mês fechado dá 409; arquiva-se.
+- **Categorias:** `budgetVsRealByCategory` e as despesas essenciais comparam sem maiúsculas nem espaços nas pontas (`catKey`).
+- **Projeção anual:** os meses restantes contam-se pelo calendário (depois do mês corrente ou do último registado), não por linhas de mês.
+- **Sugestão de excedente:** divisão em cêntimos, soma exatamente igual ao excedente.
+- **Comparação com ano fixo:** `categoryYearOverYear` soma por par, tal como os totais.
+- **Datas:** "hoje" no fuso local (`localToday`) em vez de UTC.
+- Testes: `tests/correcao-financeira.test.ts` (7). Versão 1.12.1, sem alterações ao esquema de dados.
+
 ## 1.12.0 | 2026-11-18
 
 - **Comparar com ano:** o botão de meses tem primeiro o filtro de ano e depois os meses desse ano; o ano de comparação lista só os outros anos (sem a opção "ano anterior"; sem escolha de ano continua a comparar com o ano anterior de cada mês).

@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAppState, useSave } from "@/lib/app";
+import { dateInMonth } from "@/lib/utils";
 import type { Month } from "@shared/schema";
 import { allocationAmount, availableOf, fmtEur, reconcileMonth, suggestSurplusDistribution } from "@shared/calc";
 
@@ -74,7 +75,7 @@ export function ReconciliationPanel({
       if (item.parcelId == null || item.amount <= 0) continue;
       save2.createTransaction.mutate({
         monthId,
-        date: new Date().toISOString().slice(0, 10),
+        date: dateInMonth(month.year, month.month),
         type: "contribution",
         value: item.amount,
         parcelId: item.parcelId,
