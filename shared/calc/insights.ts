@@ -112,6 +112,10 @@ export type YearOverYear = {
   /** variação da taxa de poupança e da carga fiscal em pontos percentuais (0.02 = +2 p.p.) */
   savingsRateDeltaPP: number;
   taxRateDeltaPP: number;
+  /** nº de meses de cada lado; só difere de 1 por lado na comparação livre entre meses (valores em média mensal quando os lados têm tamanhos diferentes) */
+  divisor?: { current: number; previous: number };
+  /** `livre` = dois grupos de meses à escolha (podem ser do mesmo ano) */
+  kind?: "ano" | "livre";
 };
 
 const totalsOf = (cs: MonthComputed[]): YoYTotals => {
@@ -185,6 +189,41 @@ export function yearOverYear(
   };
 }
 
+const scaleTotals = (t: YoYTotals, n: number): YoYTotals => {
+  const byParcel: Record<number, number> = {};
+  for (const [id, v] of Object.entries(t.byParcel)) byParcel[Number(id)] = v / n;
+  return { ...t, net: t.net / n, gross: t.gross / n, descontos: t.descontos / n, spent: t.spent / n, saved: t.saved / n, available: t.available / n, byParcel };
+};
+
+/**
+ * Compara dois grupos de meses à escolha (podem ser do mesmo ano). Se os grupos tiverem tamanhos
+ * diferentes, os valores comparam-se em média mensal; as taxas (poupança, carga fiscal) não mudam.
+ * Devolve null se um dos grupos estiver vazio.
+ */
+export function compareMonthSets(a: Month[], aComputed: MonthComputed[], b: Month[], bComputed: MonthComputed[]): YearOverYear | null {
+  if (a.length === 0 || b.length === 0 || aComputed.length === 0 || bComputed.length === 0) return null;
+  const raw = [totalsOf(aComputed), totalsOf(bComputed)];
+  const same = a.length === b.length;
+  const current = same ? raw[0] : scaleTotals(raw[0], a.length);
+  const previous = same ? raw[1] : scaleTotals(raw[1], b.length);
+  return {
+    pairs: [{ current: a, previous: b }],
+    current,
+    previous,
+    delta: {
+      net: rel(current.net, previous.net),
+      gross: rel(current.gross, previous.gross),
+      descontos: rel(current.descontos, previous.descontos),
+      spent: rel(current.spent, previous.spent),
+      saved: rel(current.saved, previous.saved),
+    },
+    savingsRateDeltaPP: current.savingsRate - previous.savingsRate,
+    taxRateDeltaPP: current.taxRate - previous.taxRate,
+    divisor: same ? undefined : { current: a.length, previous: b.length },
+    kind: "livre",
+  };
+}
+
 const idsOf = (ms: Month[]) => ms.map((m) => m.id);
 
 /** Despesa (`expense`) por categoria nos meses indicados; a chave ignora maiúsculas e espaços nas pontas. */
@@ -209,9 +248,10 @@ export function categoryYearOverYear(txs: Transaction[], yoy: YearOverYear): Cat
   const prev = expenseByCategory(txs, new Set(yoy.pairs.flatMap((p) => idsOf(p.previous))));
   const keys = Array.from(new Set(Array.from(cur.keys()).concat(Array.from(prev.keys()))));
   const rows: CategoryYoYRow[] = [];
+  const dc = yoy.divisor?.current ?? 1, dp = yoy.divisor?.previous ?? 1;
   for (const k of keys) {
     const c = cur.get(k), p = prev.get(k);
-    const current = c?.total ?? 0, previous = p?.total ?? 0;
+    const current = Math.round(((c?.total ?? 0) / dc) * 100) / 100, previous = Math.round(((p?.total ?? 0) / dp) * 100) / 100;
     rows.push({ name: (c ?? p)!.name, current, previous, delta: Math.round((current - previous) * 100) / 100, deltaPct: previous > 0 ? current / previous - 1 : null });
   }
   return rows.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));

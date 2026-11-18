@@ -92,6 +92,43 @@ test.describe("Leituras sobre o histórico", () => {
     }
   });
 
+  test("comparar meses do mesmo ano com a base à escolha", async ({ page, request }) => {
+    const criados: number[] = [];
+    try {
+      for (const [month, base] of [[7, 1000], [8, 1200]] as const) {
+        const r = await request.post("/api/months", { headers: cabecalhosApi(), data: { year: 2026, month, label: `Mês ${month} E2E`, base } });
+        expect(r.ok()).toBe(true);
+        criados.push((await r.json()).id);
+      }
+      await page.goto("/#/");
+      await page.reload();
+      await expect(page.getByTestId("yoy-card")).toBeVisible();
+      await clicar(page.getByTestId("yoy-ref-select"));
+      await page.getByRole("option", { name: "Comparar com outros meses" }).click();
+      await expect(page.getByTestId("yoy-empty")).toContainText("cada lado");
+
+      await clicar(page.getByTestId("yoy-months-trigger"));
+      const alternar = page.getByTestId("yoy-months-toggle-all");
+      if ((await alternar.textContent()) !== "Limpar seleção") await alternar.click(); // tudo escolhido
+      await alternar.click(); // limpar
+      await expect(page.getByTestId("yoy-months-trigger")).toContainText("Nenhum mês");
+      await page.getByTestId("yoy-months-month-2026-08").click();
+      await page.keyboard.press("Escape");
+      await clicar(page.getByTestId("yoy-base-trigger"));
+      await page.getByTestId("yoy-base-month-2026-07").click();
+      await page.keyboard.press("Escape");
+
+      const cartao = page.getByTestId("yoy-card");
+      await expect(cartao).toContainText(/\d+ (mês|meses) face a \d+ (mês|meses) da base/);
+      await expect(page.getByTestId("yoy-row-net")).toContainText("+");
+
+      await clicar(page.getByTestId("yoy-reset"));
+      await expect(page.getByTestId("yoy-base-trigger")).toHaveCount(0);
+    } finally {
+      for (const id of criados) await request.delete(`/api/months/${id}`, { headers: cabecalhosApi() });
+    }
+  });
+
   test("escolher os meses e o ano de comparação, com a escolha guardada", async ({ page, request }) => {
     const criados: number[] = [];
     try {
@@ -109,9 +146,15 @@ test.describe("Leituras sobre o histórico", () => {
 
       // escolher só o último mês (Setembro 2026) e comparar com 2025
       await clicar(page.getByTestId("yoy-months-trigger"));
-      await page.getByTestId("yoy-preset-last").click();
+      const todos = page.getByTestId("yoy-months-toggle-all");
+      await todos.click();
+      await expect(todos).toHaveText("Limpar seleção");
+      await todos.click();
+      await expect(page.getByTestId("yoy-months-trigger")).toContainText("Nenhum mês");
+      await expect(page.getByTestId("yoy-empty")).toBeVisible();
+      await page.getByTestId("yoy-months-month-2026-09").click();
       await page.keyboard.press("Escape");
-      await expect(page.getByTestId("yoy-months-trigger")).toContainText("1 mês escolhido");
+      await expect(page.getByTestId("yoy-months-trigger")).toContainText("1 mês");
       await expect(cartao).toContainText("1 mês comparado com o mesmo mês do ano anterior");
       await clicar(page.getByTestId("yoy-ref-select"));
       await page.getByRole("option", { name: "Comparar com 2025" }).click();
@@ -126,14 +169,13 @@ test.describe("Leituras sobre o histórico", () => {
 
       // a escolha fica guardada e vale também no Orçamento
       await page.reload();
-      await expect(page.getByTestId("yoy-months-trigger")).toContainText("1 mês escolhido");
+      await expect(page.getByTestId("yoy-months-trigger")).toContainText("1 mês");
       await expect(page.getByTestId("yoy-card")).toContainText("de 2025");
       await page.goto("/#/orcamento");
-      await expect(page.getByTestId("yoy-months-trigger")).toContainText("1 mês escolhido");
+      await expect(page.getByTestId("yoy-months-trigger")).toContainText("1 mês");
 
       // repor volta aos meses do filtro
       await clicar(page.getByTestId("yoy-reset"));
-      await expect(page.getByTestId("yoy-months-trigger")).toContainText("Meses do filtro");
       await expect(page.getByTestId("yoy-reset")).toHaveCount(0);
     } finally {
       for (const id of criados) await request.delete(`/api/months/${id}`, { headers: cabecalhosApi() });
