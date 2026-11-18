@@ -1,7 +1,7 @@
 /** Plataformas, tipos de parcela e tipos de movimento (EVO-02). */
-import type { Platform, ParcelType, TxType, Subgoal, GoalEntry, ContributionLink, FxRate } from "@shared/schema";
-import { eq, and } from "drizzle-orm";
-import { allocations, months, parcels, settings, transactions, platforms, parcelPlatforms, parcelTypes, txTypes, allocationPlatforms, subgoals, goalEntries, contributionLinks, fxRates, normName } from "@shared/schema";
+import type { Platform, ParcelType, TxType } from "@shared/schema";
+import { eq } from "drizzle-orm";
+import { parcels, transactions, platforms, parcelPlatforms, parcelTypes, txTypes, allocationPlatforms, subgoals, normName } from "@shared/schema";
 import { db, sqlite, httpError } from "./db";
 
 export const catalogMethods = {

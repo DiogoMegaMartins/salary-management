@@ -17,12 +17,8 @@ import type {
   ParcelType,
   TxType,
 } from "@shared/schema";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import Database from "better-sqlite3";
 import { eq, and } from "drizzle-orm";
 import seedData from "./seed.json";
-import { mkdirSync } from "node:fs";
-import { join, resolve } from "node:path";
 import { availableOf, allocationAmount, distribute, distributeAssets, type DistLine } from "@shared/calc";
 import { db, sqlite, httpError, roundCents, dataDir, dbPath } from "./db";
 import { catalogMethods } from "./storage-catalogs";

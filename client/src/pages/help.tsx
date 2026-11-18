@@ -5,9 +5,8 @@ import { AppShell } from "@/components/layout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { HELP_SECTIONS, HELP_VERSION, HELP_UPDATED_AT, type HelpSection } from "@/lib/help-content";
+import { HELP_SECTIONS, HELP_VERSION, HELP_UPDATED_AT } from "@/lib/help-content";
 
-const LAST_VISITED_KEY = "help-last-section";
 /** Memoria em runtime (nao usa sessionStorage, que e bloqueado no preview em iframe). */
 let lastVisitedSection: string | null = null;
 

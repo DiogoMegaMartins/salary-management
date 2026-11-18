@@ -24,7 +24,7 @@ Definido em `shared/schema.ts`. Datas são texto `AAAA-MM-DD`. Valores novos em 
 `months` 1-N `allocations` N-1 `parcels`; `allocations` 1-N `allocation_platforms` (por plataforma) e `allocations` 1-N `allocation_assets` (por ativo, com `platform_id`); `parcels` 1-N `subgoals` 1-N `goal_entries`; `transactions` N-1 `months` e N-1 `parcels` (origem e destino).
 
 ## Migrações
-As tabelas são criadas com `CREATE TABLE IF NOT EXISTS` no arranque; nada existente é apagado. Detalhes em [EVOLUCAO-EVO01-07.md](EVOLUCAO-EVO01-07.md).
+As tabelas são criadas com `CREATE TABLE IF NOT EXISTS` no arranque; nada existente é apagado. Detalhes em [historico/EVOLUCAO-EVO01-07.md](historico/EVOLUCAO-EVO01-07.md).
 
 ## EVO-08 (migração aditiva, `CREATE TABLE IF NOT EXISTS` e `ALTER TABLE ADD COLUMN`)
 | Alteração | Detalhe |

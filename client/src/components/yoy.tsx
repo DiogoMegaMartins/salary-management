@@ -151,7 +151,6 @@ export function YoYControls({ d, sel, setSel }: { d: Derived; sel: YoYSelection;
     return Array.from(out.entries()).sort((a, b) => b[0] - a[0]).map(([y, ms]) => [y, ms.sort((a, b) => a - b)] as const);
   }, [d.allMonths]);
   const years = byYear.map(([y]) => y);
-  const allKeys = byYear.flatMap(([y, ms]) => ms.map((m) => yearMonthKey(y, m)));
   const filterKeys = Array.from(new Set(d.months.map((m) => yearMonthKey(m.year, m.month))));
   const free = sel.refYear === "meses";
   // ano mostrado no painel de meses: o escolhido ou, sem escolha, o mais recente

@@ -1,6 +1,5 @@
 import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
-import { createInsertSchema } from "drizzle-zod";
-import type * as z from "zod/mini";
+export { TRANSACTION_TYPES, TX_NATURES } from "./constants";
 
 /* ---------------------------------------------------------------- parcelas */
 
@@ -20,8 +19,6 @@ export const parcels = sqliteTable("parcels", {
   currency: text("currency").notNull().default("EUR"), // moeda de referência da meta (EVO-04)
 });
 
-export const insertParcelSchema = createInsertSchema(parcels).omit({ id: true });
-export type InsertParcel = z.infer<typeof insertParcelSchema>;
 export type Parcel = typeof parcels.$inferSelect;
 
 /* ------------------------------------------------------------------- meses */
@@ -65,8 +62,6 @@ export const months = sqliteTable("months", {
   carryIn: real("carry_in").notNull().default(0),
 });
 
-export const insertMonthSchema = createInsertSchema(months).omit({ id: true });
-export type InsertMonth = z.infer<typeof insertMonthSchema>;
 export type Month = typeof months.$inferSelect;
 
 /* -------------------------------------------------------------- alocacoes */
@@ -79,8 +74,6 @@ export const allocations = sqliteTable("allocations", {
   value: real("value").notNull().default(0),
 });
 
-export const insertAllocationSchema = createInsertSchema(allocations).omit({ id: true });
-export type InsertAllocation = z.infer<typeof insertAllocationSchema>;
 export type Allocation = typeof allocations.$inferSelect;
 
 /* ------------------------------------------------------------ configuracao */
@@ -110,7 +103,6 @@ export const settings = sqliteTable("settings", {
   pageLayouts: text("page_layouts").notNull().default("{}"),
 });
 
-export const insertSettingsSchema = createInsertSchema(settings).omit({ id: true });
 export type Settings = typeof settings.$inferSelect;
 
 /* ------------------------------------------------------------- movimentos */
@@ -137,16 +129,8 @@ export const transactions = sqliteTable("transactions", {
   importBatchId: integer("import_batch_id"), // lote de importação CSV
 });
 
-export const insertTransactionSchema = createInsertSchema(transactions).omit({ id: true });
-export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
 export type Transaction = typeof transactions.$inferSelect;
 
-export const TRANSACTION_TYPES = [
-  { value: "expense", label: "Despesa" },
-  { value: "transfer", label: "Transferência entre parcelas" },
-  { value: "withdrawal", label: "Retirada de parcela" },
-  { value: "contribution", label: "Aporte a parcela" },
-] as const;
 
 /* ---------------------------------------------------------------- categorias (SM-004) */
 
@@ -159,8 +143,6 @@ export const categories = sqliteTable("categories", {
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
-export const insertCategorySchema = createInsertSchema(categories).omit({ id: true });
-export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type Category = typeof categories.$inferSelect;
 
 /* ------------------------------------------------ catálogos (EVO-02) */
@@ -200,12 +182,6 @@ export const txTypes = sqliteTable("tx_types", {
 });
 export type TxType = typeof txTypes.$inferSelect;
 
-export const TX_NATURES = [
-  { value: "despesa", label: "Despesa", baseType: "expense" },
-  { value: "entrada", label: "Entrada (aporte)", baseType: "contribution" },
-  { value: "transferencia", label: "Transferência", baseType: "transfer" },
-  { value: "ajuste", label: "Ajuste", baseType: "withdrawal" },
-] as const;
 
 /** Linha da distribuição mensal de uma parcela por plataforma (planeamento; não cria movimentos). */
 export const allocationPlatforms = sqliteTable("allocation_platforms", {

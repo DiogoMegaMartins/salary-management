@@ -1,11 +1,11 @@
 /** EVO-08: serviços de fecho mensal, histórico, recorrências, reservas, importação CSV e verificação. */
 import { eq, and, desc } from "drizzle-orm";
 import { db, storage, httpError } from "./storage";
-import { months, allocations, transactions, monthClosures, changeLog, recurringExpenses, recurrenceSkips, reserves, importBatches, categories } from "@shared/schema";
+import { months, transactions, monthClosures, changeLog, recurringExpenses, recurrenceSkips, reserves, importBatches, categories } from "@shared/schema";
 import { availableOf, allocationAmount } from "@shared/calc";
-import { checkConsistency, monthRemainder, nextMonthKey, isClosed, pendingOccurrences, ymOf, parseCsv, validateCsvRows, fingerprint, round2, sumEuros, type CsvMapping } from "@shared/evo08";
+import { checkConsistency, monthRemainder, nextMonthKey, isClosed, pendingOccurrences, parseCsv, validateCsvRows, fingerprint, round2, sumEuros, type CsvMapping } from "@shared/evo08";
 
-export const APP_VERSION = "1.12.4";
+export const APP_VERSION = "1.12.5";
 export const ENV_NAME = process.env.NODE_ENV === "production" ? "produção" : "desenvolvimento";
 
 /** Máximo de entradas guardadas no histórico; as mais antigas saem quando é excedido. */

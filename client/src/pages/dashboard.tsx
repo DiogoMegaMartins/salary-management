@@ -23,7 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useAppState, useDerived, useSave } from "@/lib/app";
+import { useAppState, useDerived } from "@/lib/app";
 import { DashboardSubgoals, formatGoalMoney } from "@/components/dashboard-subgoals";
 import { fmtEur, fmtPct, monthLabelShort } from "@shared/calc";
 import { DrillDownSheet } from "@/components/drill-down-sheet";

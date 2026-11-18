@@ -11,7 +11,7 @@ import { useConfirm } from "@/components/confirm";
 import { useToast } from "@/hooks/use-toast";
 import { useSave, type AppState } from "@/lib/app";
 import { KINDS } from "@shared/calc";
-import { TX_NATURES } from "@shared/schema";
+import { TX_NATURES } from "@shared/constants";
 
 /** Extrai a mensagem útil de erros do tipo `409: {"message":"..."}`. */
 export function errMsg(err: any): string {

@@ -18,10 +18,6 @@ export type ReportOptions = {
   hideAmounts: boolean;
 };
 
-function line(...parts: (string | undefined | false)[]) {
-  return parts.filter(Boolean).join(" ");
-}
-
 const mask = (s: string, hide: boolean) => (hide ? "•••••" : s);
 
 export function buildMonthlyReportMarkdown(

@@ -636,6 +636,11 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.12.5</H3>
+        <UL>
+          <li>Carregamento inicial mais leve: o código da base de dados e da validação deixou de ir no pacote da interface.</li>
+          <li>Limpeza interna (código e dependências sem uso) e documentação reorganizada. Sem alterações à interface, às fórmulas nem ao esquema de dados.</li>
+        </UL>
         <H3>1.12.4</H3>
         <UL>
           <li>A aplicação passa a exigir Node 24 (antes aceitava Node 20): <code>engines</code>, tipos (<code>@types/node</code> 24) e instruções de instalação atualizados. Sem alterações à interface, às fórmulas nem ao esquema de dados.</li>
@@ -723,5 +728,5 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
   },
 ];
 
-export const HELP_VERSION = "1.12.4";
+export const HELP_VERSION = "1.12.5";
 export const HELP_UPDATED_AT = "2026-11-18";

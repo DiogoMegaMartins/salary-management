@@ -15,7 +15,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { errMsg } from "@/components/catalogs";
 import { goalCtx } from "@/components/goal-panel";
 import { fmtEur, goalBreakdown, monthKeyOf } from "@shared/calc";
-import { composeTotal, executionOfMonth, simulateGoal, suggestedContribution, ymOf, round2 } from "@shared/evo08";
+import { composeTotal, executionOfMonth, simulateGoal, suggestedContribution, ymOf } from "@shared/evo08";
 
 const num = (s: string) => { const t = s.trim().replace(",", "."); return /^-?\d+(\.\d+)?$/.test(t) ? Number(t) : null; };
 const NONE = "__none__";

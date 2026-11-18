@@ -26,7 +26,22 @@ npm run check      # verificação de tipos
 npm run build      # produz dist/ (cliente em dist/public, servidor em dist/index.cjs)
 npm start          # produção (NODE_ENV=production node dist/index.cjs)
 ```
-Variável de ambiente: `PORT` (por omissão 5000). Os dados ficam em `data.db` (SQLite) na raiz do projeto.
+Requisitos: Node.js 24 e npm 11+. O `better-sqlite3` usa binários pré-compilados; se falhar, instala as ferramentas de compilação (Windows: Visual Studio Build Tools; macOS: `xcode-select --install`; Linux: `build-essential python3`). Os scripts `dev` e `start` usam `cross-env` e funcionam em Windows, macOS e Linux. Usa `npm ci` para uma instalação reprodutível.
+
+Os dados ficam em `data.db` (SQLite) na raiz do projeto, criado no primeiro arranque.
+
+### Variáveis de ambiente
+| Variável | Para quê |
+|---|---|
+| `PORT` | Porta do servidor (omissão 5000) |
+| `ACCESS_CODE` | Código de acesso (mínimo 8 caracteres); recomendado em produção |
+| `DATA_DIR` | Pasta de `data.db`, `backups/` e `pre-import-backup-*.json`; aponta para um volume persistente |
+| `DB_PATH` | Caminho do ficheiro da base de dados (alternativa a `DATA_DIR`) |
+| `TRUST_PROXY` | Proxies à frente do servidor (omissão 1 em produção); define o IP real para o limite de tentativas |
+| `BACKUP_DIR` | Pasta das cópias automáticas (omissão `backups/` dentro de `DATA_DIR`) |
+| `BACKUP_KEEP` | Quantas cópias automáticas manter (omissão 7) |
+| `BACKUP_INTERVAL_HOURS` | Intervalo entre cópias automáticas (omissão 24; `0` desliga) |
+| `NODE_ENV` | `production` no arranque em produção (`npm start` já o define) |
 
 ## Documentação
 | Ficheiro | Conteúdo |
@@ -40,6 +55,5 @@ Variável de ambiente: `PORT` (por omissão 5000). Os dados ficam em `data.db` (
 | [docs/SEGURANCA.md](docs/SEGURANCA.md) | Código de acesso, medidas e riscos conhecidos |
 | [docs/DESENVOLVIMENTO-E-TESTES.md](docs/DESENVOLVIMENTO-E-TESTES.md) | Ambiente, testes e convenções |
 | [docs/PUBLICACAO.md](docs/PUBLICACAO.md) | Pré-visualização, publicação e persistência |
-| [docs/EVOLUCAO-EVO01-07.md](docs/EVOLUCAO-EVO01-07.md) | Evolução EVO-01 a EVO-07, migração e reversão |
 | [docs/CHANGELOG.md](docs/CHANGELOG.md) | Histórico de alterações |
-| [docs/revisao-responsiva-2026-11-15.md](docs/revisao-responsiva-2026-11-15.md) | Correções responsivas, cobertura Chromium e limitações |
+| [docs/historico/](docs/historico/) | Documentos históricos (EVO-01 a 07, revisão responsiva, QA offline, revisão de segurança de 2026-09, FLOWS). Não descrevem o estado atual |

@@ -26,7 +26,7 @@ import { API_BASE, useAppState, useSave } from "@/lib/app";
 import { setAccessCode, withAccessCode, getAccessCode } from "@/lib/queryClient";
 import { fmtEur } from "@shared/calc";
 import { CatalogsSection } from "@/components/catalogs";
-import { AppInfo, VerifyData, ChangeHistory, CsvImport } from "@/components/data-tools";
+import { VerifyData, ChangeHistory, CsvImport } from "@/components/data-tools";
 import { OfflineSettings } from "@/components/offline-status";
 
 export function daysSince(iso: string): number | null {
