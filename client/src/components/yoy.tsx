@@ -312,7 +312,6 @@ function colsOf(yoy: YoYData) {
 export function YearOverYearCard({ d }: { d: Derived }) {
   const { sel, setSel, yoy, refYear, chosenCount, free } = useYoYComparison(d);
   const parcels = useMemo(() => (yoy ? parcelYearOverYear(d.allParcels, yoy) : []), [d.allParcels, yoy]);
-  const cols = yoy ? colsOf(yoy) : { swap: false, first: "", second: "" };
   return (
     <div data-testid="yoy-card" className="space-y-3">
       <YoYControls d={d} sel={sel} setSel={setSel} />
@@ -321,50 +320,14 @@ export function YearOverYearCard({ d }: { d: Derived }) {
       ) : (
         <>
           <p className="text-xs text-muted-foreground">{summary(yoy.pairs.length, refYear, yoy)}</p>
-          <MetricsTable yoy={yoy} />
-          {parcels.length > 0 && (
-            <div data-testid="yoy-parcels">
-              <h4 className="mb-1 text-xs font-semibold text-muted-foreground">Total alocado por parcela</h4>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-left text-xs text-muted-foreground">
-                      <th className="py-1 pr-3 font-medium">Parcela</th>
-                      <th className="py-1 pr-3 text-right font-medium">{cols.first}</th>
-                      <th className="py-1 pr-3 text-right font-medium">{cols.second}</th>
-                      <th className="py-1 text-right font-medium">Variação</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {parcels.map((r) => (
-                      <tr key={r.id} className="border-t border-border" data-testid={`yoy-parcel-${r.id}`}>
-                        <td className="py-1.5 pr-3">
-                          <span className="inline-flex items-center gap-2">
-                            {r.color && <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: r.color }} />}
-                            {r.name}
-                          </span>
-                        </td>
-                        <td className="tnum py-1.5 pr-3 text-right">{fmtEur(cols.swap ? r.previous : r.current)}</td>
-                        <td className="tnum py-1.5 pr-3 text-right text-muted-foreground">{fmtEur(cols.swap ? r.current : r.previous)}</td>
-                        <td className="tnum py-1.5 text-right font-medium text-muted-foreground">
-                          {r.delta >= 0 ? "+" : ""}
-                          {fmtEur(r.delta)}
-                          {r.deltaPct != null && ` (${pctSigned(r.deltaPct)})`}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
+          <MetricsTable yoy={yoy} parcels={parcels} />
         </>
       )}
     </div>
   );
 }
 
-function MetricsTable({ yoy }: { yoy: YoYData }) {
+function MetricsTable({ yoy, parcels }: { yoy: YoYData; parcels: ReturnType<typeof parcelYearOverYear> }) {
   const cols = colsOf(yoy);
   type Row = { id: string; label: string; cur: string; prev: string; delta: number | null; text?: string; upIsGood: boolean };
   const rows: Row[] = [
@@ -378,27 +341,66 @@ function MetricsTable({ yoy }: { yoy: YoYData }) {
   ];
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full min-w-[30rem] table-fixed text-left text-sm">
+        <ColGroup />
         <thead>
-          <tr className="text-left text-xs text-muted-foreground">
-            <th className="py-1 pr-3 font-medium">Indicador</th>
-            <th className="py-1 pr-3 text-right font-medium">{cols.first}</th>
-            <th className="py-1 pr-3 text-right font-medium">{cols.second}</th>
-            <th className="py-1 text-right font-medium">Variação</th>
+          <tr className="text-xs text-muted-foreground">
+            <th className="py-1 pr-3 text-left font-medium">Indicador</th>
+            <th className="py-1 pr-3 text-left font-medium">{cols.first}</th>
+            <th className="py-1 pr-3 text-left font-medium">{cols.second}</th>
+            <th className="py-1 text-left font-medium">Variação</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((r) => (
             <tr key={r.id} className="border-t border-border" data-testid={`yoy-row-${r.id}`}>
               <td className="py-1.5 pr-3">{r.label}</td>
-              <td className="tnum py-1.5 pr-3 text-right">{cols.swap ? r.prev : r.cur}</td>
-              <td className="tnum py-1.5 pr-3 text-right text-muted-foreground">{cols.swap ? r.cur : r.prev}</td>
-              <td className={cn("tnum py-1.5 text-right font-medium", tone(r.delta, r.upIsGood))}>{r.text ?? pctSigned(r.delta)}</td>
+              <td className="tnum py-1.5 pr-3">{cols.swap ? r.prev : r.cur}</td>
+              <td className="tnum py-1.5 pr-3 text-muted-foreground">{cols.swap ? r.cur : r.prev}</td>
+              <td className={cn("tnum py-1.5 font-medium", tone(r.delta, r.upIsGood))}>{r.text ?? pctSigned(r.delta)}</td>
             </tr>
           ))}
         </tbody>
+        {parcels.length > 0 && (
+          <tbody data-testid="yoy-parcels">
+            <tr className="border-t border-border">
+              <th colSpan={4} className="pb-1 pt-3 text-left text-xs font-semibold text-muted-foreground">
+                Total alocado por parcela
+              </th>
+            </tr>
+            {parcels.map((r) => (
+              <tr key={r.id} className="border-t border-border" data-testid={`yoy-parcel-${r.id}`}>
+                <td className="py-1.5 pr-3">
+                  <span className="inline-flex items-center gap-2">
+                    {r.color && <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: r.color }} />}
+                    {r.name}
+                  </span>
+                </td>
+                <td className="tnum py-1.5 pr-3">{fmtEur(cols.swap ? r.previous : r.current)}</td>
+                <td className="tnum py-1.5 pr-3 text-muted-foreground">{fmtEur(cols.swap ? r.current : r.previous)}</td>
+                <td className="tnum py-1.5 font-medium text-muted-foreground">
+                  {r.delta >= 0 ? "+" : ""}
+                  {fmtEur(r.delta)}
+                  {r.deltaPct != null && ` (${pctSigned(r.deltaPct)})`}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        )}
       </table>
     </div>
+  );
+}
+
+/** Larguras fixas partilhadas: Indicador/Parcela, valor, valor e variação ficam sempre nas mesmas colunas. */
+function ColGroup() {
+  return (
+    <colgroup>
+      <col className="w-[32%]" />
+      <col className="w-[20%]" />
+      <col className="w-[20%]" />
+      <col className="w-[28%]" />
+    </colgroup>
   );
 }
 
@@ -419,22 +421,23 @@ export function CategoryYearOverYear({ d }: { d: Derived }) {
             <p className="py-2 text-xs text-muted-foreground">Sem despesas com categoria nos meses comparados.</p>
           ) : (
             <div className="overflow-x-auto" data-testid="yoy-categories">
-              <table className="w-full text-sm">
+              <table className="w-full min-w-[30rem] table-fixed text-left text-sm">
+                <ColGroup />
                 <thead>
                   <tr className="text-left text-xs text-muted-foreground">
                     <th className="py-1 pr-3 font-medium">Categoria</th>
-                    <th className="py-1 pr-3 text-right font-medium">{cols.first}</th>
-                    <th className="py-1 pr-3 text-right font-medium">{cols.second}</th>
-                    <th className="py-1 text-right font-medium">Variação</th>
+                    <th className="py-1 pr-3 text-left font-medium">{cols.first}</th>
+                    <th className="py-1 pr-3 text-left font-medium">{cols.second}</th>
+                    <th className="py-1 text-left font-medium">Variação</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map((r) => (
                     <tr key={r.name} className="border-t border-border">
                       <td className="py-1.5 pr-3">{r.name}</td>
-                      <td className="tnum py-1.5 pr-3 text-right">{fmtEur(cols.swap ? r.previous : r.current)}</td>
-                      <td className="tnum py-1.5 pr-3 text-right text-muted-foreground">{fmtEur(cols.swap ? r.current : r.previous)}</td>
-                      <td className={cn("tnum py-1.5 text-right font-medium", tone(r.delta, false))}>
+                      <td className="tnum py-1.5 pr-3">{fmtEur(cols.swap ? r.previous : r.current)}</td>
+                      <td className="tnum py-1.5 pr-3 text-muted-foreground">{fmtEur(cols.swap ? r.current : r.previous)}</td>
+                      <td className={cn("tnum py-1.5 font-medium", tone(r.delta, false))}>
                         {r.delta >= 0 ? "+" : ""}
                         {fmtEur(r.delta)}
                         {r.deltaPct != null && ` (${pctSigned(r.deltaPct)})`}
