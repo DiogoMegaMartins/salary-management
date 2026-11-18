@@ -228,7 +228,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         </P>
         <H3>Relatório mensal em PDF</H3>
         <P>
-          O botão <KBD>Relatório mensal</KBD> (no Painel e no Orçamento) gera uma fotografia do período filtrado, em PDF ou Markdown, com os
+          O botão <KBD>Relatório mensal</KBD> (no Painel e no Orçamento) gera uma fotografia do período filtrado, em PDF, com os
           indicadores, o orçamento contra o real, as parcelas e os meses incluídos. O ficheiro é criado no teu dispositivo e a opção
           <em> Ocultar valores de património</em> troca os montantes por marcadores.
         </P>
@@ -635,7 +635,7 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
           <li>Ritmo das metas: aviso quando, ao ritmo atual, uma meta não chega ao objetivo na data alvo, com o que seria preciso poupar por mês.</li>
           <li>Comparação com o ano anterior no Painel e no Orçamento (por indicador e por categoria).</li>
           <li>Despesas fora do padrão: categorias do último mês bem acima do habitual.</li>
-          <li>Relatório mensal também em PDF.</li>
+          <li>Relatório mensal em PDF (deixa de haver descarga em Markdown).</li>
           <li>Rotas da API validadas com esquemas formais: pedidos com campos desconhecidos ou identificadores inválidos são recusados.</li>
           <li>Sem alterações às fórmulas financeiras ou ao esquema de dados.</li>
         </UL>

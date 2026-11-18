@@ -9,7 +9,7 @@ Mais leituras no Painel (versão 1.10.0):
 - **Ritmo das metas:** numa meta com objetivo e data alvo, um aviso diz quando, ao ritmo dos últimos 3 meses, o objetivo só chega depois do prazo, em que mês chega e quanto seria preciso poupar por mês. As metas fora do ritmo ficam resumidas numa faixa no topo.
 - **Face ao ano anterior:** líquido, gastos, poupança e taxa de poupança dos meses do período contra os mesmos meses de há um ano (só meses com par).
 - **Despesas fora do padrão:** categorias do último mês com despesas bem acima do habitual (precisa de 3 meses anteriores).
-- **Relatório mensal:** botão no cabeçalho; descarrega em PDF ou Markdown, com opção de ocultar valores.
+- **Relatório mensal:** botão no cabeçalho; descarrega em PDF, com opção de ocultar valores.
 
 ## Meses
 Cada mês tem rendimento bruto, subsídio de alimentação, descontos (segurança social e IRS) e a alocação por parcela (valor fixo ou percentagem). Pode duplicar um mês, aplicar as regras por omissão das parcelas e guardar a alocação atual como regras. A distribuição por plataforma e por ativos dentro de cada parcela é planeamento: não cria movimentos.

@@ -13,10 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useAppState, type Derived } from "@/lib/app";
-import { buildMonthlyReportMarkdown, buildMonthlyReportPdf, downloadMarkdown, downloadPdf } from "@/lib/monthly-report";
+import { buildMonthlyReportPdf, downloadPdf } from "@/lib/monthly-report";
 
 /**
- * SM-010: relatório mensal/periódico arquivável. Gera um Markdown a partir
+ * SM-010: relatório mensal/periódico arquivável. Gera um PDF a partir
  * dos dados já carregados no cliente e do período filtrado ativo — não faz
  * nenhuma chamada de escrita ao servidor.
  */
@@ -24,14 +24,6 @@ export function MonthlyReportDialog({ d }: { d: Derived }) {
   const { data } = useAppState();
   const [open, setOpen] = useState(false);
   const [hideAmounts, setHideAmounts] = useState(false);
-
-  const generate = () => {
-    if (!data) return;
-    const md = buildMonthlyReportMarkdown(d, data.categories, { hideAmounts });
-    const stamp = new Date().toISOString().slice(0, 10);
-    downloadMarkdown(md, `relatorio-particao-salario-${stamp}.md`);
-    setOpen(false);
-  };
 
   const generatePdf = () => {
     if (!data) return;
@@ -53,7 +45,7 @@ export function MonthlyReportDialog({ d }: { d: Derived }) {
         <DialogHeader>
           <DialogTitle>Gerar relatório do período</DialogTitle>
           <DialogDescription>
-            Fotografia em PDF ou Markdown com KPIs, orçamento vs. real, parcelas, metas e alertas do período
+            Fotografia em PDF com KPIs, orçamento vs. real, parcelas, metas e alertas do período
             atualmente filtrado ({d.periodLabel}). A exportação não altera nenhum dado da aplicação.
           </DialogDescription>
         </DialogHeader>
@@ -78,9 +70,6 @@ export function MonthlyReportDialog({ d }: { d: Derived }) {
         <DialogFooter>
           <Button variant="ghost" onClick={() => setOpen(false)}>
             Cancelar
-          </Button>
-          <Button variant="outline" onClick={generate} data-testid="button-generate-report">
-            Descarregar Markdown
           </Button>
           <Button onClick={generatePdf} data-testid="button-generate-report-pdf">
             Descarregar PDF
