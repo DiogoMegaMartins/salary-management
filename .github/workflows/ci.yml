@@ -1,6 +1,10 @@
 name: CI
 on:
   push:
+    # commits só de documentação não gastam minutos de Actions
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
   workflow_dispatch:
 concurrency:
   group: ci-${{ github.ref }}

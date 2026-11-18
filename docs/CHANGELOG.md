@@ -9,7 +9,7 @@ Limpeza e bundle (auditoria).
 - `shared/constants.ts` com `TRANSACTION_TYPES` e `TX_NATURES`; o cliente deixa de importar valores de `shared/schema.ts`, por isso `drizzle-orm`, `drizzle-zod` e `zod` saem do pacote inicial.
 - Removidos: os `insert*Schema` e tipos `Insert*` (sem uso), `drizzle-zod`, `@tailwindcss/typography`, `@radix-ui/react-tooltip` e `ui/tooltip.tsx`, o alias `@assets`, `transactionsOfMonth`, `monthKey` e cerca de 40 imports e variáveis sem uso. `noUnusedLocals` ligado no `tsconfig.json` (o `npm run check` apanha novos casos).
 - Documentação: `INSTALACAO.md` fundido no README (requisitos e tabela de variáveis de ambiente); documentos históricos movidos para `docs/historico/`; `API.md` com `GET /health` e `POST /offline/sync`.
-- CI: cache do Chromium do Playwright e `timeout-minutes` por job (menos minutos de Actions).
+- CI: cache do Chromium do Playwright, `timeout-minutes` por job e `paths-ignore` para commits só de documentação (`**.md`, `docs/**`). Atenção: se um dia ativares verificações obrigatórias na `main`, uma PR só de documentação não as executa e fica bloqueada.
 - Sem alterações ao esquema de dados.
 
 ## 1.12.4 | 2026-11-18
