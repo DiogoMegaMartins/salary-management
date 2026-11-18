@@ -2,6 +2,13 @@
 
 Ordem do mais recente para o mais antigo.
 
+## Ficheiros grandes divididos
+
+- `shared/calc.ts` passa a reexportar cinco módulos em `shared/calc/` (`month`, `budget`, `distribution`, `goals`, `expenses`). Os imports `@shared/calc` não mudam.
+- `server/storage.ts` perde a ligação e o esquema (`server/db.ts`) e os métodos de catálogos e de metas (`server/storage-catalogs.ts`, `server/storage-goals.ts`), compostos de volta no objeto `storage`. `storage`, `db`, `sqlite`, `httpError`, `roundCents`, `dataDir` e `dbPath` continuam exportados por `server/storage.ts`.
+- O cálculo dos números do Painel sai de `dashboard.tsx` para `client/src/lib/dashboard-model.ts` (`buildDashboardModel`).
+- Sem alterações de comportamento: mesmos 129 testes.
+
 ## Saldos e ajustes com o mesmo cartão das submetas
 
 - O histórico de saldos e ajustes usa agora o mesmo cartão das submetas (nome, informação, valor e ícones nas mesmas posições) e ganhou o ícone de **editar**: valor, data e nota podem ser corrigidos sem apagar e voltar a criar. O tipo (saldo inicial ou ajuste) e a meta/submetas não mudam.
