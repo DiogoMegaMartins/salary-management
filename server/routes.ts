@@ -1,4 +1,4 @@
-import { hashCode, verifyCode, isHashed, makeLimiter, publicState, publicSettings, MIN_CODE_LENGTH } from "./access";
+import { hashCode, verifyCode, verifyCodeAsync, knownGood, isHashed, authLimiter, globalLimiter, GLOBAL_KEY, ipKey, publicState, publicSettings, MIN_CODE_LENGTH } from "./access";
 import {
   idParamSchema, platformCreateSchema, platformPatchSchema, parcelTypeCreateSchema, parcelTypePatchSchema,
   txTypeCreateSchema, txTypePatchSchema, goalEntryCreateSchema, goalEntryPatchSchema, subgoalCreateSchema, subgoalPatchSchema,
@@ -54,6 +54,8 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   }
   const currentCode = () => storage.getAccessCode().trim();
+  if (process.env.NODE_ENV === "production" && !currentCode())
+    console.warn("AVISO: sem código de acesso (ACCESS_CODE ou definições). Qualquer pessoa com o endereço lê e altera os dados e pode definir um código.");
 
   // estado de saúde para a plataforma/monitorização: sem dados, sem autenticação
   app.get("/api/health", (_req, res) => {
@@ -64,38 +66,26 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     res.json({ enabled: currentCode().length > 0, managed: envManaged });
   });
 
-  // 5 falhas por IP em 15 minutos bloqueiam novas tentativas, tanto em /api/auth como no cabeçalho
-  const limiter = makeLimiter(5, 15 * 60 * 1000);
-  const tooMany = (res: any, ip: string) => {
-    res.setHeader("Retry-After", String(limiter.retryAfterSeconds(ip)));
-    return res.status(429).json({ ok: false, message: "Demasiadas tentativas. Tenta novamente dentro de alguns minutos." });
-  };
-  app.post("/api/auth", (req, res) => {
+  // POST /api/auth: mesmas regras de limite que o cabeçalho (ver middleware.ts)
+  app.post("/api/auth", async (req, res) => {
     const code = currentCode();
     const given = String(req.body?.code ?? "").trim();
     if (!code) return res.json({ ok: true });
-    const ip = String(req.ip ?? "?");
-    if (limiter.retryAfterSeconds(ip)) return tooMany(res, ip);
-    if (verifyCode(code, given)) {
-      limiter.reset(ip);
+    const ip = ipKey(req.ip);
+    if (!knownGood(code, given)) {
+      const wait = Math.max(authLimiter.retryAfterSeconds(ip), globalLimiter.retryAfterSeconds(GLOBAL_KEY));
+      if (wait) {
+        res.setHeader("Retry-After", String(wait));
+        return res.status(429).json({ ok: false, message: "Demasiadas tentativas. Tenta novamente dentro de alguns minutos." });
+      }
+    }
+    if (await verifyCodeAsync(code, given)) {
+      authLimiter.reset(ip);
       return res.json({ ok: true });
     }
-    limiter.fail(ip);
+    authLimiter.fail(ip);
+    globalLimiter.fail(GLOBAL_KEY);
     res.status(401).json({ ok: false, message: "Código incorreto." });
-  });
-
-  app.use("/api", (req, res, next) => {
-    res.setHeader("Cache-Control", "no-store");
-    if (req.path === "/auth" || req.path === "/auth/status" || req.path === "/health") return next();
-    const code = currentCode();
-    if (!code) return next();
-    // só por cabeçalho: o código nunca viaja em URLs (histórico/logs)
-    const given = String(req.headers["x-codigo-acesso"] ?? "").trim();
-    const ip = String(req.ip ?? "?");
-    if (given && limiter.retryAfterSeconds(ip)) return tooMany(res, ip);
-    if (given && verifyCode(code, given)) return next();
-    if (given) limiter.fail(ip);
-    res.status(401).json({ message: "Código de acesso inválido." });
   });
 
   app.get("/api/state", (_req, res) => {

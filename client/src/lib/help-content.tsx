@@ -636,6 +636,12 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.12.2</H3>
+        <UL>
+          <li>Segurança: o código de acesso é verificado antes de ler o corpo dos pedidos; limite de tentativas por IP (IPv6 por /64) e global; a verificação já não bloqueia o servidor.</li>
+          <li>Quem já introduziu o código certo não fica trancado por tentativas falhadas de outros no mesmo IP.</li>
+          <li>O servidor de desenvolvimento deixa de servir a base de dados e as cópias de segurança.</li>
+        </UL>
         <H3>1.12.1</H3>
         <UL>
           <li>Um movimento com data num mês fechado já não é movido para esse mês: o servidor recusa e pede para o reabrir.</li>
@@ -705,5 +711,5 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
   },
 ];
 
-export const HELP_VERSION = "1.12.1";
+export const HELP_VERSION = "1.12.2";
 export const HELP_UPDATED_AT = "2026-11-18";

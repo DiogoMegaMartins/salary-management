@@ -5,6 +5,10 @@
 - Enviado só por cabeçalho `x-codigo-acesso`, comparado em tempo constante.
 - Limite de 5 falhas por IP em 15 minutos (resposta 429), em `POST /api/auth` **e** nos pedidos com cabeçalho errado.
 - Variável de ambiente `ACCESS_CODE` (≥ 8 caracteres): define o código desde o primeiro arranque e impede que seja alterado pela API. **Recomendado em produção**: sem ela, quem aceder primeiro a uma instância sem código pode defini-lo.
+- O código é verificado **antes** de ler o corpo do pedido (`server/middleware.ts`): um pedido sem código válido não faz o servidor ler nem interpretar até 50 MB de JSON. Os corpos grandes (`/api/import`, `/api/offline`) não aceitam compressão (`inflate: false`).
+- O scrypt de verificação corre fora do thread principal. O limite é por IP (IPv6 agrupado por /64) e há um teto global de 60 falhas por minuto contra rotação de endereços. Um código já verificado passa sempre, para quem partilha o IP de um atacante não ficar trancado.
+- Sem código de acesso, a API fica aberta (comportamento documentado). Em produção, o arranque regista um aviso. Define sempre `ACCESS_CODE` em instâncias publicadas.
+- O servidor de desenvolvimento (`npm run dev`) não serve `*.db`, `backups/` nem `pre-import-backup-*.json`. Não o exponhas à rede.
 - Atrás de proxy (produção) usa-se `trust proxy` (`TRUST_PROXY`, por omissão 1 em produção) para o limite ser por IP real.
 - Pedidos que alteram dados exigem o cabeçalho `x-sm-client: 1` (anti-CSRF); formulários de outros sites são recusados (403).
 - Códigos antigos em texto simples são convertidos em hash no primeiro arranque.
@@ -18,7 +22,7 @@
 - Logs sem corpos de resposta; `X-Content-Type-Options` e `Referrer-Policy`.
 
 ## Riscos conhecidos
-- `npm audit --omit=dev` (dependências de produção) sem avisos à data de 2026-11-17; corre semanalmente no workflow `audit.yml`. As ferramentas de build podem ter avisos sem correção (ex.: `picomatch`, ReDoS em extglobs); não entram em produção. `xlsx` vem da distribuição oficial SheetJS (não do registo npm) e só é usado para exportar.
+- `npm audit --omit=dev` (dependências de produção) sem avisos à data de 2026-11-17; corre semanalmente no workflow `audit.yml`. As ferramentas de build podem ter avisos sem correção (ex.: `picomatch`, ReDoS em extglobs); não entram em produção. `xlsx` vem da distribuição oficial SheetJS (não do registo npm) e só é usado para exportar. Está em `devDependencies` (é empacotado no build), por isso o `npm audit --omit=dev` não o vê e, por vir de URL, o registo npm também não avisa: reve-o à mão a cada release em https://cdn.sheetjs.com.
 - SQLite local não é persistência durável de produção.
 - A cópia offline é cifrada com uma chave derivada do código de acesso.
 
