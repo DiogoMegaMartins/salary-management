@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useConfirm } from "@/components/confirm";
 import { Save, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +49,16 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
 
   const isDraft = month.id < 0;
 
+  // fechar com alterações por guardar pede confirmação (Esc, clique fora e "Fechar")
+  const { ask, dialog: confirmDialog } = useConfirm();
+  const initialForm = useRef(JSON.stringify(month));
+  useEffect(() => { initialForm.current = JSON.stringify(month); }, [month.id]);
+  const requestClose = async () => {
+    const dirty = !isClosedMonth && JSON.stringify(form) !== initialForm.current;
+    if (dirty && !(await ask("Descartar as alterações?", "Os valores que alteraste neste mês ainda não foram guardados."))) return;
+    onClose();
+  };
+
   const persist = () => {
     if (!form.label || !form.label.trim()) {
       toast({ title: "Etiqueta obrigatória", description: "Indica um nome para o mês.", variant: "destructive" });
@@ -93,7 +104,7 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
   };
 
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
+    <Dialog open onOpenChange={(o) => !o && requestClose()}>
       <DialogContent className="month-editor flex max-h-[90dvh] max-w-3xl flex-col gap-0 overflow-hidden p-0" data-testid="month-editor">
         <DialogHeader className="shrink-0 px-6 pt-6">
           <DialogTitle>
@@ -417,7 +428,7 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
 
         <DialogFooter className="shrink-0 border-t border-border bg-background px-6 py-4">
           {saveError && <p role="alert" className="mr-auto text-sm text-destructive" data-testid="error-save-month">{saveError}</p>}
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" onClick={requestClose} data-testid="button-close-month-editor">
             Fechar
           </Button>
           <Button onClick={persist} disabled={isClosedMonth || save.month.isPending || save.createMonth.isPending || save.allocation.isPending} data-testid="button-save-month">
@@ -425,6 +436,7 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
           </Button>
         </DialogFooter>
       </DialogContent>
+    {confirmDialog}
     </Dialog>
   );
 }

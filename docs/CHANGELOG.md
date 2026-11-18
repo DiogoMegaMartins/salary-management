@@ -2,6 +2,18 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.12.3 | 2026-11-18
+
+Interface (auditoria).
+
+- `MutationCache.onError` em `queryClient.ts`: toda a mutação sem `onError` próprio mostra um aviso. "Aplicar sugestão" usa `Promise.allSettled` e só mantém os lançamentos que falharam.
+- `AppShell` mostra `state-error` com "Tentar de novo" quando `GET /api/state` falha sem dados.
+- Editor de mês: confirmação ao fechar com alterações; eliminar movimento e categoria pedem confirmação e têm nome acessível.
+- Definições: campo de taxa vazio ou sem alteração não grava.
+- Filtros Tipo e Parcelas com `DropdownMenuCheckboxItem` (teclado); `NumberField` e campos das definições com `htmlFor`; linhas de parcela do Painel com `role="button"`; `--destructive` mais claro no tema escuro e `amber-700` nos avisos.
+- Estados vazios em Despesas e Fecho mensal.
+- Testes: `e2e/interface.spec.ts` (3). Sem alterações ao esquema de dados.
+
 ## 1.12.2 | 2026-11-18
 
 Segurança (auditoria).

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Settings, Eye, EyeOff, LayoutGrid, CalendarCheck, Moon, Sun, LayoutDashboard, CalendarRange, PieChart, Wallet, Menu, Target, HelpCircle, Receipt, Ellipsis } from "lucide-react";
-import { useTheme } from "@/lib/app";
+import { useAppState, useTheme } from "@/lib/app";
 import { usePrivacy } from "@/lib/privacy";
 import { layoutEditor, useLayoutEditor } from "@/lib/layout-editor";
 import { AppInfo } from "@/components/data-tools";
@@ -168,6 +168,8 @@ export function AppShell({
   const { theme, toggle } = useTheme();
   const layoutState = useLayoutEditor();
   const { hidden, toggle: togglePrivacy } = usePrivacy();
+  const state = useAppState();
+  const failed = state.isError && !state.data;
   return (
     <div className="grid h-[100dvh] grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)_auto] bg-background lg:grid-cols-[236px_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)]">
       <aside className="hidden lg:flex lg:row-span-2 flex-col gap-6 border-r border-sidebar-border bg-sidebar p-4 overflow-y-auto [overscroll-behavior:contain]">
@@ -243,7 +245,17 @@ export function AppShell({
       </header>
 
       <main className="min-h-0 min-w-0 col-start-1 lg:col-start-2 overflow-y-auto [overscroll-behavior:contain] px-4 py-5 md:px-6 md:py-6">
-        {children}
+        {failed ? (
+          <div role="alert" className="mx-auto mt-10 max-w-md space-y-3 rounded-lg border border-border bg-card p-5 text-center" data-testid="state-error">
+            <p className="font-medium">Não foi possível carregar os dados.</p>
+            <p className="text-sm text-muted-foreground">Verifica a ligação e tenta de novo. Os teus dados no servidor não foram alterados.</p>
+            <Button onClick={() => state.refetch()} disabled={state.isFetching} data-testid="button-retry-state">
+              {state.isFetching ? "A tentar…" : "Tentar de novo"}
+            </Button>
+          </div>
+        ) : (
+          children
+        )}
       </main>
       <BottomNav />
     </div>

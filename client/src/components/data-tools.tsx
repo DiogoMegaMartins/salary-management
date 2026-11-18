@@ -43,7 +43,7 @@ export function VerifyData() {
         {ran && issues.length === 0 && <p className="text-sm text-primary" data-testid="verify-ok">Sem problemas encontrados.</p>}
         {ran && issues.length > 0 && (
           <div className="space-y-2 text-sm" data-testid="verify-result">
-            <p><span className="font-medium text-destructive">{errs.length} erro(s)</span> · <span className="font-medium text-amber-600">{warns.length} aviso(s)</span></p>
+            <p><span className="font-medium text-destructive">{errs.length} erro(s)</span> · <span className="font-medium text-amber-700 dark:text-amber-400">{warns.length} aviso(s)</span></p>
             <ul className="space-y-1.5">
               {[...errs, ...warns].slice(0, 100).map((i, k) => (
                 <li key={k} className={`rounded-md border p-2 ${i.severity === "erro" ? "border-destructive/40" : "border-amber-500/40"}`} data-testid={`issue-${i.code}`}>
@@ -152,11 +152,11 @@ export function CsvImport() {
         )}
         {pv && (
           <div className="space-y-2" data-testid="csv-preview">
-            <p data-testid="csv-summary">{pv.summary.total} linha(s): <b>{pv.summary.validas}</b> a importar · <b className="text-destructive">{pv.summary.erros}</b> com erro · <b className="text-amber-600">{pv.summary.duplicadas}</b> duplicada(s).</p>
-            {pv.alreadyImported && <p className="text-amber-600" data-testid="csv-already">Este ficheiro já foi importado antes.</p>}
+            <p data-testid="csv-summary">{pv.summary.total} linha(s): <b>{pv.summary.validas}</b> a importar · <b className="text-destructive">{pv.summary.erros}</b> com erro · <b className="text-amber-700 dark:text-amber-400">{pv.summary.duplicadas}</b> duplicada(s).</p>
+            {pv.alreadyImported && <p className="text-amber-700 dark:text-amber-400" data-testid="csv-already">Este ficheiro já foi importado antes.</p>}
             <ul className="max-h-60 space-y-0.5 overflow-y-auto text-xs">
               {pv.results.filter((r: any) => !r.ok || r.duplicate).slice(0, 100).map((r: any) => (
-                <li key={r.line} className={r.ok ? "text-amber-600" : "text-destructive"}>Linha {r.line}: {r.ok ? `possível duplicado (${r.duplicate === "ficheiro" ? "no ficheiro" : "já existe"})` : r.errors.join("; ")}</li>
+                <li key={r.line} className={r.ok ? "text-amber-700 dark:text-amber-400" : "text-destructive"}>Linha {r.line}: {r.ok ? `possível duplicado (${r.duplicate === "ficheiro" ? "no ficheiro" : "já existe"})` : r.errors.join("; ")}</li>
               ))}
             </ul>
             <div className="flex gap-2">

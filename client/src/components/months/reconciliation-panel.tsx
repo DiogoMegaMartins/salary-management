@@ -69,11 +69,11 @@ export function ReconciliationPanel({
     setSuggestion(items);
   }
 
-  function applySuggestion() {
+  async function applySuggestion() {
     if (!suggestion) return;
-    for (const item of suggestion) {
-      if (item.parcelId == null || item.amount <= 0) continue;
-      save2.createTransaction.mutate({
+    const todo = suggestion.filter((item) => item.parcelId != null && item.amount > 0);
+    const results = await Promise.allSettled(todo.map((item) =>
+      save2.createTransaction.mutateAsync({
         monthId,
         date: dateInMonth(month.year, month.month),
         type: "contribution",
@@ -81,9 +81,10 @@ export function ReconciliationPanel({
         parcelId: item.parcelId,
         category: "Distribuição de excedente",
         note: item.reason === "reserva" ? "Reserva de emergência (sugestão SM-007)" : item.reason === "meta_proxima" ? "Meta próxima (sugestão SM-007)" : "Sugestão de distribuição (SM-007)",
-      } as any);
-    }
-    setSuggestion(null);
+      } as any)));
+    // ficam na sugestão só os que falharam (já mostraram o erro), para não duplicar os que foram criados
+    const failed = todo.filter((_, i) => results[i].status === "rejected");
+    setSuggestion(failed.length ? failed : null);
   }
 
   const chipClass =

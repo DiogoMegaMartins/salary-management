@@ -47,6 +47,16 @@ export default function Dashboard() {
 
   const model = useMemo(() => buildDashboardModel(d, data), [d, data]);
 
+  const openParcelDrill = (parcel: { id: number; name: string }) => {
+    const ms = d?.months ?? [];
+    const monthIds = new Set(ms.map((m) => m.id));
+    setDrillDown({
+      title: `Movimentos · ${parcel.name}`,
+      description: `Lançamentos individuais desta parcela nos ${ms.length} meses do período filtrado.`,
+      filter: (t) => monthIds.has(t.monthId) && (t.parcelId === parcel.id || t.targetParcelId === parcel.id),
+    });
+  };
+
   if (isLoading || !d || !model) {
     return (
       <AppShell title="Painel" subtitle="A carregar…">
@@ -376,14 +386,16 @@ export default function Dashboard() {
                     {model.perParcel.map((p) => (
                       <tr
                         key={p.parcel.id}
-                        className="cursor-pointer border-b border-border/60 last:border-0 transition-colors hover:bg-muted/40"
-                        onClick={() => {
-                          const monthIds = new Set(d.months.map((m) => m.id));
-                          setDrillDown({
-                            title: `Movimentos · ${p.parcel.name}`,
-                            description: `Lançamentos individuais desta parcela nos ${d.months.length} meses do período filtrado.`,
-                            filter: (t) => monthIds.has(t.monthId) && (t.parcelId === p.parcel.id || t.targetParcelId === p.parcel.id),
-                          });
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`Ver movimentos de ${p.parcel.name}`}
+                        className="cursor-pointer border-b border-border/60 last:border-0 transition-colors hover:bg-muted/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring"
+                        onClick={() => openParcelDrill(p.parcel)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            openParcelDrill(p.parcel);
+                          }
                         }}
                         data-testid={`row-parcel-drilldown-${p.parcel.id}`}
                       >
