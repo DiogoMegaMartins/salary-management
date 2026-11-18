@@ -262,7 +262,9 @@ export const storage = {
       if (!m) throw httpError(400, "Mês inexistente.");
       const [y, mo] = d.split("-").map(Number);
       if (m.year !== y || m.month !== mo) {
-        const target = db.select().from(months).where(and(eq(months.year, y), eq(months.month, mo))).get();
+        // com meses repetidos (ex.: "Dezembro" e "Dezembro (subsídio)") prefere-se um aberto, depois o mais antigo
+        const target = db.select().from(months).where(and(eq(months.year, y), eq(months.month, mo))).all()
+          .sort((a, b) => Number(a.status === "fechado") - Number(b.status === "fechado") || a.id - b.id)[0];
         if (!target) throw httpError(409, `Não existe o mês ${String(mo).padStart(2, "0")}/${y}. Cria esse mês antes de usar esta data.`);
         // a data pode deslocar o movimento para outro mês: esse mês também tem de estar aberto
         if (target.status === "fechado") throw httpError(423, "O mês da data indicada está fechado. Reabre-o para alterar valores.");
@@ -283,6 +285,18 @@ export const storage = {
     const cur = db.select().from(transactions).where(eq(transactions.id, id)).get();
     if (!cur) throw httpError(404, "Movimento não encontrado.");
     patch = this.normalizeTransaction(patch, cur);
+    // um aporte/retirada com valor atribuído a submetas tem de continuar a cobrir essa atribuição
+    const links = db.select().from(contributionLinks).where(eq(contributionLinks.transactionId, id)).all();
+    if (links.length) {
+      const used = links.reduce((a, l) => a + Math.round(l.amount * 100), 0);
+      const type = patch.type ?? cur.type;
+      const value = patch.value ?? cur.value;
+      const parcel = patch.parcelId !== undefined ? patch.parcelId : cur.parcelId;
+      if (!["contribution", "withdrawal"].includes(type) || parcel !== cur.parcelId)
+        throw httpError(409, "O movimento tem valor atribuído a submetas. Remove essas atribuições antes de mudar o tipo ou a parcela.");
+      if (Math.round(value * 100) < used)
+        throw httpError(409, `O movimento tem ${(used / 100).toFixed(2)} € atribuídos a submetas. Reduz as atribuições antes de baixar o valor.`);
+    }
     return db.update(transactions).set(patch).where(eq(transactions.id, id)).returning().get();
   },
   deleteTransaction(id: number) {
@@ -358,7 +372,8 @@ export const storage = {
     const dist = storage.getDistribution(monthId, parcelId);
     const r0 = distribute(total, dist.map((l) => ({ platformId: l.platformId, mode: l.mode as any, value: l.value })));
     const idx = dist.findIndex((l) => l.platformId === platformId);
-    if (idx < 0 || !r0.ok) throw httpError(409, "A plataforma tem de estar na distribuição guardada desta parcela.");
+    if (!r0.ok) throw httpError(409, r0.error ?? "A distribuição guardada desta parcela é inválida.");
+    if (idx < 0) throw httpError(409, "A plataforma tem de estar na distribuição guardada desta parcela.");
     const clean = (Array.isArray(lines) ? lines : []).map((l) => ({ name: String(l.name ?? "").trim().replace(/\s+/g, " "), percent: Number(l.percent), note: String(l.note ?? "").trim() }));
     const r = distributeAssets(r0.amountsCents[idx] / 100, clean);
     if (!r.ok) throw httpError(409, r.error ?? "Distribuição por ativos inválida.");

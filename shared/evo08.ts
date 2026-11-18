@@ -2,7 +2,7 @@
  * EVO-08: cálculos puros partilhados (cliente, servidor e testes).
  * Precisão: todos os montantes são tratados em cêntimos inteiros nas somas e comparações.
  */
-import { allocationAmount, toCents } from "./calc";
+import { allocationAmount, distribute, toCents } from "./calc";
 
 export const cents = toCents;
 export const euros = (c: number) => c / 100;
@@ -90,6 +90,13 @@ export function checkConsistency(d: CheckInput): Issue[] {
       if (a.mode === "percentagem" && (a.value < 0 || a.value > 100)) out.push({ severity: "erro", code: "pct_invalida", where: `${monthLabel(m.id)} / ${pName(a.parcelId)}`, message: `Percentagem inválida (${a.value}).`, fix: "Usa um valor entre 0 e 100." });
       if (a.value < 0) out.push({ severity: "erro", code: "valor_negativo", where: `${monthLabel(m.id)} / ${pName(a.parcelId)}`, message: "Alocação negativa.", fix: "Corrige o valor." });
     }
+  }
+  // a distribuição por plataformas tem de caber no total da parcela (baixar o rendimento pode deixá-la acima)
+  for (const a of d.allocations) {
+    const lines = d.allocationPlatforms.filter((p) => p.allocationId === a.id);
+    if (!lines.length) continue;
+    const r = distribute(allocationAmount(a as any, d.availableByMonth[a.monthId] ?? 0), lines.map((l) => ({ platformId: l.platformId, mode: l.mode as any, value: l.value })));
+    if (!r.ok) out.push({ severity: "erro", code: "dist_plataformas", where: `${monthLabel(a.monthId)} / ${pName(a.parcelId)}`, message: r.error ?? "Distribuição por plataformas inválida.", fix: "Ajusta a distribuição por plataformas desta parcela." });
   }
   for (const a of d.allocations) {
     if (!monthIds.has(a.monthId) || !parcelIds.has(a.parcelId)) out.push({ severity: "erro", code: "ref_alocacao", where: `alocação ${a.id}`, message: "Alocação com mês ou parcela inexistente.", fix: "Elimina ou corrige o registo." });

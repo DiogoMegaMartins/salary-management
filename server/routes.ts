@@ -214,9 +214,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     const monthId = Number(req.params.id);
     // só aplica parcelas com regra definida, para não apagar alocações existentes
     try {
-      for (const p of state.parcels.filter((x) => !x.archived && x.defaultValue !== 0)) {
-        storage.setAllocation(monthId, p.id, p.defaultMode, p.defaultValue);
-      }
+      // tudo ou nada: se uma parcela falhar, o mês não fica a meio com regras novas e valores antigos
+      storage.transaction(() => {
+        for (const p of state.parcels.filter((x) => !x.archived && x.defaultValue !== 0)) {
+          storage.setAllocation(monthId, p.id, p.defaultMode, p.defaultValue);
+        }
+      });
     } catch (e: any) {
       return res.status(e.status ?? 500).json({ message: e.message });
     }

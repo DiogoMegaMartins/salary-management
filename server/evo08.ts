@@ -5,7 +5,7 @@ import { months, transactions, monthClosures, changeLog, recurringExpenses, recu
 import { availableOf, allocationAmount } from "@shared/calc";
 import { checkConsistency, monthRemainder, nextMonthKey, isClosed, pendingOccurrences, parseCsv, validateCsvRows, fingerprint, round2, sumEuros, type CsvMapping } from "@shared/evo08";
 
-export const APP_VERSION = "1.12.5";
+export const APP_VERSION = "1.12.6";
 export const ENV_NAME = process.env.NODE_ENV === "production" ? "produção" : "desenvolvimento";
 
 /** Máximo de entradas guardadas no histórico; as mais antigas saem quando é excedido. */
@@ -180,7 +180,11 @@ export function pending() {
   const keys = new Set(st.transactions.map((t: any) => t.occurrenceKey).filter(Boolean) as string[]);
   const skipped = new Set(db.select().from(recurrenceSkips).all().map((s) => s.occurrenceKey));
   const open = st.months.filter((m) => !isClosed(m));
-  return pendingOccurrences(recs as any, open, keys, skipped).map((p) => ({ key: p.key, date: p.date, recurrenceId: p.rec.id, name: p.rec.name, value: p.rec.value, category: p.rec.category, parcelId: p.rec.parcelId, monthId: st.months.find((m) => m.year === p.year && m.month === p.month)!.id }));
+  // com meses repetidos (mesmo ano e mês) a ocorrência é uma só, e vai para um mês aberto
+  const seen = new Set<string>();
+  return pendingOccurrences(recs as any, open, keys, skipped)
+    .filter((p) => (seen.has(p.key) ? false : (seen.add(p.key), true)))
+    .map((p) => ({ key: p.key, date: p.date, recurrenceId: p.rec.id, name: p.rec.name, value: p.rec.value, category: p.rec.category, parcelId: p.rec.parcelId, monthId: open.find((m) => m.year === p.year && m.month === p.month)!.id }));
 }
 
 /** Confirma uma ocorrência: cria o movimento uma única vez (chave única por recorrência+mês). */
