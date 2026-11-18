@@ -215,15 +215,14 @@ export const HELP_SECTIONS: HelpSection[] = [
           poupar por mês para chegar a tempo. Também avisa quando não há contribuições recentes ou o prazo já passou. As metas fora do
           ritmo ficam resumidas numa faixa no topo do Painel. Sem data alvo, a meta mostra só o tempo estimado.
         </P>
-        <H3>Face ao ano anterior</H3>
+        <H3>Comparação mensal e anual</H3>
         <P>
           Compara o líquido, o rendimento bruto, os descontos, a carga fiscal, os gastos, a poupança, a taxa de poupança e o total por
-          parcela dos meses escolhidos com os mesmos meses de outro ano. Só entram os meses que existem nos dois lados, para a comparação
-          ser justa.
+          parcela. O primeiro botão, <em>Tipo de comparação</em>, tem duas opções: <em>Comparar com ano</em> e <em>Comparar com mês</em>.
         </P>
         <UL>
-          <li><strong>Meses:</strong> por omissão, os do filtro de período. O botão de meses permite escolher um ou vários, de qualquer ano, e tem uma só ação para <em>Selecionar todos</em> ou <em>Limpar seleção</em>. Em <em>Comparar com outros meses</em> escolhes também os meses da base, o que permite comparar meses do mesmo ano (se os dois lados tiverem tamanhos diferentes, compara médias mensais).</li>
-          <li><strong>Ano de comparação:</strong> o ano anterior (automático) ou um ano à escolha, por exemplo 2024.</li>
+          <li><strong>Comparar com ano:</strong> o segundo botão mostra todos os anos e os respetivos meses, para escolheres os meses a comparar (com uma só ação para <em>Selecionar todos</em> ou <em>Limpar seleção</em>). Depois escolhes o ano de comparação: o anterior (automático) ou um ano à escolha. Só entram os meses que existem nos dois lados.</li>
+          <li><strong>Comparar com mês:</strong> escolhes um ano e o segundo botão mostra só os meses desse ano. Escolhes os meses a comparar e os meses da base (por exemplo, agosto face a julho). Se os dois lados tiverem tamanhos diferentes, compara médias mensais.</li>
           <li><strong>Memória:</strong> a escolha fica guardada neste dispositivo e vale também no Orçamento. <em>Repor</em> volta aos meses do filtro e ao ano anterior.</li>
         </UL>
         <P>Se nenhum dos meses escolhidos tiver par no ano de comparação, o cartão explica porquê.</P>
@@ -387,7 +386,7 @@ export const HELP_SECTIONS: HelpSection[] = [
           <li><strong>Alerta</strong> — assinalado quando o desvio percentual atinge ou excede o limite configurado (10% por defeito).</li>
         </UL>
         <P>Para investigar um desvio, use o drill-down do Painel a partir do KPI de Gastos ou de uma parcela.</P>
-        <H3>Face ao ano anterior e despesas fora do padrão</H3>
+        <H3>Comparação mensal e anual e despesas fora do padrão</H3>
         <P>
           Em baixo, o Orçamento mostra a despesa por categoria contra os mesmos meses do ano anterior (com a variação em euros e em
           percentagem) e as categorias do último mês que fugiram ao habitual. Funcionam como no Painel.
@@ -639,7 +638,7 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
       <>
         <H3>1.11.0</H3>
         <UL>
-          <li>Face ao ano anterior: escolha dos meses a comparar e do ano de comparação, com a escolha guardada e partilhada entre o Painel e o Orçamento.</li>
+          <li>Comparação mensal e anual: escolha do tipo de comparação, dos meses a comparar e do ano de comparação, com a escolha guardada e partilhada entre o Painel e o Orçamento.</li>
           <li>Novas métricas na comparação: rendimento bruto, descontos, carga fiscal efetiva e total por parcela.</li>
           <li>Relatório mensal: a descarga em Markdown foi removida; fica só o PDF.</li>
           <li>Sem alterações às fórmulas financeiras nem ao esquema de dados.</li>

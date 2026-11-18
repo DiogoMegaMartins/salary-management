@@ -82,7 +82,7 @@ sequenceDiagram
 | `shared/calc.ts` e `shared/calc/` | Cálculos puros; `calc.ts` reexporta `month`, `budget`, `distribution`, `goals`, `expenses` e `insights` (ritmo das metas, ano anterior, despesas fora do padrão) |
 | `shared/pdf.ts` | Gerador de PDF a partir de Markdown simples, sem dependências; usado pelo relatório mensal |
 | `client/src/components/insights.tsx` | Despesas fora do padrão e linha de ritmo das metas |
-| `client/src/components/yoy.tsx`, `client/src/lib/yoy-selection.ts` | Cartões "Face ao ano anterior" do Painel e do Orçamento, com seletor de meses e de ano; a escolha fica em `localStorage` e vale nos dois ecrãs |
+| `client/src/components/yoy.tsx`, `client/src/lib/yoy-selection.ts` | Cartões "Comparação mensal e anual" do Painel e do Orçamento, com seletor de meses e de ano; a escolha fica em `localStorage` e vale nos dois ecrãs |
 | `tests/` | Testes node:test (cálculos, integridade, API, segurança, offline, layout) |
 | `e2e/` | Testes de interface com Playwright |
 | `script/build.ts` | Build do cliente (Vite) e do servidor (esbuild, `dist/index.cjs`) |

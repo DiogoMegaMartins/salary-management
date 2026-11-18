@@ -147,44 +147,85 @@ export function YoYControls({ d, sel, setSel }: { d: Derived; sel: YoYSelection;
   const allKeys = byYear.flatMap(([y, ms]) => ms.map((m) => yearMonthKey(y, m)));
   const filterKeys = Array.from(new Set(d.months.map((m) => yearMonthKey(m.year, m.month))));
   const free = sel.refYear === "meses";
+  const year = sel.year != null && years.includes(sel.year) ? sel.year : years[0];
+  const yearOnly = useMemo<ByYear>(() => byYear.filter(([y]) => y === year), [byYear, year]);
+  const yearKeys = yearOnly.flatMap(([y, ms]) => ms.map((m) => yearMonthKey(y, m)));
+  const setType = (v: string) =>
+    v === "mes"
+      ? setSel({ ...sel, mode: "manual", months: [], compareMonths: [], refYear: "meses", year })
+      : setSel({ ...sel, refYear: "auto", compareMonths: [] });
+  const setYear = (v: string) => setSel({ ...sel, mode: "manual", months: [], compareMonths: [], year: Number(v) });
 
   return (
     <div className="flex flex-wrap items-center gap-2" data-testid="yoy-controls">
-      <MonthPicker
-        byYear={byYear}
-        allKeys={allKeys}
-        checked={(key) => (sel.mode === "manual" ? sel.months.includes(key) : filterKeys.includes(key))}
-        onChange={(keys) => setSel({ ...sel, mode: "manual", months: keys })}
-        label={sel.mode === "manual" ? countLabel(sel.months.length) : countLabel(filterKeys.length)}
-        ariaLabel="Escolher meses a comparar"
-        testid="yoy-months"
-      />
-
-      <Select value={String(sel.refYear)} onValueChange={(v) => setSel({ ...sel, refYear: v === "auto" ? "auto" : v === "meses" ? "meses" : Number(v) })}>
-        <SelectTrigger className="h-8 w-auto min-w-44 gap-2 text-xs" data-testid="yoy-ref-select" aria-label="Comparar com">
-          <SelectValue />
+      <Select value={free ? "mes" : "ano"} onValueChange={setType}>
+        <SelectTrigger className="h-8 w-auto min-w-44 gap-2 text-xs" data-testid="yoy-type-select" aria-label="Tipo de comparação">
+          <SelectValue placeholder="Tipo de comparação" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="auto">Comparar com o ano anterior</SelectItem>
-          {years.map((y) => (
-            <SelectItem key={y} value={String(y)}>
-              Comparar com {y}
-            </SelectItem>
-          ))}
-          <SelectItem value="meses">Comparar com outros meses</SelectItem>
+          <SelectItem value="ano">Comparar com ano</SelectItem>
+          <SelectItem value="mes">Comparar com mês</SelectItem>
         </SelectContent>
       </Select>
 
-      {free && (
-        <MonthPicker
-          byYear={byYear}
-          allKeys={allKeys}
-          checked={(key) => sel.compareMonths.includes(key)}
-          onChange={(keys) => setSel({ ...sel, compareMonths: keys })}
-          label={`Base: ${countLabel(sel.compareMonths.length).toLowerCase()}`}
-          ariaLabel="Escolher meses de comparação"
-          testid="yoy-base"
-        />
+      {free ? (
+        <>
+          <Select value={String(year)} onValueChange={setYear}>
+            <SelectTrigger className="h-8 w-auto min-w-24 gap-2 text-xs" data-testid="yoy-year-select" aria-label="Ano dos meses">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {years.map((y) => (
+                <SelectItem key={y} value={String(y)}>
+                  {y}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <MonthPicker
+            byYear={yearOnly}
+            allKeys={yearKeys}
+            checked={(key) => sel.months.includes(key)}
+            onChange={(keys) => setSel({ ...sel, mode: "manual", months: keys })}
+            label={countLabel(sel.mode === "manual" ? sel.months.length : 0)}
+            ariaLabel="Escolher meses a comparar"
+            testid="yoy-months"
+          />
+          <MonthPicker
+            byYear={yearOnly}
+            allKeys={yearKeys}
+            checked={(key) => sel.compareMonths.includes(key)}
+            onChange={(keys) => setSel({ ...sel, compareMonths: keys })}
+            label={`Base: ${countLabel(sel.compareMonths.length).toLowerCase()}`}
+            ariaLabel="Escolher meses de comparação"
+            testid="yoy-base"
+          />
+        </>
+      ) : (
+        <>
+          <MonthPicker
+            byYear={byYear}
+            allKeys={allKeys}
+            checked={(key) => (sel.mode === "manual" ? sel.months.includes(key) : filterKeys.includes(key))}
+            onChange={(keys) => setSel({ ...sel, mode: "manual", months: keys })}
+            label={sel.mode === "manual" ? countLabel(sel.months.length) : countLabel(filterKeys.length)}
+            ariaLabel="Escolher anos e meses a comparar"
+            testid="yoy-months"
+          />
+          <Select value={String(sel.refYear)} onValueChange={(v) => setSel({ ...sel, refYear: v === "auto" ? "auto" : Number(v) })}>
+            <SelectTrigger className="h-8 w-auto min-w-44 gap-2 text-xs" data-testid="yoy-ref-select" aria-label="Ano de comparação">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="auto">Comparar com o ano anterior</SelectItem>
+              {years.map((y) => (
+                <SelectItem key={y} value={String(y)}>
+                  Comparar com {y}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </>
       )}
 
       {(sel.mode !== "filtro" || sel.refYear !== "auto") && (

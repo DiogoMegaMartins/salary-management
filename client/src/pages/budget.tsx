@@ -320,10 +320,10 @@ export default function BudgetPage() {
         sections.push(
           {
             id: "orc-ano-anterior",
-            title: "Face ao ano anterior",
+            title: "Comparação mensal e anual",
             defaultLayout: { x: 0, y: 29, w: 6, h: 12 },
             node: (
-              <SectionCard title="Face ao ano anterior" description="Despesa por categoria; a escolha de meses e ano é a mesma do Painel">
+              <SectionCard title="Comparação mensal e anual" description="Despesa por categoria; a escolha é a mesma do Painel">
                 <CategoryYearOverYear d={d} />
               </SectionCard>
             ),

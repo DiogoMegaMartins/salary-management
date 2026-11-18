@@ -7,7 +7,7 @@ No cartão Metas, usa o botão de cada meta para mostrar ou esconder todas as su
 
 Mais leituras no Painel (versão 1.10.0):
 - **Ritmo das metas:** numa meta com objetivo e data alvo, um aviso diz quando, ao ritmo dos últimos 3 meses, o objetivo só chega depois do prazo, em que mês chega e quanto seria preciso poupar por mês. As metas fora do ritmo ficam resumidas numa faixa no topo.
-- **Face ao ano anterior:** líquido, rendimento bruto, descontos, carga fiscal, gastos, poupança, taxa de poupança e total por parcela, contra o mesmo período de outro ano. Escolhes os meses (um, vários, todos ou nenhum) e a base: o ano anterior, outro ano, ou outros meses à escolha, incluindo do mesmo ano (com tamanhos diferentes comparam-se médias mensais). A escolha fica guardada neste dispositivo e vale também no Orçamento; "Repor" volta ao filtro. Só entram meses com par.
+- **Comparação mensal e anual:** líquido, rendimento bruto, descontos, carga fiscal, gastos, poupança, taxa de poupança e total por parcela. O botão "Tipo de comparação" tem "Comparar com ano" (escolhes meses de qualquer ano e o ano de comparação, o anterior ou outro) e "Comparar com mês" (escolhes um ano e comparas meses desse ano com outros meses do mesmo ano; com tamanhos diferentes comparam-se médias mensais). A escolha fica guardada neste dispositivo e vale também no Orçamento; "Repor" volta ao filtro.
 - **Despesas fora do padrão:** categorias do último mês com despesas bem acima do habitual (precisa de 3 meses anteriores).
 - **Relatório mensal:** botão no cabeçalho; descarrega em PDF, com opção de ocultar valores.
 
@@ -31,7 +31,7 @@ Acumulado por parcela ao longo do tempo, por ano e por plataforma. Os totais inc
 
 ## Orçamento
 Orçado vs real por categoria, projeção até ao fim do ano, runway da reserva de emergência (parcelas marcadas nas definições) e sugestão de distribuição de excedente.
-Em baixo, a despesa por categoria face ao ano anterior e as categorias do último mês que fugiram ao habitual (como no Painel).
+Em baixo, a despesa por categoria na comparação mensal e anual e as categorias do último mês que fugiram ao habitual (como no Painel).
 
 ## Definições (antiga página Dados e backups)
 Organizada em cinco separadores; o último separador aberto fica lembrado nesta sessão.

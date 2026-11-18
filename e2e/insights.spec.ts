@@ -86,7 +86,7 @@ test.describe("Leituras sobre o histórico", () => {
       await expect(page.getByTestId("yoy-row-net")).toContainText("+");
 
       await page.goto("/#/orcamento");
-      await expect(page.getByText("Face ao ano anterior").first()).toBeVisible();
+      await expect(page.getByText("Comparação mensal e anual").first()).toBeVisible();
     } finally {
       for (const id of criados) await request.delete(`/api/months/${id}`, { headers: cabecalhosApi() });
     }
@@ -103,15 +103,14 @@ test.describe("Leituras sobre o histórico", () => {
       await page.goto("/#/");
       await page.reload();
       await expect(page.getByTestId("yoy-card")).toBeVisible();
-      await clicar(page.getByTestId("yoy-ref-select"));
-      await page.getByRole("option", { name: "Comparar com outros meses" }).click();
+      await clicar(page.getByTestId("yoy-type-select"));
+      await page.getByRole("option", { name: "Comparar com mês" }).click();
       await expect(page.getByTestId("yoy-empty")).toContainText("cada lado");
+      await expect(page.getByTestId("yoy-year-select")).toBeVisible();
+      await expect(page.getByTestId("yoy-ref-select")).toHaveCount(0);
 
       await clicar(page.getByTestId("yoy-months-trigger"));
-      const alternar = page.getByTestId("yoy-months-toggle-all");
-      if ((await alternar.textContent()) !== "Limpar seleção") await alternar.click(); // tudo escolhido
-      await alternar.click(); // limpar
-      await expect(page.getByTestId("yoy-months-trigger")).toContainText("Nenhum mês");
+      await expect(page.getByTestId("yoy-months-panel").locator("fieldset")).toHaveCount(1); // só o ano escolhido
       await page.getByTestId("yoy-months-month-2026-08").click();
       await page.keyboard.press("Escape");
       await clicar(page.getByTestId("yoy-base-trigger"));
