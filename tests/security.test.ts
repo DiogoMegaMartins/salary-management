@@ -84,12 +84,29 @@ test("mudar o código funciona com o código antigo; o novo passa a valer", asyn
   assert.equal((await call("GET", "/api/state")).status, 200);
 });
 
-test("tentativas erradas pelo cabeçalho também são limitadas (429), mesmo com o código certo", async () => {
+test("tentativas erradas pelo cabeçalho são limitadas (429); o código certo já conhecido continua a passar", async () => {
   let blocked = 0;
   for (let i = 0; i < 8 && !blocked; i++) {
     const s = (await call("GET", "/api/state", undefined, { code: "errado" + i })).status;
     if (s === 429) blocked = i + 1; else assert.equal(s, 401);
   }
   assert.ok(blocked > 0 && blocked <= 6, "bloqueia ao fim de poucas tentativas");
-  assert.equal((await call("GET", "/api/state")).status, 429);
+  assert.equal((await call("GET", "/api/state", undefined, { code: "outro-errado" })).status, 429);
+  // o dono (código já verificado antes) não fica trancado por tentativas alheias no mesmo IP
+  assert.equal((await call("GET", "/api/state")).status, 200);
+});
+
+test("sem código, o corpo nem chega a ser lido: JSON inválido dá 401 e não 400", async () => {
+  const r = await call("POST", "/api/import", undefined, { code: "", raw: "{isto não é json" });
+  assert.equal(r.status, 401);
+  const grande = await call("POST", "/api/import/preview", undefined, { code: "", raw: JSON.stringify({ x: "y".repeat(2_000_000) }) });
+  assert.equal(grande.status, 401);
+});
+
+test("o limitador agrupa IPv6 por /64", async () => {
+  const { ipKey } = await import("../server/access");
+  assert.equal(ipKey("2001:db8:1:2:aaaa:bbbb:cccc:dddd"), ipKey("2001:db8:1:2:1111:2222:3333:4444"));
+  assert.notEqual(ipKey("2001:db8:1:3::1"), ipKey("2001:db8:1:2::1"));
+  assert.equal(ipKey("203.0.113.7"), "203.0.113.7");
+  assert.equal(ipKey("::ffff:203.0.113.7"), "::ffff:203.0.113.7");
 });

@@ -20,7 +20,8 @@ export default defineConfig({
   server: {
     fs: {
       strict: true,
-      deny: ["**/.*"],
+      // ficheiros dotfile, a base de dados, as cópias de segurança e os backups de importação nunca saem do servidor de desenvolvimento
+      deny: ["**/.*", "**/*.db", "**/*.db-*", "**/*.sqlite*", "**/backups/**", "**/pre-import-backup-*.json"],
     },
   },
 });

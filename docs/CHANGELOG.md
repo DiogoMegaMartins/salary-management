@@ -2,6 +2,17 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.12.2 | 2026-11-18
+
+Segurança (auditoria).
+
+- O código de acesso passa a ser verificado **antes** dos `express.json` (`server/middleware.ts`); `/api/import` e `/api/offline` sem `inflate`.
+- `verifyCodeAsync` (scrypt assíncrono), `knownGood` (código já verificado passa sempre), limitador por IP/`/64` e teto global de 60 falhas/min (`authLimiter`, `globalLimiter`, `ipKey`).
+- Aviso no arranque em produção sem código de acesso.
+- `vite.config.ts`: `server.fs.deny` cobre `*.db`, `backups/` e `pre-import-backup-*.json`.
+- `docs/SEGURANCA.md` atualizado (incluindo a revisão manual do `xlsx`).
+- Testes: 3 novos em `tests/security.test.ts`, 1 ajustado (o dono já autenticado não é trancado). Sem alterações ao esquema de dados.
+
 ## 1.12.1 | 2026-11-18
 
 Correções financeiras da auditoria.

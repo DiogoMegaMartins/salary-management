@@ -1,5 +1,7 @@
 import express from "express";
 import type { Express } from "express";
+import { storage } from "./storage";
+import { authLimiter, globalLimiter, GLOBAL_KEY, ipKey, knownGood, verifyCodeAsync } from "./access";
 
 /**
  * Configuração base partilhada pelo servidor e pelos testes: proxy, cabeçalhos, limites de corpo
@@ -34,9 +36,38 @@ export function installBase(app: Express) {
     next();
   });
 
+  // Código de acesso ANTES de ler corpos: um pedido sem código não faz o servidor descomprimir e
+  // interpretar até 50 MB de JSON. Só por cabeçalho: o código nunca viaja em URLs (histórico/logs).
+  app.use("/api", async (req, res, next) => {
+    try {
+      res.setHeader("Cache-Control", "no-store");
+      if (req.path === "/auth" || req.path === "/auth/status" || req.path === "/health") return next();
+      const code = storage.getAccessCode().trim();
+      if (!code) return next();
+      const given = String(req.headers["x-codigo-acesso"] ?? "").trim();
+      // um código já verificado passa sempre: quem partilha o IP de um atacante (NAT) não fica trancado
+      if (given && knownGood(code, given)) return next();
+      if (given) {
+        const ip = ipKey(req.ip);
+        const wait = Math.max(authLimiter.retryAfterSeconds(ip), globalLimiter.retryAfterSeconds(GLOBAL_KEY));
+        if (wait) {
+          res.setHeader("Retry-After", String(wait));
+          return res.status(429).json({ ok: false, message: "Demasiadas tentativas. Tenta novamente dentro de alguns minutos." });
+        }
+        if (await verifyCodeAsync(code, given)) return next();
+        authLimiter.fail(ip);
+        globalLimiter.fail(GLOBAL_KEY);
+      }
+      res.status(401).json({ message: "Código de acesso inválido." });
+    } catch (e) {
+      next(e);
+    }
+  });
+
   // Importações de backup/CSV e sincronização offline precisam de corpos grandes; o resto não.
-  app.use("/api/import", express.json({ limit: "50mb" }));
-  app.use("/api/offline", express.json({ limit: "10mb" }));
+  // Sem `inflate`: a app não comprime pedidos, e descomprimir é a forma barata de inflar memória.
+  app.use("/api/import", express.json({ limit: "50mb", inflate: false }));
+  app.use("/api/offline", express.json({ limit: "10mb", inflate: false }));
   app.use(express.json({ limit: "1mb" }));
 
   app.use("/api", (req, res, next) => {

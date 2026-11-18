@@ -1,4 +1,4 @@
-import { scryptSync, randomBytes, timingSafeEqual, createHash } from "node:crypto";
+import { scryptSync, scrypt, randomBytes, timingSafeEqual, createHash } from "node:crypto";
 
 /** Código de acesso: guardado só como hash scrypt; comparação em tempo constante. */
 const PREFIX = "scrypt$";
@@ -28,6 +28,37 @@ export function verifyCode(stored: string, given: string): boolean {
     okCache.add(key);
   }
   return good;
+}
+
+/** Já foi verificado como certo (cache em memória): não custa scrypt e não passa pelo limitador. */
+export function knownGood(stored: string, given: string): boolean {
+  stored = stored.trim();
+  if (!isHashed(stored)) return false;
+  return okCache.has(createHash("sha256").update(`${stored}\0${given}`).digest("hex"));
+}
+
+const scryptAsync = (pw: string, salt: Buffer) =>
+  new Promise<Buffer>((resolve, reject) => scrypt(pw, salt, 32, (e, k) => (e ? reject(e) : resolve(k))));
+
+/** Como `verifyCode`, mas o scrypt corre fora do thread principal (uma tentativa falhada não bloqueia o servidor). */
+export async function verifyCodeAsync(stored: string, given: string): Promise<boolean> {
+  stored = stored.trim();
+  if (!isHashed(stored) || knownGood(stored, given)) return verifyCode(stored, given);
+  const [, saltHex, hashHex] = stored.split("$");
+  if (!saltHex || !hashHex) return false;
+  const good = same(await scryptAsync(given, Buffer.from(saltHex, "hex")), Buffer.from(hashHex, "hex"));
+  if (good) {
+    if (okCache.size > 50) okCache.clear();
+    okCache.add(createHash("sha256").update(`${stored}\0${given}`).digest("hex"));
+  }
+  return good;
+}
+
+/** Chave do limitador: IPv4 inteiro; IPv6 agrupado por /64 (um atacante com um /64 tem 2^64 endereços). */
+export function ipKey(ip: string | undefined): string {
+  const v = String(ip ?? "?");
+  if (v.includes(":") && !v.includes(".")) return v.split(":").slice(0, 4).join(":");
+  return v;
 }
 
 /** Limitador de falhas por IP (janela fixa). */
@@ -61,3 +92,8 @@ export function publicState<T extends { settings: { accessCode?: string } }>(sta
   const { changeLog: _log, ...rest } = state as any;
   return { ...rest, settings: publicSettings(state.settings) } as T;
 }
+
+/** 5 falhas por IP (ou /64) em 15 minutos, mais um teto global de 60 falhas por minuto contra rotação de IPs. */
+export const authLimiter = makeLimiter(5, 15 * 60 * 1000);
+export const globalLimiter = makeLimiter(60, 60 * 1000);
+export const GLOBAL_KEY = "*";
