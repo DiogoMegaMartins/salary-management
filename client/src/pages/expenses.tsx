@@ -9,7 +9,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useConfirm } from "@/components/confirm";
 import { useToast } from "@/hooks/use-toast";
-import { useAppState, useSave } from "@/lib/app";
+import { useAppState, useDerived, useSave } from "@/lib/app";
+import { SectionCard } from "@/components/kpi";
+import { AnomaliesCard } from "@/components/insights";
 import { errMsg } from "@/components/catalogs";
 import { UNCLASSIFIED, expenseView, fmtEur } from "@shared/calc";
 import type { Transaction } from "@shared/schema";
@@ -41,6 +43,7 @@ type Draft = { id?: number; date: string; value: string; category: string; parce
 
 export default function ExpensesPage() {
   const { data, isLoading } = useAppState();
+  const derived = useDerived(data);
   const save = useSave();
   const { toast } = useToast();
   const { ask, dialog: confirmDialog } = useConfirm();
@@ -296,6 +299,11 @@ export default function ExpensesPage() {
               </section>
             ))}
           </div>
+        )}
+        {derived && (
+          <SectionCard title="Despesas fora do padrão" description={`${month.label} ${month.year} contra o habitual de cada categoria`}>
+            <AnomaliesCard d={derived} monthId={month.id} />
+          </SectionCard>
         )}
       </div>
     </AppShell>

@@ -229,7 +229,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         <P>Se nenhum dos meses escolhidos tiver par no ano de comparação, o cartão explica porquê.</P>
         <H3>Despesas fora do padrão</H3>
         <P>
-          Olha para o último mês do período com despesas e assinala as categorias que ficaram bem acima do habitual: mais de duas
+          Está na página Despesas e olha para o mês escolhido ali. Assinala as categorias que ficaram bem acima do habitual: mais de duas
           vezes o desvio dos até 12 meses anteriores, pelo menos 1,5 vezes a média e acima de 20 €. Uma categoria sem gasto nos meses
           anteriores aparece como <em>Novo</em> a partir de 40 €. São precisos pelo menos 3 meses anteriores com dados.
         </P>
@@ -387,10 +387,10 @@ export const HELP_SECTIONS: HelpSection[] = [
           <li><strong>Alerta</strong> — assinalado quando o desvio percentual atinge ou excede o limite configurado (10% por defeito).</li>
         </UL>
         <P>Para investigar um desvio, use o drill-down do Painel a partir do KPI de Gastos ou de uma parcela.</P>
-        <H3>Comparação mensal e anual e despesas fora do padrão</H3>
+        <H3>Comparação mensal e anual</H3>
         <P>
           Em baixo, o Orçamento mostra a despesa por categoria contra os mesmos meses do ano anterior (com a variação em euros e em
-          percentagem) e as categorias do último mês que fugiram ao habitual. Funcionam como no Painel.
+          percentagem), com a escolha do Painel. As categorias que fugiram ao habitual ficam na página Despesas.
         </P>
       </>
     ),
@@ -696,7 +696,7 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
         <UL>
           <li>Ritmo das metas: aviso quando, ao ritmo atual, uma meta não chega ao objetivo na data alvo, com o que seria preciso poupar por mês.</li>
           <li>Comparação com o ano anterior no Painel e no Orçamento (por indicador e por categoria).</li>
-          <li>Despesas fora do padrão: categorias do último mês bem acima do habitual.</li>
+          <li>Despesas fora do padrão: categorias do mês escolhido bem acima do habitual.</li>
           <li>Relatório mensal em PDF (deixa de haver descarga em Markdown).</li>
           <li>Rotas da API validadas com esquemas formais: pedidos com campos desconhecidos ou identificadores inválidos são recusados.</li>
           <li>Sem alterações às fórmulas financeiras ou ao esquema de dados.</li>

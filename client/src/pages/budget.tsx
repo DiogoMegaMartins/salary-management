@@ -22,7 +22,6 @@ import { FilterBar } from "@/components/filter-bar";
 import { EditableSectionGrid, type SectionSpec } from "@/components/editable-section-grid";
 import { usePageLayout } from "@/lib/page-layout";
 import { MonthlyReportDialog } from "@/components/monthly-report-dialog";
-import { AnomaliesCard } from "@/components/insights";
 import { CategoryYearOverYear } from "@/components/yoy";
 import {
   budgetVsRealByCategory,
@@ -324,20 +323,10 @@ export default function BudgetPage() {
           {
             id: "orc-ano-anterior",
             title: "Comparação mensal e anual",
-            defaultLayout: { x: 0, y: 29, w: 6, h: 12 },
+            defaultLayout: { x: 0, y: 29, w: 12, h: 12 },
             node: (
               <SectionCard title="Comparação mensal e anual" description="Despesa por categoria; a escolha é a mesma do Painel">
                 <CategoryYearOverYear d={d} />
-              </SectionCard>
-            ),
-          },
-          {
-            id: "orc-padrao",
-            title: "Despesas fora do padrão",
-            defaultLayout: { x: 6, y: 29, w: 6, h: 10 },
-            node: (
-              <SectionCard title="Despesas fora do padrão" description="O último mês com despesas do período contra o habitual de cada categoria">
-                <AnomaliesCard d={d} />
               </SectionCard>
             ),
           },

@@ -56,7 +56,7 @@ test.describe("Leituras sobre o histórico", () => {
       for (const m of historico) await novo(m, 10);
       await novo(alvo, 300);
 
-      await page.goto("/#/");
+      await page.goto("/#/despesas"); // mostra o mês mais recente, que é o alvo
       await page.reload(); // os dados foram alterados pela API: recarrega o estado
       const item = page.getByTestId("anomaly-anomalia-e2e");
       await expect(item).toBeVisible();
