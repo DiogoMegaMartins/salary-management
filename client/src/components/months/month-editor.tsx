@@ -136,6 +136,7 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
                   value={form.label}
                   onChange={(e) => set("label", e.target.value)}
                   className="h-9 text-sm"
+                  aria-label="Etiqueta do mês"
                   data-testid="input-label"
                 />
               </div>
@@ -265,6 +266,7 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
                 onChange={(e) => set("notes", e.target.value)}
                 rows={2}
                 placeholder="Ex.: subsídio de férias pago neste mês"
+                aria-label="Notas do mês"
                 className="text-sm"
               />
             </div>

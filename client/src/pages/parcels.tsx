@@ -350,6 +350,7 @@ export default function Parcels() {
                 value={draft.name}
                 onChange={(e) => setDraft({ ...draft, name: e.target.value })}
                 placeholder="Ex.: Obrigações"
+                aria-label="Nome da nova parcela"
                 data-testid="input-new-parcel-name"
               />
             </div>
