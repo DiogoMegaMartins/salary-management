@@ -23,10 +23,13 @@ const GOOD = "text-emerald-700 dark:text-emerald-400";
 const BAD = "text-destructive";
 /** Cor da variação: `upIsGood` indica se subir é bom (rendimento, poupança) ou mau (gastos, descontos). */
 const tone = (x: number | null, upIsGood: boolean) => (x == null || Math.abs(x) < 0.0005 ? "text-muted-foreground" : (x > 0) === upIsGood ? GOOD : BAD);
-const eurSigned = (x: number) => `${x >= 0 ? "+" : "−"}${fmtEur(Math.abs(x))}`;
+const eurSigned = (x: number) => (Math.abs(x) < 0.005 ? fmtEur(0) : `${x > 0 ? "+" : "−"}${fmtEur(Math.abs(x))}`);
 /** Variação em euros e em percentagem: "+143,00 € (+20,0%)" */
 const eurPct = (delta: number, pct: number | null) => `${eurSigned(delta)}${pct != null ? ` (${pctSigned(pct)})` : ""}`;
-const pp = (x: number) => `${x >= 0 ? "+" : ""}${(x * 100).toFixed(1).replace(".", ",")} p.p.`;
+const pp = (x: number) => {
+  const v = Math.round(x * 1000) / 10;
+  return `${v > 0 ? "+" : ""}${(v === 0 ? 0 : v).toFixed(1).replace(".", ",")} p.p.`;
+};
 
 /** Meses e ano de referência em uso: a escolha guardada ou, sem ela, os meses do filtro. */
 export function useYoYComparison(d: Derived) {
@@ -372,7 +375,7 @@ function MetricsTable({ yoy, parcels }: { yoy: YoYData; parcels: ReturnType<type
               <td className="py-1.5 pr-3">Total alocado por parcela</td>
               <td className="tnum py-1.5 pr-3">{fmtEur(cols.swap ? allocPrev : allocCur)}</td>
               <td className="tnum py-1.5 pr-3 text-muted-foreground">{fmtEur(cols.swap ? allocCur : allocPrev)}</td>
-              <td className="tnum py-1.5 text-muted-foreground">{eurPct(Math.round((allocCur - allocPrev) * 100) / 100, allocPrev > 0 ? allocCur / allocPrev - 1 : null)}</td>
+              <td className={cn("tnum py-1.5", tone(allocPrev > 0 ? allocCur / allocPrev - 1 : allocCur - allocPrev, true))}>{eurPct(Math.round((allocCur - allocPrev) * 100) / 100, allocPrev > 0 ? allocCur / allocPrev - 1 : null)}</td>
             </tr>
             {parcels.map((r) => (
               <tr key={r.id} className="border-t border-border/40 text-muted-foreground" data-testid={`yoy-parcel-${r.id}`}>
@@ -384,7 +387,7 @@ function MetricsTable({ yoy, parcels }: { yoy: YoYData; parcels: ReturnType<type
                 </td>
                 <td className="tnum py-1.5 pr-3">{fmtEur(cols.swap ? r.previous : r.current)}</td>
                 <td className="tnum py-1.5 pr-3 text-muted-foreground">{fmtEur(cols.swap ? r.current : r.previous)}</td>
-                <td className="tnum py-1.5 font-medium text-muted-foreground">{eurPct(r.delta, r.deltaPct)}</td>
+                <td className={cn("tnum py-1.5", tone(r.delta, true))}>{eurPct(r.delta, r.deltaPct)}</td>
               </tr>
             ))}
           </tbody>

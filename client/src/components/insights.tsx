@@ -6,7 +6,12 @@ import { cn } from "@/lib/utils";
 import { fmtEur, formatYearMonth, spendAnomalies, type GoalPace } from "@shared/calc";
 
 /** Variação relativa com sinal ("+12,3%"); "—" quando não há base de comparação. */
-export const pctSigned = (x: number | null) => (x == null ? "—" : `${x >= 0 ? "+" : ""}${(x * 100).toFixed(1).replace(".", ",")}%`);
+/** Variação em %: sem sinal quando é zero (não houve aumento nem diminuição). */
+export const pctSigned = (x: number | null) => {
+  if (x == null) return "—";
+  const v = Math.round(x * 1000) / 10;
+  return `${v > 0 ? "+" : ""}${(v === 0 ? 0 : v).toFixed(1).replace(".", ",")}%`;
+};
 
 const GOOD = "text-emerald-700 dark:text-emerald-400";
 const BAD = "text-destructive";
