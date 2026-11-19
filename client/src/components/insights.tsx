@@ -52,15 +52,20 @@ export function GoalPaceLine({ pace, money, testId }: { pace: GoalPace; money: (
 
 /* ------------------------------------------------------------ despesas fora do padrão */
 
-/** Despesas do último mês do período (com despesas registadas) que fogem ao habitual de cada categoria. */
-export function AnomaliesCard({ d }: { d: Derived }) {
+/**
+ * Despesas que fogem ao habitual de cada categoria. Sem `monthId`, usa o último mês do período
+ * (com despesas registadas); com `monthId`, usa esse mês (ex.: o mês escolhido em Despesas).
+ */
+export function AnomaliesCard({ d, monthId }: { d: Derived; monthId?: number }) {
   const result = useMemo(() => {
     const withSpend = new Set(d.allTransactions.filter((t) => t.type === "expense").map((t) => t.monthId));
-    const target = [...d.months].reverse().find((m) => withSpend.has(m.id)) ?? null;
+    const target = monthId != null
+      ? (d.allMonths.find((m) => m.id === monthId && withSpend.has(m.id)) ?? null)
+      : ([...d.months].reverse().find((m) => withSpend.has(m.id)) ?? null);
     if (!target) return null;
     const priorWithData = d.allMonths.filter((m) => m.year * 12 + m.month < target.year * 12 + target.month).length;
     return { target, priorWithData, items: spendAnomalies(d.allTransactions, d.allMonths, target.id) };
-  }, [d.allMonths, d.allTransactions, d.months]);
+  }, [d.allMonths, d.allTransactions, d.months, monthId]);
   if (!result) {
     return (
       <p className="flex items-start gap-2 py-4 text-xs text-muted-foreground" data-testid="anomalies-nospend">

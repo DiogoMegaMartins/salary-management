@@ -5,6 +5,8 @@ Ordem do mais recente para o mais antigo.
 ## 1.12.7 | 2026-11-19
 
 - Widget "Comparação mensal e anual": "Total alocado por parcela" é uma linha normal (sem negrito nem sombreado) com os totais e a variação, e as parcelas ficam por baixo como subindicadores.
+- "Despesas fora do padrão" passou do Painel e do Orçamento para a página Despesas e usa o mês escolhido ali. A comparação mensal e anual ocupa a largura toda no Painel e no Orçamento.
+- Comparação: as parcelas ganham cor pela variação (verde sobe, vermelho desce) e uma variação zero aparece sem "+".
 - Versão da app numa só fonte: `shared/version.ts` lê o `version` do `package.json` (servidor e ajuda).
 - Arredondamento: `round2` de `@shared/evo08` usado também em `server/routes.ts` e `server/validation.ts`.
 - Acessibilidade: nomes acessíveis nos campos de regra e meta das parcelas, nome da nova parcela, etiqueta e notas do mês.

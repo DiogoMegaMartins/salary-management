@@ -31,7 +31,7 @@ import { MonthlyReportDialog } from "@/components/monthly-report-dialog";
 import { EditableSectionGrid, type SectionSpec } from "@/components/editable-section-grid";
 import { usePageLayout } from "@/lib/page-layout";
 import { buildDashboardModel } from "@/lib/dashboard-model";
-import { AnomaliesCard, GoalPaceLine } from "@/components/insights";
+import { GoalPaceLine } from "@/components/insights";
 import { YearOverYearCard } from "@/components/yoy";
 
 export default function Dashboard() {
@@ -591,20 +591,10 @@ export default function Dashboard() {
             sections.push({
               id: "ano-anterior",
               title: "Comparação mensal e anual",
-              defaultLayout: { x: 0, y: 48, w: 6, h: 16 },
+              defaultLayout: { x: 0, y: 48, w: 12, h: 16 },
               node: (
                 <SectionCard title="Comparação mensal e anual" description="Compara com um ano ou com outros meses do mesmo ano">
                   <YearOverYearCard d={d} />
-                </SectionCard>
-              ),
-            });
-            sections.push({
-              id: "fora-do-padrao",
-              title: "Despesas fora do padrão",
-              defaultLayout: { x: 6, y: 48, w: 6, h: 8 },
-              node: (
-                <SectionCard title="Despesas fora do padrão" description="O último mês com despesas do período contra o habitual de cada categoria">
-                  <AnomaliesCard d={d} />
                 </SectionCard>
               ),
             });
