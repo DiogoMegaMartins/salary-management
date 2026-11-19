@@ -2,6 +2,17 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.12.6 | 2026-11-18
+
+Correções menores da auditoria.
+
+- `goalBreakdown`: sem saldo inicial, a parte atribuída a submetas sai do saldo por distribuir (`txNet = -linked`), por isso o total da meta não muda.
+- `updateTransaction`: 409 se o valor ficar abaixo do atribuído a submetas, ou se mudar o tipo ou a parcela com atribuições.
+- `POST /api/months/:id/apply-rules` corre numa transação (tudo ou nada).
+- `checkConsistency`: novo erro `dist_plataformas` (distribuição por plataformas acima do total da parcela); `setAssets` devolve o erro real da distribuição.
+- Meses repetidos (mesmo ano e mês): a data de um movimento escolhe um mês aberto (depois o mais antigo) e as ocorrências de recorrências são únicas e vão para um mês aberto.
+- Testes: 5 novos em `tests/correcao-financeira.test.ts`. Sem alterações ao esquema de dados.
+
 ## 1.12.5 | 2026-11-18
 
 Limpeza e bundle (auditoria).

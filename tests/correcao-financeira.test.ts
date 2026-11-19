@@ -104,3 +104,63 @@ test("datas locais: dentro do mês indicado e sem passar por UTC", () => {
   assert.equal(dateInMonth(2026, 12, dia3dez), "2026-12-03");
   assert.equal(dateInMonth(2028, 2, dia3dez), "2028-02-29");
 });
+
+test("sem saldo inicial, atribuir um aporte a uma submeta não aumenta o total da meta", async () => {
+  const { goalBreakdown } = await import("../shared/calc");
+  const base = { monthly: [{ key: 2026 * 12, amount: 500 }], entries: [], subgoals: [{ id: 1, parcelId: 1, name: "S", currency: "EUR", target: null }], rates: [], refCurrency: "EUR" } as any;
+  const tx = [{ id: 1, parcelId: 1, type: "contribution", date: "2026-01-10", value: 300 }];
+  const sem = goalBreakdown({ ...base, links: [], transactions: tx }, 1);
+  const com = goalBreakdown({ ...base, links: [{ transactionId: 1, subgoalId: 1, amount: 300 }], transactions: tx }, 1);
+  assert.equal(sem.total, 500);
+  assert.equal(com.total, 500);
+  assert.equal(com.unallocated, 200);
+});
+
+test("a distribuição por plataformas acima do total da parcela é um erro de consistência", async () => {
+  const { checkConsistency } = await import("../shared/evo08");
+  const d = {
+    months: [{ id: 1, year: 2026, month: 1 }], parcels: [{ id: 1, name: "P" }], platforms: [{ id: 1 }, { id: 2 }], subgoals: [], goalEntries: [], transactions: [], allocationAssets: [],
+    allocations: [{ id: 1, monthId: 1, parcelId: 1, mode: "fixo", value: 150 }],
+    allocationPlatforms: [{ id: 1, allocationId: 1, platformId: 1, mode: "fixo", value: 100 }, { id: 2, allocationId: 1, platformId: 2, mode: "fixo", value: 100 }],
+    availableByMonth: { 1: 1000 },
+  } as any;
+  assert.ok(checkConsistency(d).some((i) => i.code === "dist_plataformas"));
+  d.allocationPlatforms[1].value = 50;
+  assert.ok(!checkConsistency(d).some((i) => i.code === "dist_plataformas"));
+});
+
+test("editar um aporte não pode deixá-lo abaixo do que está atribuído a submetas (409)", async () => {
+  const p = storage.createParcel({ name: "Meta CF", kind: "poupanca", color: "#333", defaultMode: "fixo", defaultValue: 0, currency: "EUR" } as any);
+  const m = mk(2033, 3);
+  const sg = storage.createSubgoal({ parcelId: p.id, name: "Sub", currency: "EUR" } as any);
+  const t = storage.createTransaction({ monthId: m.id, date: "2033-03-05", type: "contribution", value: 300, parcelId: p.id } as any);
+  storage.createContributionLink({ transactionId: t.id, subgoalId: sg.id, amount: 200 });
+  assert.equal((await call("PATCH", `/api/transactions/${t.id}`, { value: 100 })).status, 409);
+  assert.equal((await call("PATCH", `/api/transactions/${t.id}`, { type: "expense" })).status, 409);
+  assert.equal((await call("PATCH", `/api/transactions/${t.id}`, { value: 250 })).status, 200);
+});
+
+test("aplicar regras é tudo ou nada", async () => {
+  const pa = storage.createParcel({ name: "A CF", kind: "gastos", color: "#444", defaultMode: "fixo", defaultValue: 100 } as any);
+  const pb = storage.createParcel({ name: "B CF", kind: "gastos", color: "#555", defaultMode: "fixo", defaultValue: 50 } as any);
+  const m = mk(2034, 4);
+  const plat = storage.createPlatform({ name: "Plat CF" });
+  storage.setAllocation(m.id, pa.id, "fixo", 10); // a regra de A (100 €) mudaria este valor
+  storage.setAllocation(m.id, pb.id, "fixo", 300);
+  storage.setDistribution(m.id, pb.id, [{ platformId: plat.id, mode: "fixo", value: 300 }] as any);
+  const r = await call("POST", `/api/months/${m.id}/apply-rules`); // a regra de B (50 €) ficaria abaixo da distribuição de 300 €
+  assert.equal(r.status, 409);
+  const aloc = storage.getState().allocations.filter((a) => a.monthId === m.id);
+  assert.equal(aloc.find((a) => a.parcelId === pa.id)?.value, 10, "A não pode ter ficado alterada");
+  assert.equal(aloc.find((a) => a.parcelId === pb.id)?.value, 300);
+});
+
+test("meses repetidos: a data escolhe o mês aberto e as recorrências vão para um mês aberto", async () => {
+  const p = storage.createParcel({ name: "Rep CF", kind: "gastos", color: "#666", defaultMode: "fixo", defaultValue: 0 } as any);
+  const fechado = mk(2035, 12), aberto = storage.createMonth({ year: 2035, month: 12, label: "Dezembro (subsídio)", base: 500, taxaSs: 0, taxaIrsBase: 0 } as any);
+  assert.equal((await call("POST", `/api/months/${fechado.id}/close`, { destination: "manter" })).status, 200);
+  const outro = mk(2035, 11);
+  const t = await call("POST", "/api/transactions", { monthId: outro.id, date: "2035-12-10", type: "expense", value: 5, parcelId: p.id });
+  assert.ok(t.status === 200 || t.status === 201, JSON.stringify(t.json));
+  assert.equal(t.json.monthId, aberto.id);
+});

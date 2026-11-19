@@ -636,6 +636,13 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.12.6</H3>
+        <UL>
+          <li>Metas sem saldo inicial: atribuir um aporte a uma submeta já não aumenta o total da meta.</li>
+          <li>Editar um aporte ou retirada não pode deixá-lo abaixo do valor atribuído a submetas, nem mudar o seu tipo ou parcela enquanto houver atribuições.</li>
+          <li>"Aplicar regras" é tudo ou nada. A verificação de consistência avisa quando a distribuição por plataformas passa o total da parcela.</li>
+          <li>Com dois meses do mesmo ano e mês (ex.: "Dezembro" e "Dezembro (subsídio)"), as datas e as recorrências usam o mês aberto.</li>
+        </UL>
         <H3>1.12.5</H3>
         <UL>
           <li>Carregamento inicial mais leve: o código da base de dados e da validação deixou de ir no pacote da interface.</li>
@@ -728,5 +735,5 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
   },
 ];
 
-export const HELP_VERSION = "1.12.5";
+export const HELP_VERSION = "1.12.6";
 export const HELP_UPDATED_AT = "2026-11-18";

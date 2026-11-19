@@ -87,7 +87,9 @@ export function goalBreakdown(ctx: GoalCtx, parcelId: number): GoalBreakdown {
     .filter((l) => mySubs.some((s) => s.id === l.subgoalId) && txOf.has(l.transactionId))
     .reduce((a, l) => a + sign(txOf.get(l.transactionId)!) * c(l.amount), 0);
   // a parte atribuída a submetas sai do saldo não distribuído (sem dupla contagem)
-  const txNet = openingEntry ? txAll - linkedTotalCents : 0;
+  // sem saldo inicial os aportes não contam, mas a parte atribuída a submetas sai na mesma do saldo por distribuir:
+  // assim atribuir um aporte a uma submeta não aumenta o total da meta
+  const txNet = openingEntry ? txAll - linkedTotalCents : -linkedTotalCents;
 
   const adjMain = entries.filter((e) => e.kind === "ajuste" && e.subgoalId == null).reduce((a, e) => a + c(e.amount), 0);
   const openingMain = openingEntry ? c(openingEntry.amount) : 0;
