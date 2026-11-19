@@ -1,6 +1,6 @@
 # Nota: Dependabot e segurança das dependências
 
-Estado em 2026-11-19, versão 1.12.6.
+Estado em 2026-11-19, versão 1.12.7.
 
 ## O que está configurado
 - `.github/dependabot.yml`: npm é verificado **semanalmente** (segunda-feira, 07:00 de Lisboa). As atualizações de versão estão desligadas (`open-pull-requests-limit: 0`), por isso só chegam PRs de segurança. GitHub Actions é verificado mensalmente, com no máximo um PR agrupado.

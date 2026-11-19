@@ -2,6 +2,15 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.12.7 | 2026-11-19
+
+- Widget "Comparação mensal e anual": "Total alocado por parcela" é uma linha normal (sem negrito nem sombreado) com os totais e a variação, e as parcelas ficam por baixo como subindicadores.
+- Versão da app numa só fonte: `shared/version.ts` lê o `version` do `package.json` (servidor e ajuda).
+- Arredondamento: `round2` de `@shared/evo08` usado também em `server/routes.ts` e `server/validation.ts`.
+- Acessibilidade: nomes acessíveis nos campos de regra e meta das parcelas, nome da nova parcela, etiqueta e notas do mês.
+- CI: e2e em série com o Chrome do runner (sem instalar browser nem `apt`); Dependabot semanal só para alertas, com nota em `docs/NOTA-DEPENDABOT.md`.
+- Sem alterações ao esquema de dados.
+
 ## 1.12.6 | 2026-11-18
 
 Correções menores da auditoria.

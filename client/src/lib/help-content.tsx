@@ -637,6 +637,11 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.12.7</H3>
+        <UL>
+          <li>Comparação mensal e anual: "Total alocado por parcela" passa a ser uma linha normal, com totais e variação, e as parcelas ficam por baixo como subindicadores.</li>
+          <li>Campos de parcelas e do editor de mês com nome para leitores de ecrã. Sem alterações às fórmulas nem ao esquema de dados.</li>
+        </UL>
         <H3>1.12.6</H3>
         <UL>
           <li>Metas sem saldo inicial: atribuir um aporte a uma submeta já não aumenta o total da meta.</li>
@@ -737,4 +742,4 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
 ];
 
 export const HELP_VERSION = APP_VERSION;
-export const HELP_UPDATED_AT = "2026-11-18";
+export const HELP_UPDATED_AT = "2026-11-19";
