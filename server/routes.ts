@@ -8,6 +8,7 @@ import {
 import { settingsPatchSchema, monthCreateSchema, monthPatchSchema, parcelCreateSchema, parcelPatchSchema, categoryCreateSchema, issueMessage } from "./validation";
 import type { ZodType } from "zod";
 import * as evo8 from "./evo08";
+import { round2 } from "@shared/evo08";
 import type { Express } from "express";
 import type { Server } from "node:http";
 import { storage, httpError, sqlite, dataDir } from "./storage";
@@ -638,6 +639,3 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   return httpServer;
 }
 
-function round2(n: number) {
-  return Math.round((Number.isFinite(n) ? n : 0) * 100) / 100;
-}

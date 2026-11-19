@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { APP_VERSION } from "@shared/version";
 
 /**
  * SM-011: conteúdo estático do centro de ajuda. Escrito em português de
@@ -735,5 +736,5 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
   },
 ];
 
-export const HELP_VERSION = "1.12.6";
+export const HELP_VERSION = APP_VERSION;
 export const HELP_UPDATED_AT = "2026-11-18";
