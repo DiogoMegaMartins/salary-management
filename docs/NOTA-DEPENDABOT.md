@@ -7,7 +7,7 @@ Estado em 2026-11-19, versão 1.12.6.
 - `.github/workflows/audit.yml`: `npm audit --omit=dev` toda a semana e quando `package*.json` muda.
 
 ## Como funciona (e o que o horário muda)
-Os PRs de **segurança** do Dependabot abrem-se quando surge um aviso numa dependência que o projeto usa, não no horário do `schedule`. O horário governa a verificação periódica de versões. Com o limite a 0, o resultado prático do horário semanal é que o Dependabot revê o repositório todas as semanas e passa a reagir aos avisos dentro dessa cadência de atualização do grafo de dependências.
+Os PRs de **segurança** do Dependabot abrem-se quando surge um aviso numa dependência que o projeto usa; o `schedule` não os atrasa nem os adianta. O horário governa a verificação periódica de versões, que está desligada no npm (limite 0). O horário semanal serve por isso sobretudo para manter a configuração explícita e a verificação regular; a proteção real depende de os alertas estarem ligados (ponto 1 abaixo).
 
 ## O que pode ser alterado, e porquê
 1. **Confirmar que os alertas e as atualizações de segurança estão ligados** em *Settings → Advanced Security* (Dependabot alerts e Dependabot security updates). Sem isto, o ficheiro não gera PRs de segurança. É a verificação mais importante e não se vê no código.
