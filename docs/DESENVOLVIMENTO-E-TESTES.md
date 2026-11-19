@@ -38,6 +38,6 @@ Estratégia trunk-based: a `main` recebe alterações só por pull request, com 
 | `ci.yml` | cada `push` (um run por commit; um push novo cancela o anterior, exceto na `main`) e manualmente | Node 24, quatro jobs em paralelo: `check` (tsc), `test` (`npm test`), `build` (inclui arranque em produção e `GET /api/health`) e `e2e` (Playwright) |
 | `audit.yml` | segundas-feiras e quando `package.json` ou o lock mudam | `npm audit --omit=dev --audit-level=high`; não bloqueia PRs |
 | `auto-pr.yml` | `push` de ramos que não sejam `main` ou `dependabot/**` | abre um PR em draft para `main`, se ainda não existir |
-| Dependabot | semanal | PRs de segurança no npm (as atualizações de versão estão desligadas) e no máximo um PR mensal para as GitHub Actions |
+| Dependabot | npm: semanal (segunda-feira, 07:00 de Lisboa); Actions: mensal | PRs de segurança no npm (as atualizações de versão estão desligadas) e no máximo um PR mensal de Actions |
 
 Pré-requisito do `auto-pr.yml`: Settings, Actions, General, "Allow GitHub Actions to create and approve pull requests". O CI não publica; ver [PUBLICACAO.md](PUBLICACAO.md). Diagrama em [ARQUITETURA.md](ARQUITETURA.md).
