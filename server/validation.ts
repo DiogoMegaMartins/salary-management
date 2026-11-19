@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { MIN_CODE_LENGTH } from "./access";
+import { round2 } from "@shared/evo08";
 
-const cents = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
+const cents = round2;
 const num = z.number();
 const bool01 = z.union([z.boolean(), z.literal(0), z.literal(1)]).transform((v) => (v ? 1 : 0));
 const parsesToObject = (s: string) => {

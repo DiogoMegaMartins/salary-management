@@ -5,7 +5,7 @@ import { months, transactions, monthClosures, changeLog, recurringExpenses, recu
 import { availableOf, allocationAmount } from "@shared/calc";
 import { checkConsistency, monthRemainder, nextMonthKey, isClosed, pendingOccurrences, parseCsv, validateCsvRows, fingerprint, round2, sumEuros, type CsvMapping } from "@shared/evo08";
 
-export const APP_VERSION = "1.12.6";
+export { APP_VERSION } from "@shared/version";
 export const ENV_NAME = process.env.NODE_ENV === "production" ? "produção" : "desenvolvimento";
 
 /** Máximo de entradas guardadas no histórico; as mais antigas saem quando é excedido. */
