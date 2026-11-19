@@ -203,6 +203,7 @@ export default function Parcels() {
                             save.parcel.mutate({ id: p.id, patch: { defaultValue: Number(e.target.value) } })
                           }
                           className="tnum h-8 text-xs"
+                          aria-label={`Valor da regra de alocação de ${p.name}`}
                           data-testid={`input-rule-${p.id}`}
                         />
                       </div>
@@ -230,6 +231,7 @@ export default function Parcels() {
                           })
                         }
                         className="tnum h-8 text-xs"
+                        aria-label={`Meta de ${p.name} (€)`}
                         data-testid={`input-target-${p.id}`}
                       />
                     </div>
@@ -348,6 +350,7 @@ export default function Parcels() {
                 value={draft.name}
                 onChange={(e) => setDraft({ ...draft, name: e.target.value })}
                 placeholder="Ex.: Obrigações"
+                aria-label="Nome da nova parcela"
                 data-testid="input-new-parcel-name"
               />
             </div>
