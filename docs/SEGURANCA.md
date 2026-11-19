@@ -28,3 +28,5 @@
 
 ## Sessão de acesso
 A sessão fica em sessionStorage do separador, expira após 30 minutos sem atividade, ao fechar o separador ou com 401.
+
+Ver também [NOTA-DEPENDABOT.md](NOTA-DEPENDABOT.md): o que o Dependabot cobre, o que fica de fora e o que pode ser alterado.

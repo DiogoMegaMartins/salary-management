@@ -1,10 +1,14 @@
 version: 2
 updates:
-  # npm: sem PRs de versões novas. Só chegam PRs de segurança (limite 0 desliga as atualizações de versão).
+  # npm: verificação semanal (segunda-feira) das dependências. Sem PRs de versões novas: só chegam PRs de
+  # segurança (limite 0 desliga as atualizações de versão; as de segurança continuam ativas).
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: monthly
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/Lisbon
     open-pull-requests-limit: 0
   # GitHub Actions: no máximo um PR por mês.
   - package-ecosystem: github-actions
