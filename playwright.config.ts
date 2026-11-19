@@ -15,9 +15,11 @@ export default defineConfig({
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
+  // No CI usa-se o Google Chrome que já vem no runner do GitHub: sem descarregar o Chromium nem instalar
+  // pacotes do sistema (apt), que chegou a demorar 5 minutos. Localmente usa-se o Chromium do Playwright.
   projects: [
-    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
-    { name: "telemovel", use: { ...devices["Pixel 7"] } },
+    { name: "desktop", use: { ...devices["Desktop Chrome"], ...(process.env.CI ? { channel: "chrome" } : {}) } },
+    { name: "telemovel", use: { ...devices["Pixel 7"], ...(process.env.CI ? { channel: "chrome" } : {}) } },
   ],
   // A app tem de estar compilada (npm run build) antes de correr os testes.
   webServer: {

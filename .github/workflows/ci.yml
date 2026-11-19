@@ -106,19 +106,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      # o Chromium do Playwright (~150 MB) fica em cache; com cache só se instalam as dependências do sistema
-      - name: Versão do Playwright
-        id: pwv
-        run: echo "v=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v6
-        id: pw
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.pwv.outputs.v }}
-      - if: steps.pw.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
-      - if: steps.pw.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v7
         if: failure()
