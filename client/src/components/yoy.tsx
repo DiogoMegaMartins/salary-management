@@ -342,6 +342,8 @@ function MetricsTable({ yoy, parcels }: { yoy: YoYData; parcels: ReturnType<type
     { id: "saved", label: "Poupança e investimento", cur: fmtEur(yoy.current.saved), prev: fmtEur(yoy.previous.saved), delta: yoy.delta.saved, text: withText(yoy.current.saved, yoy.previous.saved, yoy.delta.saved), upIsGood: true },
     { id: "rate", label: "Taxa de poupança", cur: fmtPct(yoy.current.savingsRate), prev: fmtPct(yoy.previous.savingsRate), delta: yoy.savingsRateDeltaPP, text: pp(yoy.savingsRateDeltaPP), upIsGood: true },
   ];
+  const allocCur = Math.round(parcels.reduce((a, r) => a + r.current, 0) * 100) / 100;
+  const allocPrev = Math.round(parcels.reduce((a, r) => a + r.previous, 0) * 100) / 100;
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[30rem] table-fixed text-left text-sm">
@@ -365,15 +367,16 @@ function MetricsTable({ yoy, parcels }: { yoy: YoYData; parcels: ReturnType<type
           ))}
         </tbody>
         {parcels.length > 0 && (
-          <tbody data-testid="yoy-parcels" className="border-t-2 border-border">
-            <tr className="bg-muted/50">
-              <th colSpan={4} scope="colgroup" className="pb-1.5 pt-4 text-left text-xs font-semibold uppercase tracking-wide text-foreground">
-                Total alocado por parcela
-              </th>
+          <tbody data-testid="yoy-parcels">
+            <tr className="border-t border-border" data-testid="yoy-row-alocado">
+              <td className="py-1.5 pr-3">Total alocado por parcela</td>
+              <td className="tnum py-1.5 pr-3">{fmtEur(cols.swap ? allocPrev : allocCur)}</td>
+              <td className="tnum py-1.5 pr-3 text-muted-foreground">{fmtEur(cols.swap ? allocCur : allocPrev)}</td>
+              <td className="tnum py-1.5 text-muted-foreground">{eurPct(Math.round((allocCur - allocPrev) * 100) / 100, allocPrev > 0 ? allocCur / allocPrev - 1 : null)}</td>
             </tr>
             {parcels.map((r) => (
-              <tr key={r.id} className="border-t border-border/60" data-testid={`yoy-parcel-${r.id}`}>
-                <td className="py-1.5 pl-4 pr-3">
+              <tr key={r.id} className="border-t border-border/40 text-muted-foreground" data-testid={`yoy-parcel-${r.id}`}>
+                <td className="py-1 pl-4 pr-3 text-[0.8125rem]">
                   <span className="inline-flex items-center gap-2">
                     {r.color && <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: r.color }} />}
                     {r.name}
