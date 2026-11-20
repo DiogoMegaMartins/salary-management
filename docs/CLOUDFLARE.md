@@ -32,7 +32,7 @@ A Cloudflare mantém o histórico do SQLite dos Durable Objects, com recuperaç�
 npx wrangler secret put ACCESS_CODE
 ```
 
-5. Abre o endereço `https://particao-do-salario.<a-tua-conta>.workers.dev`.
+5. Abre o endereço `https://salary-management.private.workers.dev`. A primeira parte é o nome do Worker (`name` em `wrangler.jsonc`); `private` é o subdomínio da conta, que se escolhe uma vez em Workers & Pages e é único em toda a Cloudflare (se já estiver ocupado, escolhe outro e o endereço muda).
 
 ## Migrar os dados atuais
 
