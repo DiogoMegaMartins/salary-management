@@ -331,8 +331,15 @@ export default function DataPage() {
               onChange={async (e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
+                let parsed: unknown;
                 try {
-                  const parsed = JSON.parse(await file.text());
+                  parsed = JSON.parse(await file.text());
+                } catch {
+                  toast({ title: "Ficheiro inválido", description: "Não foi possível ler o JSON.", variant: "destructive" });
+                  e.target.value = "";
+                  return;
+                }
+                try {
                   setPreviewError("");
                   const code = getAccessCode();
                   const res = await fetch(`${API_BASE}/api/import/preview`, {
@@ -340,17 +347,24 @@ export default function DataPage() {
                     headers: { "Content-Type": "application/json", "x-sm-client": "1", ...(code ? { "x-codigo-acesso": code } : {}) },
                     body: JSON.stringify(parsed),
                   });
-                  const body = await res.json();
+                  // a resposta pode não ser JSON (por exemplo, uma página de erro da plataforma)
+                  const text = await res.text();
+                  let body: any = null;
+                  try { body = JSON.parse(text); } catch { /* resposta que não é JSON */ }
                   if (!res.ok) {
-                    setPreviewError(body?.message ?? body?.error ?? "Ficheiro de backup inválido.");
+                    setPreviewError(body?.message ?? body?.error ?? `O servidor respondeu ${res.status}${text ? `: ${text.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 160)}` : "."}`);
+                    setPreview(null);
+                    setPending(null);
+                  } else if (!body) {
+                    setPreviewError("O servidor respondeu com algo que não é JSON. Tenta de novo; se continuar, vê os registos do servidor.");
                     setPreview(null);
                     setPending(null);
                   } else {
                     setPreview(body);
-                    setPending(parsed);
+                    setPending(parsed as any);
                   }
-                } catch {
-                  toast({ title: "Ficheiro inválido", description: "Não foi possível ler o JSON.", variant: "destructive" });
+                } catch (err) {
+                  toast({ title: "Não foi possível enviar o ficheiro", description: err instanceof Error ? err.message : "Falha de ligação ao servidor.", variant: "destructive" });
                 }
                 e.target.value = "";
               }}
