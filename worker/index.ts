@@ -1,5 +1,6 @@
 import { DurableObject } from "cloudflare:workers";
 import { handleAsNodeRequest } from "cloudflare:node";
+import { storageContext } from "./sqlite-shim";
 
 interface Env {
   SALARY: DurableObjectNamespace<SalaryDO>;
@@ -9,22 +10,37 @@ interface Env {
 
 const PORT = 8080;
 
-/** Um único objeto (`principal`) guarda todos os dados e corre a app Express. */
+type Globais = { __DO_STORAGE?: DurableObjectStorage; __SALARY_READY?: Promise<void> };
+const g = globalThis as Globais;
+
+/**
+ * Um único objeto (`principal`) guarda todos os dados e corre a app Express.
+ *
+ * A Cloudflare pode descartar o objeto e criar outro no mesmo processo, que mantém os módulos em cache. Por isso:
+ * o armazenamento atual é registado em cada criação (o substituto do SQLite lê-o a cada operação) e a app Express
+ * só se cria uma vez por processo, sem voltar a abrir a porta.
+ */
 export class SalaryDO extends DurableObject<Env> {
   private ready: Promise<void>;
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
     this.ready = ctx.blockConcurrencyWhile(async () => {
-      (globalThis as { __DO_STORAGE?: DurableObjectStorage }).__DO_STORAGE = ctx.storage;
+      g.__DO_STORAGE = ctx.storage;
       if (env.ACCESS_CODE) {
         process.env.ACCESS_CODE = env.ACCESS_CODE;
         process.env.ACCESS_CODE_FROM_SECRET = "1";
       }
-      // importado aqui porque o servidor abre a base de dados ao carregar
-      const { buildApp } = await import("../server/app");
-      const { httpServer } = await buildApp();
-      httpServer.listen(PORT);
+      g.__SALARY_READY ??= (async () => {
+        // importado aqui porque o servidor abre a base de dados ao carregar
+        const { buildApp } = await import("../server/app");
+        const { httpServer } = await buildApp();
+        httpServer.listen(PORT);
+      })().catch((err) => {
+        g.__SALARY_READY = undefined; // deixa o pedido seguinte tentar de novo
+        throw err;
+      });
+      await g.__SALARY_READY;
     });
   }
 
@@ -36,7 +52,7 @@ export class SalaryDO extends DurableObject<Env> {
     const ip = request.headers.get("cf-connecting-ip");
     if (ip) headers.set("x-forwarded-for", ip);
     else headers.delete("x-forwarded-for");
-    return handleAsNodeRequest(PORT, new Request(request, { headers }));
+    return storageContext.run(this.ctx.storage, () => handleAsNodeRequest(PORT, new Request(request, { headers })));
   }
 }
 

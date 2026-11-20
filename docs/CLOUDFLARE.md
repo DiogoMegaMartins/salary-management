@@ -49,6 +49,10 @@ npm run dev:worker
 
 `npm run check:worker` verifica os tipos do Worker (corre também no CI). Para correr os testes e2e contra o Worker, arranca `wrangler dev --port 5057 --local --var ACCESS_CODE:codigo-de-teste-1234` e corre `E2E_PORT=5057 npx playwright test`.
 
+## Armazenamento e reinícios
+
+A Cloudflare descarta o Durable Object quando está inativo e cria outro, no mesmo processo, quando chega um pedido. Os módulos ficam em cache nesse processo, por isso o servidor nunca guarda o armazenamento em variáveis de módulo: `worker/sqlite-shim.ts` lê o armazenamento do pedido em curso (`AsyncLocalStorage`) e `worker/index.ts` cria a app Express uma só vez por processo. Quem mexer nisto deve manter essa regra, ou volta o erro "Cannot perform I/O on behalf of a different Durable Object" (1101).
+
 ## Limites conhecidos
 
 - **Plano gratuito:** a Cloudflare limita o tempo de processamento por pedido (10 ms nos Workers gratuitos; a documentação dos Durable Objects indica 30 s, mas confirma o que se aplica à tua conta). Se aparecer o erro 1102 ("Worker exceeded resource limits") ou a app mostrar "Sem ligação" ao abrir, vê em Workers & Pages > salary-management > Observability se há "Exceeded CPU Time Limits". Importações grandes são o caso mais provável. O plano pago dos Workers (a partir de 5 USD por mês) sobe o limite.

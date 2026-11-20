@@ -7,6 +7,7 @@ Ordem do mais recente para o mais antigo.
 - Cloudflare: a app corre num Worker, com a interface em Static Assets e o Express e o SQLite dentro de um Durable Object. Ver `docs/CLOUDFLARE.md`. O servidor Node continua suportado.
 - `server/app.ts`: criação da app Express partilhada pelo servidor Node e pelo Worker.
 - Worker: o código de acesso compara-se em texto com o segredo `ACCESS_CODE` (sem scrypt no arranque), o limite de tentativas usa o IP real do visitante e a importação mostra o erro verdadeiro em vez de "Não foi possível ler o JSON".
+- Worker: corrigido o erro 1101 ("Cannot perform I/O on behalf of a different Durable Object"). A Cloudflare descarta o objeto e cria outro no mesmo processo, que mantém os módulos em cache; o armazenamento ficava preso ao primeiro objeto. Agora o armazenamento do pedido vem de um contexto (`AsyncLocalStorage`) e a app Express cria-se uma vez por processo. O Worker também devolve o motivo da falha em vez do "error code: 1101".
 - Novos: `worker/`, `wrangler.jsonc`, `npm run dev:worker`, `npm run deploy`, `npm run check:worker` e o workflow manual "Deploy (Cloudflare)".
 
 ## 1.12.7 | 2026-11-19
