@@ -51,6 +51,7 @@ Os dados ficam em `data.db` (SQLite) na raiz do projeto, criado no primeiro arra
 | [docs/MODELO-DE-DADOS.md](docs/MODELO-DE-DADOS.md) | Tabelas, colunas e relações |
 | [docs/REGRAS-DE-CALCULO.md](docs/REGRAS-DE-CALCULO.md) | Fórmulas e regras de arredondamento |
 | [docs/API.md](docs/API.md) | Endpoints REST |
+| [docs/CLOUDFLARE.md](docs/CLOUDFLARE.md) | Deploy na Cloudflare (Worker e Durable Object) |
 | [docs/BACKUP-E-RESTAURO.md](docs/BACKUP-E-RESTAURO.md) | Formato, importação e reversão |
 | [docs/SEGURANCA.md](docs/SEGURANCA.md) | Código de acesso, medidas e riscos conhecidos |
 | [docs/DESENVOLVIMENTO-E-TESTES.md](docs/DESENVOLVIMENTO-E-TESTES.md) | Ambiente, testes e convenções |

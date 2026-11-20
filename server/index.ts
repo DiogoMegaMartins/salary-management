@@ -1,60 +1,13 @@
 import "dotenv/config";
-import express, { Response, NextFunction } from 'express';
-import type { Request } from 'express';
-import { registerRoutes } from "./routes";
+import { buildApp, log } from "./app";
 import { serveStatic } from "./static";
-import { installBase } from "./middleware";
 import { startBackups } from "./backup";
 import { sqlite } from "./storage";
-import { createServer } from "node:http";
 
-const app = express();
-const httpServer = createServer(app);
-
-installBase(app);
-
-export function log(message: string, source = "express") {
-  const formattedTime = new Date().toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  });
-
-  console.log(`${formattedTime} [${source}] ${message}`);
-}
-
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      // sem corpo da resposta nos logs: contém dados financeiros e definições
-      log(`${req.method} ${path} ${res.statusCode} in ${duration}ms`);
-    }
-  });
-
-  next();
-});
+export { log };
 
 (async () => {
-  await registerRoutes(httpServer, app);
-
-  app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    // erros inesperados (sem estado HTTP) não expõem detalhes internos
-    const message = status >= 500 && !err.status && !err.statusCode ? "Erro interno do servidor." : err.message || "Erro interno do servidor.";
-
-    console.error("Internal Server Error:", err);
-
-    if (res.headersSent) {
-      return next(err);
-    }
-
-    return res.status(status).json({ message });
-  });
+  const { app, httpServer } = await buildApp();
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
