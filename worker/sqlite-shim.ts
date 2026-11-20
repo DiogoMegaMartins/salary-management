@@ -1,17 +1,37 @@
+import { AsyncLocalStorage } from "node:async_hooks";
+
 /**
  * Substituto de `better-sqlite3` para o Worker da Cloudflare.
  *
  * O código do servidor usa a API síncrona do better-sqlite3 (`prepare().get/all/run`, `exec`,
  * `transaction`). Esta classe expõe a mesma API por cima do SQLite de um Durable Object
- * (`ctx.storage.sql`), que também é síncrono. O Durable Object guarda o armazenamento em
- * `globalThis.__DO_STORAGE` antes de importar o servidor.
+ * (`ctx.storage.sql`), que também é síncrono.
+ *
+ * O Durable Object guarda o seu armazenamento em `globalThis.__DO_STORAGE` sempre que é criado. O
+ * armazenamento NUNCA se guarda em variáveis do módulo: os módulos ficam em cache no processo e, quando
+ * a Cloudflare descarta o objeto e cria outro, o código antigo continuava a usar o armazenamento do
+ * objeto anterior ("Cannot perform I/O on behalf of a different Durable Object"). Por isso o
+ * armazenamento atual é lido em cada operação.
  */
+
+/** Armazenamento do pedido em curso: cada Durable Object corre o seu pedido dentro deste contexto. */
+export const storageContext = new AsyncLocalStorage<DurableObjectStorage>();
+
+const current = (): DurableObjectStorage => {
+  const storage = storageContext.getStore() ?? (globalThis as { __DO_STORAGE?: DurableObjectStorage }).__DO_STORAGE;
+  if (!storage) throw new Error("Armazenamento do Durable Object indisponível.");
+  return storage;
+};
 
 type Bindings = unknown[];
 
 class Statement {
   private pluckOn = false;
-  constructor(private readonly sql: SqlStorage, private readonly text: string) {}
+  constructor(private readonly text: string) {}
+
+  private get sql(): SqlStorage {
+    return current().sql;
+  }
 
   pluck(on = true) {
     this.pluckOn = on;
@@ -42,21 +62,21 @@ class Statement {
 }
 
 export default class Database {
-  /** Usados pelo driver `drizzle-orm/durable-sqlite`, que espera um DurableObjectStorage. */
-  readonly sql: SqlStorage;
-  readonly transactionSync: <T>(fn: () => T) => T;
-  private readonly storage: DurableObjectStorage;
+  /** Usados pelo driver `drizzle-orm/durable-sqlite`, que espera um DurableObjectStorage e lê `sql` a cada consulta. */
+  get sql(): SqlStorage {
+    return current().sql;
+  }
+
+  transactionSync<T>(fn: () => T): T {
+    return current().transactionSync(fn);
+  }
 
   constructor(_path?: string) {
-    const storage = (globalThis as { __DO_STORAGE?: DurableObjectStorage }).__DO_STORAGE;
-    if (!storage) throw new Error("Armazenamento do Durable Object indisponível.");
-    this.storage = storage;
-    this.sql = storage.sql;
-    this.transactionSync = (fn) => storage.transactionSync(fn);
+    current(); // falha cedo se o armazenamento ainda não existir
   }
 
   prepare(text: string) {
-    return new Statement(this.sql, text);
+    return new Statement(text);
   }
 
   exec(text: string) {
@@ -70,7 +90,7 @@ export default class Database {
   }
 
   transaction<A extends unknown[], R>(fn: (...args: A) => R) {
-    return (...args: A): R => this.storage.transactionSync(() => fn(...args));
+    return (...args: A): R => current().transactionSync(() => fn(...args));
   }
 
   close() {}
