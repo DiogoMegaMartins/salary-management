@@ -78,6 +78,8 @@ sequenceDiagram
 | `server/storage-catalogs.ts`, `server/storage-goals.ts` | Plataformas e tipos; saldos, ajustes, submetas, atribuições e taxas. Compostos em `storage` |
 | `server/db.ts` | Ligação SQLite/Drizzle, criação e migração do esquema, `httpError` e `roundCents` |
 | `server/backup.ts` | Cópias automáticas da base de dados |
+| `server/app.ts` | Cria a app Express (rotas e erros); usada pelo servidor Node e pelo Worker |
+| `worker/`, `wrangler.jsonc` | Worker da Cloudflare: `SalaryDO` corre o Express e o SQLite; ver `docs/CLOUDFLARE.md` |
 | `shared/schema.ts` | Tabelas Drizzle e tipos |
 | `shared/calc.ts` e `shared/calc/` | Cálculos puros; `calc.ts` reexporta `month`, `budget`, `distribution`, `goals`, `expenses` e `insights` (ritmo das metas, ano anterior, despesas fora do padrão) |
 | `shared/pdf.ts` | Gerador de PDF a partir de Markdown simples, sem dependências; usado pelo relatório mensal |

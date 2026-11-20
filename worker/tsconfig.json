@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.json",
+  "include": ["../worker/**/*", "../shared/**/*", "../server/**/*"],
+  "exclude": ["../node_modules", "../dist"],
+  "compilerOptions": {
+    "tsBuildInfoFile": "../node_modules/typescript/tsbuildinfo-worker",
+    "baseUrl": "..",
+    "types": ["node", "@cloudflare/workers-types"]
+  }
+}

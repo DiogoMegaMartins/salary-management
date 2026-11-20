@@ -2,6 +2,12 @@
 
 Ordem do mais recente para o mais antigo.
 
+## Por lançar
+
+- Cloudflare: a app corre num Worker, com a interface em Static Assets e o Express e o SQLite dentro de um Durable Object. Ver `docs/CLOUDFLARE.md`. O servidor Node continua suportado.
+- `server/app.ts`: criação da app Express partilhada pelo servidor Node e pelo Worker.
+- Novos: `worker/`, `wrangler.jsonc`, `npm run dev:worker`, `npm run deploy`, `npm run check:worker` e o workflow manual "Deploy (Cloudflare)".
+
 ## 1.12.7 | 2026-11-19
 
 - Widget "Comparação mensal e anual": "Total alocado por parcela" é uma linha normal (sem negrito nem sombreado) com os totais e a variação, e as parcelas ficam por baixo como subindicadores.

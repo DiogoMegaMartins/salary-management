@@ -27,3 +27,6 @@ pre-import-backup-*.json
 # Testes de interface (Playwright)
 test-results/
 playwright-report/
+
+# Cloudflare Workers (estado local do wrangler)
+.wrangler/

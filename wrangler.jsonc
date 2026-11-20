@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "particao-do-salario",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  // só os pedidos à API passam pelo Worker; o resto é a interface estática
+  "assets": {
+    "directory": "dist/public",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "define": { "process.env.NODE_ENV": "\"production\"" },
+  "durable_objects": {
+    "bindings": [{ "name": "SALARY", "class_name": "SalaryDO" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["SalaryDO"] }],
+  // better-sqlite3 e o Drizzle para ele não correm no Worker: usam-se as versões do Durable Object
+  "alias": {
+    "better-sqlite3": "./worker/sqlite-shim.ts",
+    "drizzle-orm/better-sqlite3": "./worker/drizzle-shim.ts"
+  }
+}
