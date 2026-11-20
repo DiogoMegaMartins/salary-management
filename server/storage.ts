@@ -21,6 +21,7 @@ import { eq, and } from "drizzle-orm";
 import seedData from "./seed.json";
 import { availableOf, allocationAmount, distribute, distributeAssets, type DistLine } from "@shared/calc";
 import { db, sqlite, httpError, roundCents, dataDir, dbPath } from "./db";
+import { secretCode } from "./access";
 import { catalogMethods } from "./storage-catalogs";
 import { goalMethods } from "./storage-goals";
 
@@ -150,6 +151,8 @@ export const storage = {
 
   /** Valor guardado do código de acesso (hash, ou texto em bases antigas). Leitura direta e barata. */
   getAccessCode(): string {
+    const secret = secretCode();
+    if (secret) return secret; // Worker: o segredo ACCESS_CODE manda (ver server/access.ts)
     return (sqlite.prepare("SELECT access_code FROM settings ORDER BY id LIMIT 1").pluck().get() as string | undefined) ?? "";
   },
   updateSettings(patch: Partial<Settings>): Settings {

@@ -6,6 +6,7 @@ Ordem do mais recente para o mais antigo.
 
 - Cloudflare: a app corre num Worker, com a interface em Static Assets e o Express e o SQLite dentro de um Durable Object. Ver `docs/CLOUDFLARE.md`. O servidor Node continua suportado.
 - `server/app.ts`: criação da app Express partilhada pelo servidor Node e pelo Worker.
+- Worker: o código de acesso compara-se em texto com o segredo `ACCESS_CODE` (sem scrypt no arranque), o limite de tentativas usa o IP real do visitante e a importação mostra o erro verdadeiro em vez de "Não foi possível ler o JSON".
 - Novos: `worker/`, `wrangler.jsonc`, `npm run dev:worker`, `npm run deploy`, `npm run check:worker` e o workflow manual "Deploy (Cloudflare)".
 
 ## 1.12.7 | 2026-11-19
