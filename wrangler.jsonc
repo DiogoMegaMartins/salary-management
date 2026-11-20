@@ -11,6 +11,8 @@
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"]
   },
+  // registos e erros visíveis em Workers & Pages > salary-management > Observability
+  "observability": { "enabled": true },
   "define": { "process.env.NODE_ENV": "\"production\"" },
   "durable_objects": {
     "bindings": [{ "name": "SALARY", "class_name": "SalaryDO" }]
