@@ -42,6 +42,13 @@ export class SalaryDO extends DurableObject<Env> {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    return env.SALARY.getByName("principal").fetch(request);
+    try {
+      return await env.SALARY.getByName("principal").fetch(request);
+    } catch (err) {
+      // Sem isto a Cloudflare responde só "error code: 1101". O texto do erro vai nos registos e, truncado, na resposta.
+      const detail = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
+      console.error("O Worker falhou:", detail, err instanceof Error ? (err.stack ?? "") : "");
+      return Response.json({ message: "O servidor falhou ao responder.", detail: detail.slice(0, 300) }, { status: 500 });
+    }
   },
 } satisfies ExportedHandler<Env>;
