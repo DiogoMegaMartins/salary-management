@@ -1,4 +1,4 @@
-import { hashCode, verifyCode, verifyCodeAsync, knownGood, isHashed, authLimiter, globalLimiter, GLOBAL_KEY, ipKey, publicState, publicSettings, MIN_CODE_LENGTH } from "./access";
+import { secretCode, hashCode, verifyCode, verifyCodeAsync, knownGood, isHashed, authLimiter, globalLimiter, GLOBAL_KEY, ipKey, publicState, publicSettings, MIN_CODE_LENGTH } from "./access";
 import {
   idParamSchema, platformCreateSchema, platformPatchSchema, parcelTypeCreateSchema, parcelTypePatchSchema,
   txTypeCreateSchema, txTypePatchSchema, goalEntryCreateSchema, goalEntryPatchSchema, subgoalCreateSchema, subgoalPatchSchema,
@@ -48,7 +48,9 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   if (envCode && !envManaged) console.warn(`ACCESS_CODE ignorado: tem de ter pelo menos ${MIN_CODE_LENGTH} caracteres.`);
   {
     const stored = storage.getAccessCode().trim();
-    if (envManaged) {
+    if (secretCode()) {
+      /* Worker: compara-se o segredo em texto; não se grava hash (o scrypt não cabe no limite de CPU) */
+    } else if (envManaged) {
       if (!isHashed(stored) || !verifyCode(stored, envCode)) storage.updateSettings({ accessCode: hashCode(envCode) } as any);
     } else if (stored && !isHashed(stored)) {
       storage.updateSettings({ accessCode: hashCode(stored) } as any); // migra códigos antigos em claro

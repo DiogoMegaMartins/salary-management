@@ -16,7 +16,7 @@ A app pode correr na Cloudflare, em vez de num servidor Node. O código do servi
 | Base de dados | ficheiro `data.db` | SQLite do Durable Object |
 | Backups automáticos em ficheiro | sim (`BACKUP_*`) | não se aplicam; usa a exportação JSON da app |
 | Cópia antes de restaurar um backup | ficheiro `pre-import-backup-*.json` | não é gravada; exporta antes de restaurar |
-| Código de acesso | `ACCESS_CODE` no ambiente | segredo `ACCESS_CODE` do Worker |
+| Código de acesso | `ACCESS_CODE` no ambiente (guardado como hash scrypt) | segredo `ACCESS_CODE` do Worker, comparado em texto (o scrypt gasta mais CPU do que o plano gratuito permite) |
 | Versão do ambiente na app | "produção" | "produção" |
 
 A Cloudflare mantém o histórico do SQLite dos Durable Objects, com recuperação ao ponto no tempo (confirma o prazo atual na documentação da Cloudflare). Mantém a rotina de exportar um backup JSON.
@@ -51,6 +51,9 @@ npm run dev:worker
 
 ## Limites conhecidos
 
+- **Plano gratuito:** a Cloudflare limita o tempo de processamento por pedido (10 ms nos Workers gratuitos; a documentação dos Durable Objects indica 30 s, mas confirma o que se aplica à tua conta). Se aparecer o erro 1102 ("Worker exceeded resource limits") ou a app mostrar "Sem ligação" ao abrir, vê em Workers & Pages > salary-management > Observability se há "Exceeded CPU Time Limits". Importações grandes são o caso mais provável. O plano pago dos Workers (a partir de 5 USD por mês) sobe o limite.
+- **Código de acesso:** definido só pelo segredo `ACCESS_CODE`. Para o mudar, altera o segredo; a app não o altera pelas Definições.
+- **IP dos visitantes:** o limite de tentativas usa o IP que a Cloudflare indica (`cf-connecting-ip`).
 - Um só Durable Object: todos os pedidos passam por ele, um de cada vez. Para uma app pessoal chega.
 - O `XLSX` corre dentro do Worker; confirma o descarregamento do Excel depois do primeiro deploy.
 - Um domínio próprio e o Cloudflare Access (login por e-mail antes da app) ficam para uma fase seguinte.

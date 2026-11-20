@@ -10,6 +10,17 @@ export function hashCode(code: string): string {
   return `${PREFIX}${salt.toString("hex")}$${scryptSync(code, salt, 32).toString("hex")}`;
 }
 
+/**
+ * No Worker da Cloudflare o código vem do segredo ACCESS_CODE (guardado pela própria Cloudflare) e compara-se
+ * em texto, em tempo constante. O scrypt custa ~50 ms de CPU, mais do que o limite do plano gratuito (10 ms).
+ * Ligado por `ACCESS_CODE_FROM_SECRET=1`, que só o Worker define.
+ */
+export function secretCode(): string {
+  if (process.env.ACCESS_CODE_FROM_SECRET !== "1") return "";
+  const code = (process.env.ACCESS_CODE ?? "").trim();
+  return code.length >= MIN_CODE_LENGTH ? code : "";
+}
+
 const same = (a: Buffer, b: Buffer) => a.length === b.length && timingSafeEqual(a, b);
 // scrypt custa ~50 ms: guarda-se (em memória) o resultado positivo para não o repetir em cada pedido
 const okCache = new Set<string>();
@@ -85,7 +96,7 @@ export function makeLimiter(max: number, windowMs: number) {
 
 /** O estado enviado ao cliente nunca inclui o código nem o hash: só um marcador "set". */
 export function publicSettings<T extends { accessCode?: string }>(s: T): T {
-  return { ...s, accessCode: s.accessCode ? "set" : "" };
+  return { ...s, accessCode: s.accessCode || secretCode() ? "set" : "" };
 }
 /** Estado para o cliente: sem código e sem o histórico de alterações (tem rota própria, /api/change-log). */
 export function publicState<T extends { settings: { accessCode?: string } }>(state: T): T {
