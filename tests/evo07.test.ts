@@ -106,7 +106,7 @@ test("fluxo completo: plataformas, tipos, metas, despesas, distribuição, ativo
 test("T24 exportar/restaurar preserva tudo e referências; restauro é idempotente", async () => {
   const exp = await fetch(base + "/api/export/json");
   const backup = await exp.json();
-  assert.equal(backup.schemaVersion, 3);
+  assert.equal(backup.schemaVersion, 4);
   const original = strip(state());
   const prev = await call("POST", "/api/import/preview", backup);
   assert.equal(prev.status, 200);

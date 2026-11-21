@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient, setAccessCode } from "./queryClient";
-import type { Allocation, Category, Month, Parcel, Settings, Transaction, Platform, ParcelPlatform, ParcelType, TxType, AllocationPlatform, AllocationAsset, Subgoal, GoalEntry, ContributionLink, FxRate } from "@shared/schema";
+import type { Allocation, Category, Month, Parcel, Settings, Transaction, Platform, ParcelPlatform, ParcelType, TxType, AllocationPlatform, AllocationAsset, Subgoal, GoalEntry, ContributionLink, FxRate, Valuation } from "@shared/schema";
 import {
   computeMonth,
   sortMonths,
@@ -29,6 +29,7 @@ export type AppState = {
   goalEntries: GoalEntry[];
   contributionLinks: ContributionLink[];
   fxRates: FxRate[];
+  valuations: Valuation[];
 };
 
 export function useAppState() {
@@ -158,10 +159,12 @@ export function useSave() {
   const deleteLink = mk<unknown>("DELETE", (v) => `/api/contribution-links/${v}`, () => undefined);
   const createFxRate = mk<FxRate>("POST", () => "/api/fx-rates");
   const deleteFxRate = mk<unknown>("DELETE", (v) => `/api/fx-rates/${v}`, () => undefined);
+  const createValuation = mk<Valuation>("POST", () => "/api/valuations");
+  const deleteValuation = mk<unknown>("DELETE", (v) => `/api/valuations/${v}`, () => undefined);
   const setAssets = mk<AllocationAsset[]>("PUT", (v) => `/api/months/${v.monthId}/parcels/${v.parcelId}/distribution/${v.platformId}/assets`, (v) => ({ lines: v.lines }));
   return {
     setAssets,
-    createGoalEntry, updateGoalEntry, deleteGoalEntry, createSubgoal, updateSubgoal, deleteSubgoal, createLink, deleteLink, createFxRate, deleteFxRate,
+    createGoalEntry, updateGoalEntry, deleteGoalEntry, createSubgoal, updateSubgoal, deleteSubgoal, createLink, deleteLink, createFxRate, deleteFxRate, createValuation, deleteValuation,
     setDistribution,
     createPlatform,
     updatePlatform,

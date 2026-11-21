@@ -1,4 +1,4 @@
-import { allocations, months, parcels, settings, transactions, categories, platforms, parcelPlatforms, parcelTypes, txTypes, allocationPlatforms, allocationAssets, subgoals, goalEntries, contributionLinks, fxRates, monthClosures, changeLog, recurringExpenses, recurrenceSkips, reserves, importBatches, normName } from "@shared/schema";
+import { allocations, months, parcels, settings, transactions, categories, platforms, parcelPlatforms, parcelTypes, txTypes, allocationPlatforms, allocationAssets, subgoals, goalEntries, contributionLinks, fxRates, valuations, monthClosures, changeLog, recurringExpenses, recurrenceSkips, reserves, importBatches, normName } from "@shared/schema";
 import type {
   Allocation,
   Month,
@@ -14,6 +14,7 @@ import type {
   GoalEntry,
   ContributionLink,
   FxRate,
+  Valuation,
   ParcelType,
   TxType,
 } from "@shared/schema";
@@ -69,6 +70,7 @@ export type FullState = {
   goalEntries: GoalEntry[];
   contributionLinks: ContributionLink[];
   fxRates: FxRate[];
+  valuations: Valuation[];
   allocationPlatforms: AllocationPlatform[];
   allocationAssets: AllocationAsset[];
   platforms: Platform[];
@@ -138,6 +140,7 @@ export const storage = {
       goalEntries: db.select().from(goalEntries).all(),
       contributionLinks: db.select().from(contributionLinks).all(),
       fxRates: db.select().from(fxRates).all(),
+      valuations: db.select().from(valuations).all(),
       monthClosures: db.select().from(monthClosures).all(),
       recurringExpenses: db.select().from(recurringExpenses).all(),
       recurrenceSkips: db.select().from(recurrenceSkips).all(),
@@ -194,6 +197,7 @@ export const storage = {
       db.delete(contributionLinks).where(eq(contributionLinks.subgoalId, sg.id)).run();
     db.delete(subgoals).where(eq(subgoals.parcelId, id)).run();
     db.delete(goalEntries).where(eq(goalEntries.parcelId, id)).run();
+    db.delete(valuations).where(eq(valuations.parcelId, id)).run();
     db.delete(allocations).where(eq(allocations.parcelId, id)).run();
     db.delete(parcelPlatforms).where(eq(parcelPlatforms.parcelId, id)).run();
     db.delete(parcels).where(eq(parcels.id, id)).run();
@@ -434,6 +438,7 @@ export const storage = {
     goalEntries?: GoalEntry[];
     contributionLinks?: ContributionLink[];
     fxRates?: FxRate[];
+    valuations?: Valuation[];
     monthClosures?: any[];
     recurringExpenses?: any[];
     recurrenceSkips?: any[];
@@ -458,6 +463,7 @@ export const storage = {
       db.delete(goalEntries).run();
       db.delete(subgoals).run();
       db.delete(fxRates).run();
+      db.delete(valuations).run();
       db.delete(allocationAssets).run();
       db.delete(allocationPlatforms).run();
       db.delete(allocations).run();
@@ -479,6 +485,7 @@ export const storage = {
       for (const l of state.allocationPlatforms ?? []) db.insert(allocationPlatforms).values(l as any).run();
       for (const x of state.allocationAssets ?? []) db.insert(allocationAssets).values(x as any).run();
       for (const x of state.fxRates ?? []) db.insert(fxRates).values(x as any).run();
+      for (const x of state.valuations ?? []) db.insert(valuations).values(x as any).run();
       for (const x of state.subgoals ?? []) db.insert(subgoals).values(x as any).run();
       for (const x of state.goalEntries ?? []) db.insert(goalEntries).values(x as any).run();
       for (const t of state.transactions ?? []) db.insert(transactions).values(t as any).run();

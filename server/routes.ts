@@ -2,7 +2,7 @@ import { secretCode, hashCode, verifyCode, verifyCodeAsync, knownGood, isHashed,
 import {
   idParamSchema, platformCreateSchema, platformPatchSchema, parcelTypeCreateSchema, parcelTypePatchSchema,
   txTypeCreateSchema, txTypePatchSchema, goalEntryCreateSchema, goalEntryPatchSchema, subgoalCreateSchema, subgoalPatchSchema,
-  contributionLinkCreateSchema, fxRateCreateSchema, recurringSchema, reserveSchema, reservePaySchema, occurrenceKeySchema,
+  contributionLinkCreateSchema, fxRateCreateSchema, valuationCreateSchema, recurringSchema, reserveSchema, reservePaySchema, occurrenceKeySchema,
   closeMonthSchema, reopenMonthSchema,
 } from "./route-schemas";
 import { settingsPatchSchema, monthCreateSchema, monthPatchSchema, parcelCreateSchema, parcelPatchSchema, categoryCreateSchema, issueMessage } from "./validation";
@@ -165,6 +165,8 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.delete("/api/contribution-links/:id", guard((req) => (storage.deleteContributionLink(pid(req.params.id)), { ok: true })));
   app.post("/api/fx-rates", guard((req) => storage.createFxRate(parse(fxRateCreateSchema, req.body))));
   app.delete("/api/fx-rates/:id", guard((req) => (storage.deleteFxRate(pid(req.params.id)), { ok: true })));
+  app.post("/api/valuations", guard((req) => storage.createValuation(parse(valuationCreateSchema, req.body))));
+  app.delete("/api/valuations/:id", guard((req) => (storage.deleteValuation(pid(req.params.id)), { ok: true })));
 
   app.put("/api/months/:monthId/parcels/:parcelId/distribution/:platformId/assets", guard((req) =>
     storage.setAssets(Number(req.params.monthId), Number(req.params.parcelId), Number(req.params.platformId), req.body?.lines ?? [])));
@@ -396,7 +398,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   });
 
   /* --------------------------------------------------- backup / export */
-  const SCHEMA_VERSION = 3;
+  const SCHEMA_VERSION = 4;
 
   app.get("/api/export/json", (_req, res) => {
     const full = storage.getState();
@@ -479,7 +481,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   function validateBackupShape(body: any): string | null {
     const isNum = (v: any) => typeof v === "number" && Number.isFinite(v);
     const isDate = (v: any) => typeof v === "string" && /^\d{4}-\d{2}-\d{2}/.test(v);
-    const colls = ["monthClosures", "recurringExpenses", "recurrenceSkips", "reserves", "importBatches", "changeLog", "months", "parcels", "allocations", "transactions", "categories", "platforms", "parcelPlatforms", "parcelTypes", "txTypes", "allocationPlatforms", "allocationAssets", "subgoals", "goalEntries", "contributionLinks", "fxRates"];
+    const colls = ["monthClosures", "recurringExpenses", "recurrenceSkips", "reserves", "importBatches", "changeLog", "months", "parcels", "allocations", "transactions", "categories", "platforms", "parcelPlatforms", "parcelTypes", "txTypes", "allocationPlatforms", "allocationAssets", "subgoals", "goalEntries", "contributionLinks", "fxRates", "valuations"];
     for (const k of colls) {
       const arr = body[k];
       if (arr === undefined) continue;
@@ -502,6 +504,9 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     for (const l of body.contributionLinks ?? []) if (!isNum(l.amount) || l.amount <= 0) return "Atribuição inválida.";
     for (const r of body.fxRates ?? []) {
       if (!/^[A-Z]{3}$/.test(String(r.fromCurrency)) || !/^[A-Z]{3}$/.test(String(r.toCurrency)) || !isDate(r.date)) return "Taxa de conversão inválida.";
+    }
+    for (const v of body.valuations ?? []) {
+      if (!isDate(v.date) || !isNum(v.value) || v.value < 0) return "Valor de carteira inválido.";
     }
     return null;
   }
@@ -533,6 +538,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       if (!subIds.has(l.subgoalId) || !txIds.has(l.transactionId)) return "Atribuição a submeta com referência inválida.";
     }
     for (const r of body.fxRates ?? []) if (!(Number(r.rate) > 0)) return "Taxa de conversão inválida (tem de ser positiva).";
+    for (const v of body.valuations ?? []) if (!parcelIds.has(v.parcelId)) return "Valor de carteira com parcela inexistente.";
     const allocIds = ids(body.allocations);
     for (const l of body.allocationPlatforms ?? []) {
       if (!allocIds.has(l.allocationId) || !platformIds.has(l.platformId)) return "Distribuição por plataforma com referência inválida.";
@@ -575,6 +581,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         submetas: Array.isArray(body.subgoals) ? body.subgoals.length : 0,
         saldosEAjustes: Array.isArray(body.goalEntries) ? body.goalEntries.length : 0,
         taxasManuais: Array.isArray(body.fxRates) ? body.fxRates.length : 0,
+        valoresCarteira: Array.isArray(body.valuations) ? body.valuations.length : 0,
         distribuicoesAtivos: Array.isArray(body.allocationAssets) ? body.allocationAssets.length : 0,
         distribuicoesPlataforma: Array.isArray(body.allocationPlatforms) ? body.allocationPlatforms.length : 0,
         tiposMovimento: Array.isArray(body.txTypes) ? body.txTypes.length : 0,
@@ -618,6 +625,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       goalEntries: body.goalEntries,
       contributionLinks: body.contributionLinks,
       fxRates: body.fxRates,
+      valuations: body.valuations,
       monthClosures: body.monthClosures,
       recurringExpenses: body.recurringExpenses,
       recurrenceSkips: body.recurrenceSkips,
