@@ -1,4 +1,7 @@
 name: Auto PR
+# Abre um PR (rascunho) para a main quando se envia uma branch e mantém a descrição atualizada a cada push,
+# escrita para pessoas: o que mudou (um ponto por commit, com o texto que o commit explica) e o tamanho da alteração.
+# Se a descrição for editada à mão (deixar de ter a marca "auto-pr" no início), o workflow não lhe volta a tocar.
 on:
   push:
     branches-ignore:
@@ -10,18 +13,51 @@ permissions:
 jobs:
   open-pr:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
-      - name: Abrir PR para main se ainda não existir
+      - name: Abrir ou atualizar o PR para a main
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           BRANCH: ${{ github.ref_name }}
         run: |
-          existing=$(gh pr list --head "$BRANCH" --base main --state open --json number --jq 'length')
-          if [ "$existing" != "0" ]; then
-            echo "Já existe um PR aberto para $BRANCH."
-            exit 0
+          set -euo pipefail
+          compare=$(gh api "repos/$GH_REPO/compare/main...$BRANCH")
+          ahead=$(jq -r '.ahead_by' <<<"$compare")
+          if [ "$ahead" = "0" ]; then echo "Sem commits à frente da main."; exit 0; fi
+
+          # Descrição legível: um ponto por commit (sem merges), com o corpo da mensagem por baixo, sem as linhas de assinatura.
+          jq -r --arg branch "$BRANCH" '
+            def clean: split("\n") | map(select(test("^(Co-Authored-By|Claude-Session|Signed-off-by):") | not)) | join("\n") | sub("\\s+$"; "");
+            def item:
+              (.commit.message | clean) as $m
+              | ($m | split("\n")) as $l
+              | ($l[0]) as $subject
+              | ($l[1:] | join("\n") | sub("^\\s+"; "")) as $body
+              | "- **" + $subject + "**"
+                + (if $body != "" then "\n" + ($body | split("\n") | map(if . == "" then "" else "  " + . end) | join("\n")) + "\n" else "" end);
+            [.commits[] | select((.parents | length) == 1)] as $c
+            | ([.files[]?.additions] | add // 0) as $add
+            | ([.files[]?.deletions] | add // 0) as $del
+            | ([.files[]?] | length) as $nfiles
+            | "<!-- auto-pr -->\n## Resumo\n\n"
+              + "Este PR reúne " + ($c | length | tostring) + (if ($c | length) == 1 then " alteração" else " alterações" end)
+              + " da branch `" + $branch + "`. A lista abaixo atualiza-se sozinha a cada push.\n\n"
+              + "## O que mudou\n\n" + ($c | map(item) | join("\n")) + "\n\n"
+              + "## Tamanho\n\n" + ($nfiles | tostring) + " ficheiros alterados (+" + ($add | tostring) + " −" + ($del | tostring) + ").\n\n"
+              + "As verificações (check, test, build, e2e) aparecem em baixo, no PR."
+          ' <<<"$compare" > body.md
+
+          number=$(gh pr list --head "$BRANCH" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -z "$number" ]; then
+            # título: o do commit se houver só um; senão o nome da branch em texto corrido
+            title=$(jq -r --arg branch "$BRANCH" '
+              [.commits[] | select((.parents | length) == 1)] as $c
+              | if ($c | length) == 1 then ($c[0].commit.message | split("\n")[0])
+                else ($branch | sub("^claude/"; "") | gsub("[-_]"; " ") | (.[0:1] | ascii_upcase) + .[1:]) end' <<<"$compare")
+            gh pr create --base main --head "$BRANCH" --draft --title "$title" --body-file body.md
+          elif gh pr view "$number" --json body --jq '.body' | head -1 | grep -q '<!-- auto-pr -->'; then
+            gh pr edit "$number" --body-file body.md
+          else
+            echo "A descrição do PR #$number foi escrita à mão: não a altero."
           fi
-          gh pr create --base main --head "$BRANCH" --draft \
-            --title "$BRANCH" \
-            --body "PR aberto automaticamente pelo workflow Auto PR para as alterações da branch \`$BRANCH\`."
