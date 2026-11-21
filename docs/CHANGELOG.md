@@ -16,7 +16,8 @@ Parcelas e metas refeitas, sessão e deploy com aprovação.
 
 **Outras alterações**
 - Campos de mês (data alvo, prazos, recorrências, reservas) passam a ser uma escolha de mês e ano em português, igual em todos os navegadores (o campo nativo mostrava "----").
-- Menu: "Terminar sessão" com confirmação (no telemóvel, no painel "Mais"); saiu a frase "Espaço privado".
+- Menu: "Terminar sessão" com confirmação (no telemóvel, no painel "Mais"); saiu a frase "Espaço privado". Versão, ambiente, formato de backup, último backup e atalhos passaram do rodapé do menu para o topo da Ajuda.
+- Cartões vazios encolhem: "Orçamento vs. real por categoria" sem categorias e "Comparação mensal e anual" sem tabela (Painel e Orçamento), também com layout personalizado.
 - Comparação mensal e anual: o ano de comparação escolhe-se sempre à mão (sem ano anterior por omissão).
 - Deploy (Cloudflare) arranca sozinho quando o CI da `main` passa depois de um merge e espera pela aprovação no ambiente `production`.
 

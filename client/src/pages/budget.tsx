@@ -22,7 +22,7 @@ import { FilterBar } from "@/components/filter-bar";
 import { EditableSectionGrid, type SectionSpec } from "@/components/editable-section-grid";
 import { usePageLayout } from "@/lib/page-layout";
 import { MonthlyReportDialog } from "@/components/monthly-report-dialog";
-import { CategoryYearOverYear } from "@/components/yoy";
+import { CategoryYearOverYear, useYoYEmpty } from "@/components/yoy";
 import {
   budgetVsRealByCategory,
   fmtEur,
@@ -38,6 +38,7 @@ import { useConfirm } from "@/components/confirm";
 export default function BudgetPage() {
   const { data, isLoading } = useAppState();
   const d = useDerived(data);
+  const yoyEmpty = useYoYEmpty(d);
   const save = useSave();
   const { ask, dialog: confirmDialog } = useConfirm();
   const pageLayout = usePageLayout(data?.settings ?? ({} as any), "orcamento");
@@ -69,6 +70,7 @@ export default function BudgetPage() {
   const monthIdsInPeriod = new Set(d.months.map((m) => m.id));
   const txsInPeriod = data.transactions.filter((t) => monthIdsInPeriod.has(t.monthId));
   const budgetRows = budgetVsRealByCategory(txsInPeriod, categories, alertThreshold);
+  const budgetEmpty = categories.length === 0 && budgetRows.length === 0;
 
   // SM-005: projeção de final de ano
   const goal = data.settings.annualSavingsGoal ?? 0;
@@ -213,9 +215,11 @@ export default function BudgetPage() {
           {
             id: "orc-categorias",
             title: "Orçamento vs. real por categoria",
-            defaultLayout: { x: 0, y: 11, w: 12, h: categories.length === 0 && budgetRows.length === 0 ? 8 : 18 },
+            defaultLayout: { x: 0, y: 11, w: 12, h: budgetEmpty ? 8 : 18 },
+            collapsedH: budgetEmpty ? 5 : undefined,
             node: (
       <SectionCard
+        className={budgetEmpty ? "min-h-0" : undefined}
         title="Orçamento vs. real por categoria"
         description={`${d.periodLabel} · alerta a partir de ${alertThreshold}% acima do orçamento`}
         actions={
@@ -327,8 +331,9 @@ export default function BudgetPage() {
             id: "orc-ano-anterior",
             title: "Comparação mensal e anual",
             defaultLayout: { x: 0, y: 29, w: 12, h: 12 },
+            collapsedH: yoyEmpty ? 5 : undefined,
             node: (
-              <SectionCard title="Comparação mensal e anual" description="Despesa por categoria; a escolha é a mesma do Painel">
+              <SectionCard className={yoyEmpty ? "min-h-0" : undefined} title="Comparação mensal e anual" description="Despesa por categoria; a escolha é a mesma do Painel">
                 <CategoryYearOverYear d={d} />
               </SectionCard>
             ),

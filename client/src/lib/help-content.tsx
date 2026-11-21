@@ -646,7 +646,8 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
           <li>Parcelas e metas: lista à esquerda e o detalhe da parcela à direita, com separadores Meta, Submetas, Histórico e Definições.</li>
           <li>&quot;Registar entrada/saída&quot; muda o acumulado (também corrige o total ou transfere para uma submeta); &quot;Registar valor de mercado&quot; só mostra o ganho ou a perda.</li>
           <li>Taxas de câmbio junto de cada submeta noutra moeda. Campos de mês em português em todos os navegadores.</li>
-          <li>&quot;Terminar sessão&quot; no menu; o ano da comparação anual escolhe-se à mão.</li>
+          <li>&quot;Terminar sessão&quot; no menu; versão e último backup passaram para o topo desta página. O ano da comparação anual escolhe-se à mão.</li>
+          <li>Cartões vazios ocupam menos espaço no Painel e no Orçamento.</li>
         </UL>
         <H3>1.13.0</H3>
         <UL>

@@ -32,12 +32,13 @@ import { EditableSectionGrid, type SectionSpec } from "@/components/editable-sec
 import { usePageLayout } from "@/lib/page-layout";
 import { buildDashboardModel } from "@/lib/dashboard-model";
 import { GoalPaceLine } from "@/components/insights";
-import { YearOverYearCard } from "@/components/yoy";
+import { YearOverYearCard, useYoYEmpty } from "@/components/yoy";
 
 export default function Dashboard() {
   const isMobile = useIsMobile();
   const { data, isLoading } = useAppState();
   const d = useDerived(data);
+  const yoyEmpty = useYoYEmpty(d);
   const pageLayout = usePageLayout(data?.settings ?? ({} as any), "painel");
   const [expandedGoals, setExpandedGoals] = useState<Record<number, boolean>>({});
   const [drillDown, setDrillDown] = useState<{ title: string; description: string; filter: (t: any) => boolean } | null>(
@@ -592,8 +593,9 @@ export default function Dashboard() {
               id: "ano-anterior",
               title: "Comparação mensal e anual",
               defaultLayout: { x: 0, y: 48, w: 12, h: 16 },
+              collapsedH: yoyEmpty ? 5 : undefined,
               node: (
-                <SectionCard title="Comparação mensal e anual" description="Compara com um ano ou com outros meses do mesmo ano">
+                <SectionCard className={yoyEmpty ? "min-h-0" : undefined} title="Comparação mensal e anual" description="Compara com um ano ou com outros meses do mesmo ano">
                   <YearOverYearCard d={d} />
                 </SectionCard>
               ),
