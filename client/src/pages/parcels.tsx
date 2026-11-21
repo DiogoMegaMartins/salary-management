@@ -63,6 +63,7 @@ export default function Parcels() {
   const figures = (p: Parcel) => parcelFigures(data, d, p);
   const detail = sel && (
     <ParcelDetail
+      fill={isMobile}
       state={data}
       d={d}
       parcel={sel}
@@ -181,12 +182,12 @@ export default function Parcels() {
 
       {isMobile && (
         <Sheet open={!!sel} onOpenChange={(o) => !o && setSelected(null)}>
-          <SheetContent side="bottom" className="max-h-[92dvh] overflow-y-auto rounded-t-2xl pb-[max(1.5rem,env(safe-area-inset-bottom))]" data-testid="sheet-parcel">
-            <SheetHeader className="text-left">
+          <SheetContent side="bottom" className="flex h-[88dvh] max-h-[88dvh] flex-col gap-0 overflow-hidden rounded-t-2xl p-0" data-testid="sheet-parcel">
+            <SheetHeader className="shrink-0 px-4 pb-3 pt-4 pr-14 text-left">
               <SheetTitle>{sel && header(sel)}</SheetTitle>
               <SheetDescription className="sr-only">Meta, submetas, histórico e definições da parcela</SheetDescription>
             </SheetHeader>
-            <div className="mt-3">{detail}</div>
+            <div className="min-h-0 flex-1 px-4">{detail}</div>
           </SheetContent>
         </Sheet>
       )}
