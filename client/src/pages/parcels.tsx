@@ -1,21 +1,14 @@
 import { useState } from "react";
-import { Archive, ArchiveRestore, Plus, Trash2 } from "lucide-react";
+import { ArchiveRestore, Plus } from "lucide-react";
 import { AppShell } from "@/components/layout";
-import { SectionCard } from "@/components/kpi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,21 +20,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useAppState, useDerived, useSave } from "@/lib/app";
+import { cn } from "@/lib/utils";
 import type { Parcel } from "@shared/schema";
-import { KINDS, fmtEur, fmtPct, goalBreakdown, monthKeyOf } from "@shared/calc";
-import { EditableSectionGrid, type SectionSpec } from "@/components/editable-section-grid";
-import { usePageLayout } from "@/lib/page-layout";
+import { KINDS, fmtEur, fmtPct } from "@shared/calc";
 import { PlatformPicker, CreateTypeDialog } from "@/components/catalogs";
-import { GoalPanel, goalCtx } from "@/components/goal-panel";
-import { ClearableDateInput } from "@/components/clearable-date-input";
-
-function ParcelTargetDate({ value, onSave }: { value: string; onSave: (v: string) => void }) {
-  const [v, setV] = useState(value);
-  const [seen, setSeen] = useState(value);
-  if (seen !== value) { setSeen(value); setV(value); }
-  return <ClearableDateInput type="month" aria-label="Data alvo" value={v} onChange={setV} onBlur={(x) => { if (x !== value) onSave(x); }} onClear={() => onSave("")} className="h-8 text-xs" />;
-}
+import { ParcelDetail, parcelFigures, type ParcelTab } from "@/components/parcels/parcel-detail";
 
 const PALETTE = ["#2f9e8f", "#3b7dd8", "#7a5cd0", "#c9a227", "#d97757", "#c2477f", "#2aa7c0", "#4b9c5c"];
 
@@ -49,13 +34,15 @@ export default function Parcels() {
   const { data, isLoading } = useAppState();
   const d = useDerived(data);
   const save = useSave();
-  const pageLayout = usePageLayout(data?.settings ?? ({} as any), "parcelas");
   const { toast } = useToast();
   const [deleting, setDeleting] = useState<Parcel | null>(null);
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState({ name: "", kind: "investimento", color: PALETTE[0], typeId: null as number | null });
   const [draftPlatforms, setDraftPlatforms] = useState<number[]>([]);
   const [newTypeFor, setNewTypeFor] = useState<null | { parcelId: number | null }>(null);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [tab, setTab] = useState<ParcelTab>("meta");
+  const isMobile = useIsMobile();
 
   if (isLoading || !d || !data) {
     return (
@@ -72,21 +59,34 @@ export default function Parcels() {
     .reduce((a, p) => a + p.defaultValue, 0);
   const fixedSum = active.filter((p) => p.defaultMode === "fixo").reduce((a, p) => a + p.defaultValue, 0);
 
-  const monthlyOf = (id: number) => d.allComputed.map((x) => ({ key: monthKeyOf(x.month.year, x.month.month), amount: x.byParcel[id] ?? 0 }));
-  // acumulado = histórico atual quando não há saldo inicial/ajustes/submetas (saldos existentes preservados)
-  const accOf = (id: number) => {
-    const p = d.allParcels.find((x) => x.id === id);
-    return p ? goalBreakdown(goalCtx(data, p, monthlyOf(id)), id).total : 0;
-  };
-  const paceOf = (id: number) => {
-    const recent = d.allComputed.slice(-3);
-    return recent.length ? recent.reduce((a, x) => a + (x.byParcel[id] ?? 0), 0) / recent.length : 0;
-  };
+  const sel = active.find((p) => p.id === selected) ?? (isMobile ? null : active[0] ?? null);
+  const figures = (p: Parcel) => parcelFigures(data, d, p);
+  const detail = sel && (
+    <ParcelDetail
+      state={data}
+      d={d}
+      parcel={sel}
+      tab={tab}
+      onTab={setTab}
+      onNewType={() => setNewTypeFor({ parcelId: sel.id })}
+      onDelete={() => setDeleting(sel)}
+    />
+  );
+  const header = (p: Parcel) => (
+    <div className="flex items-center gap-2">
+      <span className="h-3 w-3 shrink-0 rounded-full" style={{ background: p.color }} />
+      <h2 className="min-w-0 truncate text-base font-semibold">{p.name}</h2>
+    </div>
+  );
 
   return (
     <AppShell
       title="Parcelas e metas"
-      subtitle="Regras de divisão, plataformas e objetivos por parcela"
+      subtitle={
+        percentSum === 0 && fixedSum === 0
+          ? "Nenhuma parcela tem regra de divisão"
+          : `Regras: ${fmtPct(percentSum / 100, 1)} do disponível · ${fmtEur(fixedSum)} fixos`
+      }
       actions={
         <Button size="sm" className="gap-1.5" onClick={() => setAdding(true)} data-testid="button-new-parcel">
           <Plus className="h-4 w-4" />
@@ -94,255 +94,99 @@ export default function Parcels() {
         </Button>
       }
     >
-      <div className="space-y-4">
-        {(() => {
-          const parcelSections: SectionSpec[] = active.map((p, idx) => {
-            const acc = accOf(p.id);
-            const pace = paceOf(p.id);
-            const target = p.targetAmount ?? 0;
-            const pct = target > 0 ? Math.min(1, acc / target) : 0;
-            const missing = Math.max(0, target - acc);
-            const monthsLeft = pace > 0 && missing > 0 ? Math.ceil(missing / pace) : null;
-            const col = idx % 2;
-            const row = Math.floor(idx / 2);
-            return {
-              id: `parcel-${p.id}`,
-              title: p.name,
-              defaultLayout: { x: col * 6, y: 3 + row * 12, w: 6, h: 12 },
-              node: (
-                <div className="parcel-card flex h-full min-w-0 flex-col overflow-y-auto rounded-lg border border-card-border bg-card p-4 [.grid-widget_&]:h-full" data-testid={`card-parcel-${p.id}`}>
-                  <div className="parcel-heading flex items-start gap-2">
-                    <input
-                      type="color"
-                      value={p.color}
-                      onChange={(e) => save.parcel.mutate({ id: p.id, patch: { color: e.target.value } })}
-                      className="mt-0.5 h-11 w-11 shrink-0 cursor-pointer rounded border border-border bg-transparent p-0"
-                      aria-label={`Cor de ${p.name}`}
-                      title="Cor"
-                      data-testid={`input-color-${p.id}`}
-                    />
-                    <Input
-                      defaultValue={p.name}
-                      aria-label={`Nome da parcela ${p.name}`}
-                      onBlur={(e) => e.target.value !== p.name && save.parcel.mutate({ id: p.id, patch: { name: e.target.value } })}
-                      className="h-8 flex-1 border-transparent bg-transparent px-1 text-sm font-semibold hover:border-border focus:border-border"
-                      data-testid={`input-name-${p.id}`}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground"
-                      title="Arquivar"
-                      aria-label={`Arquivar ${p.name}`}
-                      onClick={() => save.parcel.mutate({ id: p.id, patch: { archived: 1 } })}
-                    >
-                      <Archive className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                      title="Eliminar"
-                      aria-label={`Eliminar ${p.name}`}
-                      onClick={() => setDeleting(p)}
-                      data-testid={`button-delete-parcel-${p.id}`}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-
-                  <div className="parcel-fields mt-3 grid gap-3">
-                    <div className="space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Tipo</Label>
-                      <Select
-                        value={p.typeId ? `t:${p.typeId}` : p.kind}
-                        onValueChange={(v) => {
-                          if (v === "__new__") return setNewTypeFor({ parcelId: p.id });
-                          if (v.startsWith("t:")) save.parcel.mutate({ id: p.id, patch: { typeId: Number(v.slice(2)) } });
-                          else save.parcel.mutate({ id: p.id, patch: { kind: v, typeId: null } });
-                        }}
-                      >
-                        <SelectTrigger className="h-8 text-xs" data-testid={`select-kind-${p.id}`}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {KINDS.map((k) => (
-                            <SelectItem key={k.value} value={k.value}>{k.label}</SelectItem>
-                          ))}
-                          {(data.parcelTypes ?? [])
-                            .filter((t) => !t.archived || t.id === p.typeId)
-                            .map((t) => (
-                              <SelectItem key={t.id} value={`t:${t.id}`}>{t.name}{t.archived ? " (arquivado)" : ""}</SelectItem>
-                            ))}
-                          <SelectItem value="__new__">Criar tipo…</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Regra por omissão</Label>
-                      <div className="flex gap-1.5">
-                        <Select
-                          value={p.defaultMode}
-                          onValueChange={(v) => save.parcel.mutate({ id: p.id, patch: { defaultMode: v } })}
-                        >
-                          <SelectTrigger className="h-8 w-[104px] shrink-0 text-xs" aria-label={`Modo da regra de ${p.name}`}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="fixo">€ fixo</SelectItem>
-                            <SelectItem value="percentagem">% disp.</SelectItem>
-
-                          </SelectContent>
-                        </Select>
-                        <Input
-                          type="number"
-                          step={0.01}
-                          defaultValue={p.defaultValue}
-                          onBlur={(e) =>
-                            Number(e.target.value) !== p.defaultValue &&
-                            save.parcel.mutate({ id: p.id, patch: { defaultValue: Number(e.target.value) } })
-                          }
-                          className="tnum h-8 text-xs"
-                          aria-label={`Valor da regra de alocação de ${p.name}`}
-                          data-testid={`input-rule-${p.id}`}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-span-full space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Plataformas</Label>
-                      <PlatformPicker
-                        state={data}
-                        value={(data.parcelPlatforms ?? []).filter((l) => l.parcelId === p.id).map((l) => l.platformId)}
-                        onChange={(ids) => save.parcel.mutate({ id: p.id, patch: { platformIds: ids } as any })}
-                        testId={`input-platforms-${p.id}`}
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Meta (€)</Label>
-                      <Input
-                        type="number"
-                        step={100}
-                        defaultValue={p.targetAmount ?? ""}
-                        placeholder="sem meta"
-                        onBlur={(e) =>
-                          save.parcel.mutate({
-                            id: p.id,
-                            patch: { targetAmount: e.target.value === "" ? null : Number(e.target.value) },
-                          })
-                        }
-                        className="tnum h-8 text-xs"
-                        aria-label={`Meta de ${p.name} (€)`}
-                        data-testid={`input-target-${p.id}`}
-                      />
-                    </div>
-                    <div className="min-w-0 space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Data alvo</Label>
-                      <ParcelTargetDate value={p.targetDate ?? ""} onSave={(v) => save.parcel.mutate({ id: p.id, patch: { targetDate: v || null } })} />
-                    </div>
-                  </div>
-
-                  <div className="mt-3 border-t border-border pt-3">
-                    <div className="flex items-baseline justify-between text-xs">
-                      <span className="text-muted-foreground">Acumulado no histórico</span>
-                      <span className="tnum font-semibold" data-testid={`text-acc-${p.id}`}>{fmtEur(acc)}</span>
-                    </div>
-                    {target > 0 && (
-                      <>
-                        <Progress value={pct * 100} className="mt-2 h-2" />
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          {fmtPct(pct, 0)} da meta de {fmtEur(target, 0)}
-                          {missing > 0
-                            ? monthsLeft
-                              ? ` · ~${monthsLeft} ${monthsLeft === 1 ? "mês" : "meses"} ao ritmo atual`
-                              : " · sem contribuições recentes"
-                            : " · concluída"}
-                        </p>
-                      </>
-                    )}
-                  </div>
-                  <GoalPanel state={data} parcel={p} monthly={monthlyOf(p.id)} />
-                </div>
-              ),
-            };
-          });
-
-          const archivedSection: SectionSpec[] =
-            archived.length > 0
-              ? [
-                  {
-                    id: "arquivadas",
-                    title: "Arquivadas",
-                    defaultLayout: { x: 0, y: 3 + Math.ceil(active.length / 2) * 12, w: 12, h: 8 },
-                    node: (
-                      <SectionCard title="Arquivadas" description="Mantêm o histórico mas não aparecem em novos meses">
-                        <div className="flex flex-wrap gap-2">
-                          {archived.map((p) => (
-                            <div
-                              key={p.id}
-                              className="flex items-center gap-2 rounded-md border border-border px-2.5 py-1.5 text-xs"
-                            >
-                              <span className="h-2 w-2 rounded-full" style={{ background: p.color }} />
-                              {p.name}
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6"
-                                title="Reativar"
-                                onClick={() => save.parcel.mutate({ id: p.id, patch: { archived: 0 } })}
-                              >
-                                <ArchiveRestore className="h-3.5 w-3.5" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </SectionCard>
-                    ),
-                  },
-                ]
-              : [];
-
-          const rulesSection: SectionSpec = {
-            id: "regras-omissao",
-            title: "Regras por omissão",
-            minH: 2,
-            defaultLayout: { x: 0, y: 0, w: 12, h: 3 },
-            node: (
-        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-card-border bg-card px-4 py-3 text-xs">
-          <span className="text-muted-foreground">Regras por omissão:</span>
-          {percentSum === 0 && fixedSum === 0 ? (
-            <span className="text-muted-foreground">nenhuma parcela tem regra definida</span>
+      {percentSum > 100 && (
+        <p className="mb-3 rounded-md border border-destructive/40 px-3 py-2 text-sm text-destructive" data-testid="rules-over">
+          A soma das percentagens passa dos 100% do disponível.
+        </p>
+      )}
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] xl:grid-cols-[minmax(0,1fr)_minmax(0,32rem)]">
+        <div className="min-w-0 overflow-hidden rounded-lg border border-card-border bg-card" data-testid="parcels-list">
+          {active.length === 0 ? (
+            <p className="p-6 text-center text-sm text-muted-foreground">Ainda não há parcelas. Cria a primeira com "Nova parcela".</p>
           ) : (
-            <>
-              <Badge variant="secondary" className="tnum">
-                {fmtPct(percentSum / 100, 1)} do disponível
-              </Badge>
-              <Badge variant="secondary" className="tnum">
-                {fmtEur(fixedSum)} fixos
-              </Badge>
-            </>
+            <ul role="listbox" aria-label="Parcelas" className="divide-y divide-border/60">
+              {active.map((p) => {
+                const f = figures(p);
+                const on = sel?.id === p.id;
+                const platforms = (data.parcelPlatforms ?? []).filter((l) => l.parcelId === p.id).map((l) => data.platforms.find((x) => x.id === l.platformId)?.name).filter(Boolean);
+                const subsN = (data.subgoals ?? []).filter((s) => s.parcelId === p.id).length;
+                const rule = p.defaultValue > 0 ? (p.defaultMode === "percentagem" ? `${fmtPct(p.defaultValue / 100, 1)} do disp.` : `${fmtEur(p.defaultValue, 0)} fixo`) : "sem regra";
+                const meta = [rule, platforms.length ? platforms.join(" · ") : null, subsN ? `${subsN} ${subsN === 1 ? "submeta" : "submetas"}` : null].filter(Boolean).join(" · ");
+                return (
+                  <li key={p.id} role="option" aria-selected={on}>
+                    <button
+                      type="button"
+                      onClick={() => setSelected(p.id)}
+                      className={cn(
+                        "grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1.5 border-l-[3px] px-4 py-3 text-left transition-colors sm:grid-cols-[minmax(0,1fr)_auto_8.5rem]",
+                        on ? "border-l-primary bg-primary/[0.06]" : "border-l-transparent hover:bg-muted/50",
+                      )}
+                      data-testid={`card-parcel-${p.id}`}
+                    >
+                      <span className="min-w-0">
+                        <span className="flex items-center gap-2 font-medium">
+                          <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: p.color }} />
+                          <span className="truncate">{p.name}</span>
+                        </span>
+                        <span className="block truncate pl-[18px] text-xs text-muted-foreground">{meta}</span>
+                      </span>
+                      <span className="tnum text-right text-sm font-medium" data-testid={`text-acc-${p.id}`}>{p.kind === "gastos" && !f.target ? "—" : fmtEur(f.br.total)}</span>
+                      <span className="col-span-2 min-w-0 sm:col-span-1">
+                        {f.target > 0 ? (
+                          <>
+                            <Progress value={f.pct * 100} className="h-1.5" />
+                            <span className="mt-1 block truncate text-[11px] text-muted-foreground">
+                              {fmtPct(f.pct, 0)} de {fmtEur(f.target, 0)}{p.targetDate ? ` · até ${p.targetDate.split("-").reverse().join("/")}` : ""}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="hidden text-xs text-muted-foreground sm:block">sem meta</span>
+                        )}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
           )}
-          {percentSum > 100 && (
-            <span className="text-destructive">A soma das percentagens passa dos 100% do disponível.</span>
+          {archived.length > 0 && (
+            <details className="border-t border-border px-4 py-3 text-sm" data-testid="parcels-archived">
+              <summary className="cursor-pointer text-muted-foreground">Arquivadas ({archived.length})</summary>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {archived.map((p) => (
+                  <li key={p.id} className="flex items-center gap-2 rounded-md border border-border px-2.5 py-1 text-xs">
+                    <span className="h-2 w-2 rounded-full" style={{ background: p.color }} />
+                    {p.name}
+                    <Button variant="ghost" size="icon" className="h-7 w-7" title="Reativar" aria-label={`Reativar ${p.name}`} onClick={() => save.parcel.mutate({ id: p.id, patch: { archived: 0 } })}>
+                      <ArchiveRestore className="h-3.5 w-3.5" />
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </details>
           )}
-          <span className="ml-auto text-muted-foreground">
-            Usa “Aplicar regras das parcelas” no editor de cada mês para preencher automaticamente.
-          </span>
+          <p className="border-t border-border px-4 py-2.5 text-xs text-muted-foreground">Usa "Aplicar regras das parcelas" no editor de cada mês para dividir o disponível com estas regras.</p>
         </div>
-            ),
-          };
-          const sections: SectionSpec[] = [rulesSection, ...parcelSections, ...archivedSection];
 
-          return (
-            <EditableSectionGrid
-              pageKey="parcelas"
-              sections={sections}
-              savedLayout={pageLayout.savedLayout}
-              isSaving={pageLayout.isSaving}
-              onSave={pageLayout.onSave}
-            />
-          );
-        })()}
+        {!isMobile && sel && (
+          <section className="min-w-0 self-start rounded-lg border border-card-border bg-card p-4 lg:sticky lg:top-0" aria-label={`Detalhe de ${sel.name}`}>
+            {header(sel)}
+            <div className="mt-3">{detail}</div>
+          </section>
+        )}
       </div>
+
+      {isMobile && (
+        <Sheet open={!!sel} onOpenChange={(o) => !o && setSelected(null)}>
+          <SheetContent side="bottom" className="max-h-[92dvh] overflow-y-auto rounded-t-2xl pb-[max(1.5rem,env(safe-area-inset-bottom))]" data-testid="sheet-parcel">
+            <SheetHeader className="text-left">
+              <SheetTitle>{sel && header(sel)}</SheetTitle>
+              <SheetDescription className="sr-only">Meta, submetas, histórico e definições da parcela</SheetDescription>
+            </SheetHeader>
+            <div className="mt-3">{detail}</div>
+          </SheetContent>
+        </Sheet>
+      )}
 
       <Dialog open={adding} onOpenChange={setAdding}>
         <DialogContent className="max-w-md">
@@ -413,7 +257,8 @@ export default function Parcels() {
                 save.createParcel.mutate(
                   { ...draft, platformIds: draftPlatforms, sortOrder: d.allParcels.length, defaultMode: "fixo", defaultValue: 0 } as any,
                   {
-                    onSuccess: () => {
+                    onSuccess: (created: any) => {
+                      if (created?.id) { setSelected(created.id); setTab("definicoes"); }
                       toast({ title: "Parcela criada", description: draft.name });
                       setDraft({ name: "", kind: "investimento", color: PALETTE[0], typeId: null });
                       setDraftPlatforms([]);

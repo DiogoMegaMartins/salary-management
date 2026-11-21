@@ -1,7 +1,7 @@
 # Guia do utilizador
 
 ## Painel
-Visão geral do período escolhido nos filtros (período, ano, meses, tipo, parcelas). Mostra líquido total, média mensal, taxa de poupança, gastos, carga fiscal e valor por alocar. O cartão Metas mostra, para cada parcela com meta, o acumulado completo (histórico de alocações, saldo inicial, ajustes e submetas), o que falta e o ritmo estimado. O botão "Editar layout" (ícone de grelha, no cabeçalho, junto de mostrar valores e do tema; existe no Painel, nas Parcelas e na Carteira) permite reordenar e redimensionar os blocos, incluindo cada cartão de indicadores no topo (Painel e Carteira), a faixa de regras das Parcelas e os cartões do Orçamento; o layout fica guardado neste navegador e nas definições.
+Visão geral do período escolhido nos filtros (período, ano, meses, tipo, parcelas). Mostra líquido total, média mensal, taxa de poupança, gastos, carga fiscal e valor por alocar. O cartão Metas mostra, para cada parcela com meta, o acumulado completo (histórico de alocações, saldo inicial, ajustes e submetas), o que falta e o ritmo estimado. O botão "Editar layout" (ícone de grelha, no cabeçalho, junto de mostrar valores e do tema; existe no Painel e na Carteira) permite reordenar e redimensionar os blocos, incluindo cada cartão de indicadores no topo (Painel e Carteira) e os cartões do Orçamento; o layout fica guardado neste navegador e nas definições.
 
 No cartão Metas, usa o botão de cada meta para mostrar ou esconder todas as suas submetas. Começam escondidas, incluindo depois de recarregar; abrir uma meta não abre as outras. Cada submeta mostra o acumulado, o objetivo, o valor em falta e o progresso na moeda respetiva, com aviso quando falta uma taxa de conversão. Este controlo só muda a apresentação.
 
@@ -19,13 +19,16 @@ O botão "Todos os meses" faz a pesquisa e os totais valerem para todo o histór
 Registo de despesas, transferências entre parcelas, aportes e retiradas, com data, categoria e nota. As categorias podem ser criadas na própria lista ("+ Nova categoria…"). Eliminar pede confirmação dentro da aplicação. Transferências exigem origem e destino diferentes. Só despesas e retiradas contam como gastos.
 
 ## Parcelas e metas
-- Cada parcela tem tipo, regra por omissão, plataformas, meta e data alvo. Para remover a data alvo (ou o prazo de uma submeta, ou o fim de uma recorrência), toca no X ao lado do campo.
-- "Saldos, ajustes e submetas" mostra o acumulado: histórico de alocações + saldo inicial + ajustes + submetas.
-- Saldo inicial: com data de referência, só contam contribuições do mês dessa data em diante (inclusive).
-- Ajustes: valores positivos ou negativos com nota.
-- Submetas: criar, editar (lápis: nome, plataforma, objetivo, prazo) e eliminar. A moeda só muda enquanto a submeta não tem saldos.
-- Taxas de conversão manuais: 1 origem = taxa x destino. Sem taxa, o total fica marcado como incompleto.
-- Os cartões deslocam-se internamente quando o painel está aberto.
+A lista mostra cada parcela com a regra, as plataformas, o acumulado e o progresso da meta. Escolhe uma para ver o detalhe ao lado (no telemóvel, num painel por cima), com quatro separadores:
+
+- **Meta**: acumulado (o que puseste), meta e data alvo, progresso e de onde vem o total (saldo inicial, alocações dos meses, aportes e retiradas, entradas e saídas, submetas). Botões "Registar entrada/saída" e "Registar valor de mercado".
+- **Entrada/saída** muda o acumulado: dinheiro que entrou ou saiu fora da divisão dos meses. "Corrigir total" regista a diferença para o total que escreveres; "Transferir" passa dinheiro entre a meta principal e uma submeta da mesma moeda sem mudar o total.
+- **Valor de mercado** não muda o acumulado: mostra o ganho ou a perda face ao que puseste até essa data. Aparece também na Carteira.
+- **Submetas**: Objetivo (ex.: Casa) ou Plataforma (ex.: XTB), com moeda, objetivo e prazo. As alocações dos meses ficam em "não distribuído" até as transferires. Numa submeta noutra moeda, a taxa aparece junto dela; sem taxa, fica fora do total.
+- **Histórico**: saldo inicial, entradas, saídas e valores de mercado, com editar e remover.
+- **Definições**: nome, cor, tipo, regra de divisão, plataformas e saldo inicial (com data de referência: só contam alocações do mês dessa data em diante). Arquivar e Eliminar.
+
+Os campos de mês (data alvo, prazos, recorrências, reservas) são uma escolha de mês e ano; o X ao lado limpa uma data opcional.
 
 ## Carteira
 Acumulado por parcela ao longo do tempo, por ano e por plataforma. Os totais incluem saldos, ajustes e submetas; a tabela por ano mostra os fluxos anuais e uma linha "Saldos, ajustes e submetas" para a conta fechar.

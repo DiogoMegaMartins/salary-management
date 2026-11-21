@@ -352,13 +352,16 @@ export const HELP_SECTIONS: HelpSection[] = [
           calculado sobre o montante da plataforma e não é editável. A soma não pode exceder 100%; o que falta fica por
           distribuir. Não há preço, quantidade nem cotação.
         </P>
-        <H3>Saldos, ajustes, submetas e moedas</H3>
+        <H3>Meta, submetas, histórico e definições</H3>
+        <P>Em Parcelas e metas, escolhe uma parcela na lista. O detalhe tem quatro separadores:</P>
         <UL>
-          <li>Saldo inicial: valor e data de referência. O mês da data e os seguintes contam como novos; os anteriores já estão no saldo.</li>
-          <li>Ajuste: valor com sinal, data e nota. &quot;Corrigir total&quot; regista a diferença como ajuste.</li>
-          <li>Cada saldo ou ajuste do histórico aparece num cartão, como as submetas. O lápis edita valor, data e nota; o caixote apaga. O tipo e a meta ou submeta não mudam: para isso, apaga e cria de novo.</li>
-          <li>Submetas (um nível): plataforma, moeda, objetivo e prazo. Os aportes e retiradas da meta podem ser atribuídos a submetas, até ao valor do movimento.</li>
-          <li>Moedas: as taxas são manuais (1 origem = taxa × destino). Sem taxa, a submeta fica fora do total, que é marcado como incompleto.</li>
+          <li><strong>Meta:</strong> acumulado (o que puseste), meta e data alvo, progresso e de onde vem o total. Botões &quot;Registar entrada/saída&quot; e &quot;Registar valor de mercado&quot;.</li>
+          <li><strong>Entrada/saída:</strong> dinheiro que entrou ou saiu fora da divisão dos meses; muda o acumulado. &quot;Corrigir total&quot; regista a diferença para o total que escreveres. &quot;Transferir&quot; passa dinheiro entre a meta principal e uma submeta (na mesma moeda) sem mudar o total.</li>
+          <li><strong>Valor de mercado:</strong> quanto vale a parcela numa data (ex.: o saldo da corretora). Não muda o acumulado; mostra o ganho ou a perda face ao que puseste até essa data. Também aparece na Carteira.</li>
+          <li><strong>Submetas:</strong> partes da parcela com saldo próprio, marcadas como Objetivo (ex.: Casa) ou Plataforma (ex.: XTB), com moeda, objetivo e prazo. As alocações dos meses ficam em &quot;não distribuído&quot; até as transferires. Aportes e retiradas das Despesas podem ser repartidos pelas submetas.</li>
+          <li><strong>Moedas:</strong> numa submeta noutra moeda, a taxa (1 moeda = taxa × euros) aparece junto dela, com &quot;atualizar&quot;. Sem taxa, a submeta fica fora do total, que é marcado como incompleto.</li>
+          <li><strong>Histórico:</strong> saldo inicial, entradas, saídas e valores de mercado da parcela, do mais recente para o mais antigo. O lápis edita valor, data e nota; o caixote remove.</li>
+          <li><strong>Definições:</strong> nome, cor, tipo, regra de divisão, plataformas e saldo inicial (o que já lá tinhas antes de uma data: o mês dessa data e os seguintes contam como novos). Arquivar e Eliminar ficam aqui.</li>
         </UL>
         <P>Estas distribuições e saldos são planeamento: não criam movimentos nem posições na Carteira.</P>
         <H3>Despesas por mês e dia</H3>
@@ -453,7 +456,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         <H3>Tablet, campos e layouts</H3>
         <P>Os formulários adaptam as colunas ao espaço disponível no próprio cartão. Janelas e painéis respeitam a largura e a altura do ecrã; tabelas financeiras largas podem ter deslocação horizontal dentro da tabela, sem alargar a página.</P>
         <P>A navegação lateral persistente aparece a partir de 1024 px de largura do ecrã. Os cartões personalizados empilham abaixo de 900 px de largura útil, sem alterar automaticamente as posições guardadas para computador. Guardar um layout no modo compacto continua a aplicar esse layout globalmente, conforme o aviso no editor.</P>
-        <P>Para mudar a disposição, usa o botão Editar layout (ícone de grelha) no cabeçalho, junto de mostrar valores e do tema. Existe no Painel, nas Parcelas, na Carteira e no Orçamento; cada cartão, incluindo os indicadores de topo, move-se e redimensiona-se sozinho.</P>
+        <P>Para mudar a disposição, usa o botão Editar layout (ícone de grelha) no cabeçalho, junto de mostrar valores e do tema. Existe no Painel, na Carteira e no Orçamento; cada cartão, incluindo os indicadores de topo, move-se e redimensiona-se sozinho.</P>
       </>
     ),
   },
@@ -638,6 +641,13 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.14.0</H3>
+        <UL>
+          <li>Parcelas e metas: lista à esquerda e o detalhe da parcela à direita, com separadores Meta, Submetas, Histórico e Definições.</li>
+          <li>&quot;Registar entrada/saída&quot; muda o acumulado (também corrige o total ou transfere para uma submeta); &quot;Registar valor de mercado&quot; só mostra o ganho ou a perda.</li>
+          <li>Taxas de câmbio junto de cada submeta noutra moeda. Campos de mês em português em todos os navegadores.</li>
+          <li>&quot;Terminar sessão&quot; no menu; o ano da comparação anual escolhe-se à mão.</li>
+        </UL>
         <H3>1.13.0</H3>
         <UL>
           <li>Carteira: "Valor atual e rentabilidade". Escreves quanto vale cada parcela de poupança ou investimento e vês o ganho ou a perda face ao que lá puseste.</li>

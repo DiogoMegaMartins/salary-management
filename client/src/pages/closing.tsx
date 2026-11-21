@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppShell } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { ClearableDateInput } from "@/components/clearable-date-input";
+import { MonthInput } from "@/components/month-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -226,8 +226,8 @@ function Recurring() {
           <Input placeholder="Valor" aria-label="Valor" inputMode="decimal" value={r.value} onChange={(e) => setR({ ...r, value: e.target.value })} className="tnum h-9 text-sm" data-testid="input-rec-value" />
           <Input placeholder="Categoria" aria-label="Categoria" value={r.category} onChange={(e) => setR({ ...r, category: e.target.value })} className="h-9 text-sm" />
           <Input placeholder="Dia" aria-label="Dia do mês" inputMode="numeric" value={r.day} onChange={(e) => setR({ ...r, day: e.target.value })} className="h-9 text-sm" />
-          <Input type="month" aria-label="Início" value={r.start} onChange={(e) => setR({ ...r, start: e.target.value })} className="h-9 text-sm" data-testid="input-rec-start" />
-          <ClearableDateInput type="month" aria-label="Fim (opcional)" value={r.end} onChange={(v) => setR({ ...r, end: v })} className="h-9 text-sm" />
+          <MonthInput aria-label="Início" value={r.start} onChange={(x) => setR({ ...r, start: x })} className="h-9 text-sm" data-testid="input-rec-start" />
+          <MonthInput clearable aria-label="Fim (opcional)" value={r.end} onChange={(x) => setR({ ...r, end: x })} className="h-9 text-sm" />
           <Button id="btn-add-rec" size="sm" disabled={busy} data-testid="button-add-rec" onClick={() => {
             const value = num(r.value);
             if (!r.name.trim() || value == null || value <= 0 || !r.start) return toast({ title: "Preenche nome, valor e mês de início", variant: "destructive" });
@@ -250,7 +250,7 @@ function Recurring() {
         <div className="responsive-form" onKeyDown={(e) => e.key === "Enter" && document.getElementById("btn-add-res")?.click()}>
           <Input placeholder="Nome (ex.: seguro anual)" aria-label="Nome da reserva" value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} className="h-9 text-sm" data-testid="input-res-name" />
           <Input placeholder="Valor-alvo" aria-label="Valor-alvo" inputMode="decimal" value={v.target} onChange={(e) => setV({ ...v, target: e.target.value })} className="tnum h-9 text-sm" data-testid="input-res-target" />
-          <Input type="month" aria-label="Prazo" value={v.due} onChange={(e) => setV({ ...v, due: e.target.value })} className="h-9 text-sm" data-testid="input-res-due" />
+          <MonthInput aria-label="Prazo" value={v.due} onChange={(x) => setV({ ...v, due: x })} className="h-9 text-sm" data-testid="input-res-due" />
           <Input placeholder="Já reservado" aria-label="Já reservado" inputMode="decimal" value={v.reserved} onChange={(e) => setV({ ...v, reserved: e.target.value })} className="tnum h-9 text-sm" />
           <Button id="btn-add-res" size="sm" disabled={busy} data-testid="button-add-res" onClick={() => {
             const target = num(v.target); const reserved = num(v.reserved || "0");
