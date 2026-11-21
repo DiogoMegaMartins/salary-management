@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useConfirm } from "@/components/confirm";
 import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import { useAppState, useDerived, useSave } from "@/lib/app";
 import { SectionCard } from "@/components/kpi";
 import { AnomaliesCard } from "@/components/insights";
@@ -303,7 +304,25 @@ export default function ExpensesPage() {
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
                     <Button variant="ghost" size="icon" className="h-7 w-7 hover:text-destructive" aria-label="Remover" data-testid={`button-delete-expense-${t.id}`}
-                      onClick={() => ask(`Remover a despesa de ${fmtEur(t.value)}${t.note ? ` (${t.note})` : ""}?`).then((ok) => ok && save.deleteTransaction.mutate(t.id, { onError: fail("Não foi possível remover") }))}>
+                      onClick={() => ask(`Remover a despesa de ${fmtEur(t.value)}${t.note ? ` (${t.note})` : ""}?`).then((ok) => ok && save.deleteTransaction.mutate(t.id, {
+                        onError: fail("Não foi possível remover"),
+                        onSuccess: () => toast({
+                          title: "Despesa removida",
+                          description: `${fmtEur(t.value)}${t.note ? ` · ${t.note}` : ""}`,
+                          action: (
+                            <ToastAction
+                              altText="Desfazer a remoção"
+                              data-testid="button-undo-delete"
+                              onClick={() => save.createTransaction.mutate(
+                                { monthId: t.monthId, date: t.date.slice(0, 10), type: t.type, value: t.value, parcelId: t.parcelId, targetParcelId: t.targetParcelId, category: t.category, note: t.note } as any,
+                                { onError: fail("Não foi possível desfazer") },
+                              )}
+                            >
+                              Desfazer
+                            </ToastAction>
+                          ),
+                        }),
+                      }))}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>

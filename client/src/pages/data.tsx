@@ -28,14 +28,8 @@ import { fmtEur } from "@shared/calc";
 import { CatalogsSection } from "@/components/catalogs";
 import { VerifyData, ChangeHistory, CsvImport } from "@/components/data-tools";
 import { OfflineSettings } from "@/components/offline-status";
+import { daysSince } from "@/lib/utils";
 import { isValidDecimalDraft, parseDecimalDraft } from "@/components/months/number-field";
-
-function daysSince(iso: string): number | null {
-  if (!iso) return null;
-  const then = new Date(iso).getTime();
-  if (Number.isNaN(then)) return null;
-  return Math.floor((Date.now() - then) / 86400000);
-}
 
 export default function DataPage() {
   const { data, isLoading } = useAppState();

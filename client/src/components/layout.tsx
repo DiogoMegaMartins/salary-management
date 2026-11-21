@@ -8,6 +8,7 @@ import { AppInfo } from "@/components/data-tools";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { OfflineStatus } from "@/components/offline-status";
+import { KeyboardShortcuts } from "@/components/shortcuts";
 import { offlineInfo } from "@/lib/offline";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
@@ -218,6 +219,7 @@ export function AppShell({
         {filters}
         <OfflineStatus />
       </header>
+      <KeyboardShortcuts />
 
       <main className="min-h-0 min-w-0 col-start-1 lg:col-start-2 overflow-y-auto [overscroll-behavior:contain] px-4 py-5 md:px-6 md:py-6">
         {failed ? (

@@ -45,12 +45,22 @@ export function AccessGate({ children }: { children: React.ReactNode }) {
         }
         if (alive) setStatus("bloqueado");
       })
-      .catch(async () => {
+      .catch(async (err) => {
         if (!alive) return;
+        // falha de rede (fetch rejeita com TypeError) é diferente de o servidor responder com erro
+        const rede = err instanceof TypeError;
         setOffline(true);
         const saved = restoreAccessCode();
         if (saved && await unlockOffline(saved)) { if (alive) setStatus("livre"); return; }
-        if (alive) { setStatus("bloqueado"); setError(await hasOffline() ? "Sem ligação. Usa o código da cópia offline deste dispositivo." : "Sem ligação e sem cópia offline preparada. Liga-te à internet para entrar."); }
+        if (alive) {
+          setStatus("bloqueado");
+          const temCopia = await hasOffline();
+          setError(
+            rede
+              ? temCopia ? "Sem ligação. Usa o código da cópia offline deste dispositivo." : "Sem ligação e sem cópia offline preparada. Liga-te à internet para entrar."
+              : temCopia ? "O servidor não respondeu como esperado. Usa o código da cópia offline deste dispositivo." : "O servidor não respondeu como esperado (a tua ligação está bem). Tenta de novo daqui a um minuto.",
+          );
+        }
       });
     return () => {
       alive = false;
