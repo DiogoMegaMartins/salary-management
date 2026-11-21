@@ -36,7 +36,9 @@ npx wrangler secret put ACCESS_CODE
 
 ## Deploy automático com aprovação
 
-Depois de um merge para a `main`, quando o CI dessa `main` acaba com sucesso, o workflow "Deploy (Cloudflare)" arranca sozinho e fica à espera da tua aprovação. Este arranque automático está desligado por omissão: só corre se criares a variável de repositório `AUTO_DEPLOY` com o valor `true` (Settings > Secrets and variables > Actions > Variables), e só deves fazê-lo depois de configurares os "Required reviewers" abaixo, senão o deploy corre sem pedir nada. Publica exatamente o commit que o CI validou. Se o CI falhar, não arranca. Também o podes correr à mão em Actions, e esse arranque também espera pela aprovação.
+Depois de um merge para a `main`, quando o CI dessa `main` acaba com sucesso, o CI dispara o workflow "Deploy (Cloudflare)", que fica à espera da tua aprovação. Publica exatamente o commit que o CI validou. Se alguma verificação falhar, não dispara.
+
+Isto está desligado por omissão: só acontece se criares a variável de repositório `AUTO_DEPLOY` com o valor `true` (Settings > Secrets and variables > Actions > Variables > New repository variable). Sem a variável (ou com outro valor), o CI não dispara nada e o workflow de deploy nem aparece em Actions; no CI, o job `auto-deploy` fica "skipped". Só a atives depois de configurares os "Required reviewers" abaixo, senão o deploy corre sem pedir nada. Também podes sempre correr o deploy à mão em Actions (Run workflow), e esse arranque também espera pela aprovação.
 
 A aprovação vem do ambiente `production` do GitHub. Configura-o uma vez:
 

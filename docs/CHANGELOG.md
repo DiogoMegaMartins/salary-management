@@ -17,7 +17,7 @@ Dependências principais atualizadas. Sem alterações de funcionalidades, fórm
 - Metas e submetas no telemóvel: separadores compactos (o número de submetas passa a um selo), botões principais de largura total no topo da Meta, bloco próprio para o valor de mercado (ganho ou perda), histórico em duas linhas sem partir palavras, seta nas parcelas da lista, explicação das submetas recolhida e botões com altura de toque. No Painel, a meta sem contribuições já não repete o aviso duas vezes.
 - Ao terminar sessão, o código deixa de ficar escrito na caixa do ecrã de acesso (e o navegador não o preenche sozinho).
 - Nome da aplicação: "Personal Salary Management" no menu lateral, no separador do navegador, no ecrã do código de acesso, no nome da aplicação instalada (manifesto) e no título no iOS.
-- Deploy automático só corre com a variável de repositório `AUTO_DEPLOY=true` (por omissão fica só manual) até os "Required reviewers" do ambiente `production` estarem ativos.
+- Deploy automático: o CI (job `auto-deploy`) só dispara o "Deploy (Cloudflare)" se existir a variável de repositório `AUTO_DEPLOY=true`; sem ela o workflow de deploy nem aparece em Actions (antes aparecia como ignorado). Por omissão fica só manual até os "Required reviewers" do ambiente `production` estarem ativos.
 - O pacote `xlsx` volta a instalar-se no ambiente de desenvolvimento na nuvem (host `cdn.sheetjs.com` permitido).
 
 ## 1.14.0 | 2026-11-21
