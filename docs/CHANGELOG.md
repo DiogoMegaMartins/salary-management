@@ -12,6 +12,7 @@ Dependências principais atualizadas. Sem alterações de funcionalidades, fórm
 - Recharts 2 → 3.
 - TypeScript 5 → 7: `baseUrl` saiu dos `tsconfig` (opção retirada).
 - CI mais barato: o `e2e` passa a testar o Worker (o que corre em produção), em computador e telemóvel; nos ramos, o telemóvel corre só o essencial; o servidor Node é testado na `main` (`e2e-node`); o rasto do Playwright só se grava na repetição de um teste falhado. O job `e2e-worker` deixou de existir (fundiu-se no `e2e`).
+- Ao terminar sessão, o código deixa de ficar escrito na caixa do ecrã de acesso (e o navegador não o preenche sozinho).
 - Nome da aplicação: "Personal Salary Management" no menu lateral, no separador do navegador, no ecrã do código de acesso, no nome da aplicação instalada (manifesto) e no título no iOS.
 - Deploy automático só corre com a variável de repositório `AUTO_DEPLOY=true` (por omissão fica só manual) até os "Required reviewers" do ambiente `production` estarem ativos.
 - O pacote `xlsx` volta a instalar-se no ambiente de desenvolvimento na nuvem (host `cdn.sheetjs.com` permitido).

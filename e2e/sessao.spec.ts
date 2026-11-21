@@ -19,6 +19,7 @@ test.describe("Terminar sessão", () => {
     await abrir();
     await page.getByTestId("button-confirm-ok").click();
     await expect(page.getByPlaceholder("Código de acesso")).toBeVisible();
+    await expect(page.getByPlaceholder("Código de acesso")).toHaveValue(""); // o código não fica na caixa
     // ao recarregar continua fora: o código guardado foi apagado
     await page.reload();
     await expect(page.getByPlaceholder("Código de acesso")).toBeVisible();

@@ -71,6 +71,8 @@ export function AccessGate({ children }: { children: React.ReactNode }) {
     const onLock = () => {
       clearAccessCode();
       queryClient.clear();
+      setCode("");
+      setError("");
       setStatus("bloqueado");
     };
     window.addEventListener("sm:locked", onLock);
@@ -90,6 +92,7 @@ export function AccessGate({ children }: { children: React.ReactNode }) {
       if (offline || !navigator.onLine) {
         if (!await unlockOffline(code.trim())) { setError("Código incorreto ou cópia offline indisponível."); return; }
         setAccessCode(code.trim());
+        setCode("");
         queryClient.invalidateQueries();
         setStatus("livre");
         return;
@@ -107,6 +110,7 @@ export function AccessGate({ children }: { children: React.ReactNode }) {
       }
       setAccessCode(code.trim());
       if (await hasOffline()) await unlockOffline(code.trim());
+      setCode("");
       queryClient.invalidateQueries();
       setStatus("livre");
     } catch {
@@ -154,7 +158,7 @@ export function AccessGate({ children }: { children: React.ReactNode }) {
               ref={inputRef}
               type="password"
               inputMode="text"
-              autoComplete="off"
+              autoComplete="new-password"
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="Código de acesso"
