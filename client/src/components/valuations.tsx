@@ -34,9 +34,6 @@ export function ValuationsCard({ d, base }: { d: Derived; base: Record<number, n
   const { toast } = useToast();
   const { ask, dialog: confirmDialog } = useConfirm();
   const [adding, setAdding] = useState<{ parcelId: string } | null>(null);
-  const [date, setDate] = useState(localToday());
-  const [value, setValue] = useState("");
-  const [note, setNote] = useState("");
 
   const valuations = d.state.valuations ?? [];
   const rows = useMemo(
@@ -59,14 +56,7 @@ export function ValuationsCard({ d, base }: { d: Derived; base: Record<number, n
   const totalGain = Math.round((totals.value - totals.contributed) * 100) / 100;
   const hasAny = rows.some((r) => r.ret.latest);
 
-  const open = (parcelId?: number) => {
-    setAdding({ parcelId: String(parcelId ?? rows[0]?.parcel.id ?? "") });
-    setDate(localToday());
-    setValue("");
-    setNote("");
-  };
-  const parsed = parseDecimalDraft(value);
-  const valid = !!adding?.parcelId && /^\d{4}-\d{2}-\d{2}$/.test(date) && parsed !== null && parsed >= 0;
+  const open = (parcelId?: number) => setAdding({ parcelId: String(parcelId ?? rows[0]?.parcel.id ?? "") });
 
   return (
     <SectionCard
@@ -173,64 +163,103 @@ export function ValuationsCard({ d, base }: { d: Derived; base: Record<number, n
         </div>
       )}
 
-      <Dialog open={!!adding} onOpenChange={(o) => !o && setAdding(null)}>
-        <DialogContent className="max-w-sm" data-testid="dialog-valuation">
-          <DialogHeader>
-            <DialogTitle>Registar valor</DialogTitle>
-            <DialogDescription>O que vale a parcela nesta data, por exemplo o saldo que vês na corretora.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3">
+      <ValuationDialog
+        parcels={rows.map((r) => r.parcel)}
+        parcelId={adding ? Number(adding.parcelId) || null : null}
+        open={!!adding}
+        onOpenChange={(o) => !o && setAdding(null)}
+      />
+    </SectionCard>
+  );
+}
+
+/**
+ * Registar o valor de mercado de uma parcela numa data (Carteira e Parcelas). Com `parcelId` a parcela vem
+ * escolhida; a lista deixa mudar para outra.
+ */
+export function ValuationDialog({
+  parcels,
+  parcelId,
+  open,
+  onOpenChange,
+}: {
+  parcels: { id: number; name: string }[];
+  parcelId: number | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const save = useSave();
+  const { toast } = useToast();
+  const [chosen, setChosen] = useState("");
+  const [date, setDate] = useState(localToday());
+  const [value, setValue] = useState("");
+  const [note, setNote] = useState("");
+  const [wasOpen, setWasOpen] = useState(false);
+  if (open !== wasOpen) {
+    // ao abrir, começa sempre limpo
+    setWasOpen(open);
+    if (open) { setChosen(String(parcelId ?? parcels[0]?.id ?? "")); setDate(localToday()); setValue(""); setNote(""); }
+  }
+  const parsed = parseDecimalDraft(value);
+  const valid = !!chosen && /^\d{4}-\d{2}-\d{2}$/.test(date) && parsed !== null && parsed >= 0;
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm" data-testid="dialog-valuation">
+        <DialogHeader>
+          <DialogTitle>Registar valor de mercado</DialogTitle>
+          <DialogDescription>Quanto vale a parcela nesta data, por exemplo o saldo que vês na corretora. Não muda o acumulado: mostra o ganho ou a perda.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs text-muted-foreground">Parcela</Label>
+            <Select value={chosen} onValueChange={setChosen}>
+              <SelectTrigger className="h-9 text-sm" data-testid="select-valuation-parcel"><SelectValue placeholder="Escolher parcela" /></SelectTrigger>
+              <SelectContent>
+                {parcels.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Parcela</Label>
-              <Select value={adding?.parcelId ?? ""} onValueChange={(v) => setAdding({ parcelId: v })}>
-                <SelectTrigger className="h-9 text-sm" data-testid="select-valuation-parcel"><SelectValue placeholder="Escolher parcela" /></SelectTrigger>
-                <SelectContent>
-                  {rows.map(({ parcel }) => <SelectItem key={parcel.id} value={String(parcel.id)}>{parcel.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="valuation-date" className="text-xs text-muted-foreground">Data</Label>
-                <Input id="valuation-date" type="date" value={date} max={localToday()} onChange={(e) => setDate(e.target.value)} className="h-9 text-sm" data-testid="input-valuation-date" />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="valuation-value" className="text-xs text-muted-foreground">Valor (€)</Label>
-                <Input
-                  id="valuation-value"
-                  inputMode="decimal"
-                  value={value}
-                  onChange={(e) => isValidDecimalDraft(e.target.value) && setValue(e.target.value)}
-                  className="tnum h-9 text-sm"
-                  data-testid="input-valuation-value"
-                />
-              </div>
+              <Label htmlFor="valuation-date" className="text-xs text-muted-foreground">Data</Label>
+              <Input id="valuation-date" type="date" value={date} max={localToday()} onChange={(e) => setDate(e.target.value)} className="h-9 text-sm" data-testid="input-valuation-date" />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="valuation-note" className="text-xs text-muted-foreground">Nota</Label>
-              <Input id="valuation-note" value={note} maxLength={200} onChange={(e) => setNote(e.target.value)} placeholder="Opcional" className="h-9 text-sm" />
+              <Label htmlFor="valuation-value" className="text-xs text-muted-foreground">Valor (€)</Label>
+              <Input
+                id="valuation-value"
+                inputMode="decimal"
+                value={value}
+                onChange={(e) => isValidDecimalDraft(e.target.value) && setValue(e.target.value)}
+                className="tnum h-9 text-sm"
+                data-testid="input-valuation-value"
+              />
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setAdding(null)}>Cancelar</Button>
-            <Button
-              disabled={!valid || save.createValuation.isPending}
-              data-testid="button-save-valuation"
-              onClick={() =>
-                save.createValuation.mutate(
-                  { parcelId: Number(adding!.parcelId), date, value: parsed!, note: note.trim() || undefined },
-                  {
-                    onSuccess: () => { setAdding(null); toast({ title: "Valor registado" }); },
-                    onError: (e) => toast({ title: "Não foi possível registar", description: errMsg(e), variant: "destructive" }),
-                  },
-                )
-              }
-            >
-              Guardar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </SectionCard>
+          <div className="space-y-1.5">
+            <Label htmlFor="valuation-note" className="text-xs text-muted-foreground">Nota</Label>
+            <Input id="valuation-note" value={note} maxLength={200} onChange={(e) => setNote(e.target.value)} placeholder="Opcional" className="h-9 text-sm" />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button
+            disabled={!valid || save.createValuation.isPending}
+            data-testid="button-save-valuation"
+            onClick={() =>
+              save.createValuation.mutate(
+                { parcelId: Number(chosen), date, value: parsed!, note: note.trim() || undefined },
+                {
+                  onSuccess: () => { onOpenChange(false); toast({ title: "Valor registado" }); },
+                  onError: (e) => toast({ title: "Não foi possível registar", description: errMsg(e), variant: "destructive" }),
+                },
+              )
+            }
+          >
+            Guardar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

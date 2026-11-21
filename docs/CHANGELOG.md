@@ -2,6 +2,24 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.14.0 | 2026-11-21
+
+Parcelas e metas refeitas, sessão e deploy com aprovação.
+
+**Parcelas e metas**
+- Lista de parcelas (regra, plataformas, acumulado e progresso da meta) e, ao lado, o detalhe da parcela escolhida com separadores Meta, Submetas, Histórico e Definições. No telemóvel o detalhe abre num painel por cima.
+- Dinheiro e mercado separados: "Registar entrada/saída" (muda o acumulado; inclui "Corrigir total" e "Transferir" entre a meta principal e as submetas, que não muda o total) e "Registar valor de mercado" (só mostra o ganho ou a perda). O valor de mercado aparece também na Carteira.
+- Saldo inicial passa para Definições da parcela.
+- Submetas em diálogo próprio, marcadas como "Objetivo" ou "Plataforma". Noutra moeda, a taxa aparece junto da submeta, com "atualizar" ou "Definir taxa"; deixou de haver uma lista de taxas repetida em todas as parcelas.
+- Histórico único por parcela: saldo inicial, entradas, saídas e valores de mercado, com editar e remover.
+- Sem alterações ao esquema de dados nem às fórmulas: entradas e saídas são ajustes com sinal, como antes.
+
+**Outras alterações**
+- Campos de mês (data alvo, prazos, recorrências, reservas) passam a ser uma escolha de mês e ano em português, igual em todos os navegadores (o campo nativo mostrava "----").
+- Menu: "Terminar sessão" com confirmação (no telemóvel, no painel "Mais"); saiu a frase "Espaço privado".
+- Comparação mensal e anual: o ano de comparação escolhe-se sempre à mão (sem ano anterior por omissão).
+- Deploy (Cloudflare) arranca sozinho quando o CI da `main` passa depois de um merge e espera pela aprovação no ambiente `production`.
+
 ## 1.13.0 | 2026-11-21
 
 Auditoria completa: segurança do Worker, limpeza, layout e funcionalidades novas.
