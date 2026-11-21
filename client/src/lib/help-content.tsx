@@ -641,6 +641,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.16.0</H3>
+        <UL>
+          <li>Separadores com linha verde em Definições, Fecho e planeamento, editor de Mês e parcelas. Em ecrãs pequenos deslocam na horizontal em vez de quebrar em duas linhas, e ficam fixos no topo em Definições e Fecho.</li>
+        </UL>
         <H3>1.15.0</H3>
         <UL>
           <li>Bibliotecas principais atualizadas (React 19, Vite 8, Tailwind 4, Recharts 3, TypeScript 7). Sem alterações às fórmulas nem aos dados.</li>
