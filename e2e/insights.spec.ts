@@ -187,6 +187,18 @@ test.describe("Leituras sobre o histórico", () => {
     }
   });
 
+  test("relatório anual em PDF", async ({ page }) => {
+    await page.goto("/#/");
+    await clicar(page.getByTestId("button-open-report"));
+    await page.getByTestId("select-report-scope").click();
+    await page.getByRole("option", { name: /Relatório anual de \d{4}/ }).first().click();
+    const [descarga] = await Promise.all([page.waitForEvent("download"), clicar(page.getByTestId("button-generate-report-pdf"))]);
+    expect(descarga.suggestedFilename()).toMatch(/^relatorio-anual-\d{4}-particao-salario\.pdf$/);
+    const bytes = await (await import("node:fs/promises")).readFile(await descarga.path());
+    expect(bytes.subarray(0, 8).toString("latin1")).toBe("%PDF-1.4");
+    expect(bytes.length).toBeGreaterThan(1500);
+  });
+
   test("descarregar o relatório em PDF", async ({ page }) => {
     await page.goto("/#/");
     await clicar(page.getByTestId("button-open-report"));

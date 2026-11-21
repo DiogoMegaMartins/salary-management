@@ -233,11 +233,12 @@ export const HELP_SECTIONS: HelpSection[] = [
           vezes o desvio dos até 12 meses anteriores, pelo menos 1,5 vezes a média e acima de 20 €. Uma categoria sem gasto nos meses
           anteriores aparece como <em>Novo</em> a partir de 40 €. São precisos pelo menos 3 meses anteriores com dados.
         </P>
-        <H3>Relatório mensal em PDF</H3>
+        <H3>Relatório em PDF</H3>
         <P>
-          O botão <KBD>Relatório mensal</KBD> (no Painel e no Orçamento) gera uma fotografia do período filtrado, em PDF, com os
-          indicadores, o orçamento contra o real, as parcelas e os meses incluídos. O ficheiro é criado no teu dispositivo e a opção
-          <em> Ocultar valores de património</em> troca os montantes por marcadores.
+          O botão <KBD>Relatório</KBD> (no Painel e no Orçamento) gera uma fotografia em PDF. Em <em>O que incluir</em> escolhes o
+          período filtrado (indicadores, orçamento contra o real, parcelas e meses incluídos) ou um <strong>ano completo</strong>
+          (resumo contra o ano anterior, mês a mês, parcelas, despesas por categoria e valor da carteira). O ficheiro é criado no teu
+          dispositivo e a opção <em>Ocultar valores de património</em> troca os montantes por marcadores.
         </P>
       </>
     ),
