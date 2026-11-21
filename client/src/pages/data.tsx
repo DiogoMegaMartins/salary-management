@@ -28,6 +28,7 @@ import { fmtEur } from "@shared/calc";
 import { CatalogsSection } from "@/components/catalogs";
 import { VerifyData, ChangeHistory, CsvImport } from "@/components/data-tools";
 import { OfflineSettings } from "@/components/offline-status";
+import { isValidDecimalDraft, parseDecimalDraft } from "@/components/months/number-field";
 
 function daysSince(iso: string): number | null {
   if (!iso) return null;
@@ -477,17 +478,19 @@ export default function DataPage() {
   );
 }
 
+/** Mostra o número com vírgula (formato português), sem zeros a mais. */
+const shown = (v: number) => String(Number(v.toFixed(4))).replace(".", ",");
+
 function Field({
   label,
   value,
   suffix,
-  step = 0.01,
   onSave,
 }: {
   label: string;
   value: number;
   suffix: string;
-  step?: number;
+  step?: number; // já não é usado: o campo aceita qualquer decimal
   onSave: (v: number) => void;
 }) {
   const id = useId();
@@ -497,17 +500,19 @@ function Field({
       <div className="relative">
         <Input
           id={id}
-          type="number"
-          step={step}
-          defaultValue={Number(value.toFixed(4))}
+          type="text"
+          inputMode="decimal"
+          defaultValue={shown(value)}
+          onChange={(e) => { if (!isValidDecimalDraft(e.target.value)) e.target.value = e.target.value.slice(0, -1); }}
           onBlur={(e) => {
-            // campo vazio ou sem alteração não grava (esvaziar não pode virar 0%)
-            const v = e.target.value.trim();
-            if (v === "" || Number(v) === Number(value.toFixed(4))) {
-              e.target.value = String(Number(value.toFixed(4)));
+            // campo vazio, ilegível ou sem alteração não grava (esvaziar não pode virar 0%)
+            const n = parseDecimalDraft(e.target.value);
+            if (n === null || n === Number(value.toFixed(4))) {
+              e.target.value = shown(value);
               return;
             }
-            onSave(Number(v));
+            onSave(n);
+            e.target.value = shown(n);
           }}
           className="tnum h-9 pr-8 text-sm"
         />

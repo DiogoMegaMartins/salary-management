@@ -75,7 +75,8 @@ export function Kpi({
       } : undefined}
     >
       <div className="flex items-start justify-between gap-2">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+        {/* duas linhas reservadas: com títulos de uma e de duas linhas, os valores ficam alinhados entre cartões */}
+        <p className="min-h-8 text-xs font-medium uppercase leading-4 tracking-wide text-muted-foreground">{label}</p>
         {helpSlug && (
           <Link
             href={`/ajuda/${helpSlug}`}

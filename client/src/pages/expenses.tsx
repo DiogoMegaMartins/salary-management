@@ -301,7 +301,7 @@ export default function ExpensesPage() {
           </div>
         )}
         {derived && (
-          <SectionCard title="Despesas fora do padrão" description={`${month.label} ${month.year} contra o habitual de cada categoria`}>
+          <SectionCard className="min-h-0" title="Despesas fora do padrão" description={`${month.label} ${month.year} contra o habitual de cada categoria`}>
             <AnomaliesCard d={derived} monthId={month.id} />
           </SectionCard>
         )}

@@ -172,7 +172,7 @@ export default function BudgetPage() {
           }
           actions={
             <Select value={String(runwayWindow)} onValueChange={(v) => setRunwayWindow(Number(v) as 3 | 6 | 12)}>
-              <SelectTrigger className="w-36" data-testid="select-runway-window">
+              <SelectTrigger className="w-44" data-testid="select-runway-window">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -213,21 +213,24 @@ export default function BudgetPage() {
           {
             id: "orc-categorias",
             title: "Orçamento vs. real por categoria",
-            defaultLayout: { x: 0, y: 11, w: 12, h: 18 },
+            defaultLayout: { x: 0, y: 11, w: 12, h: categories.length === 0 && budgetRows.length === 0 ? 8 : 18 },
             node: (
       <SectionCard
         title="Orçamento vs. real por categoria"
         description={`${d.periodLabel} · alerta a partir de ${alertThreshold}% acima do orçamento`}
         actions={
           <div className="flex items-center gap-2">
-            <Input
-              type="number"
-              value={alertThreshold}
-              onChange={(e) => setAlertThreshold(Number(e.target.value) || 0)}
-              className="w-20"
-              aria-label="Limite de alerta em percentagem"
-              data-testid="input-alert-threshold"
-            />
+            <div className="relative">
+              <Input
+                type="number"
+                value={alertThreshold}
+                onChange={(e) => setAlertThreshold(Number(e.target.value) || 0)}
+                className="w-24 pr-7"
+                aria-label="Limite de alerta em percentagem"
+                data-testid="input-alert-threshold"
+              />
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span>
+            </div>
             <Button size="sm" onClick={() => setAddingCategory(true)} data-testid="button-add-category">
               <Plus className="mr-1 h-3.5 w-3.5" />
               Categoria

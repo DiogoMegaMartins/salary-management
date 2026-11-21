@@ -236,7 +236,7 @@ export default function Dashboard() {
                     />
                     <Tooltip trigger={isMobile ? "click" : "hover"} content={<ChartTooltip />} />
                     <Area
-                      type="monotone"
+                      type="linear"
                       dataKey="liquido"
                       name="Líquido"
                       stroke="hsl(var(--chart-1))"
@@ -246,7 +246,7 @@ export default function Dashboard() {
                     <Bar dataKey="subsidio" name="Subsídio alimentação" fill="hsl(var(--chart-4))" radius={[3, 3, 0, 0]} barSize={14} />
                     <Line
                       yAxisId="pct"
-                      type="monotone"
+                      type="linear"
                       dataKey="taxa"
                       name="Taxa de poupança"
                       stroke="hsl(var(--chart-3))"
