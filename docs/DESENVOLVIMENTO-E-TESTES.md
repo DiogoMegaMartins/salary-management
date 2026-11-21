@@ -11,6 +11,7 @@ Node.js 24 e npm (é a única versão suportada e a que o CI usa).
 | `npm test` | Testes (`tsx --test tests/*.test.ts`) |
 | `npm run build` | Build de produção em `dist/` |
 | `npm run test:e2e` | Testes de interface (Playwright); exigem `npm run build` antes |
+| `npm run test:e2e:worker` | A mesma bateria, só em computador, contra o Worker da Cloudflare em local (`e2e/serve-worker.mjs`, `wrangler dev`) |
 | `npm start` | Executa `dist/index.cjs` |
 | `npm run db:push` | Sincroniza o esquema Drizzle (uso pontual) |
 
@@ -35,7 +36,7 @@ Estratégia trunk-based: a `main` recebe alterações só por pull request, com 
 
 | Workflow | Quando corre | O que faz |
 |---|---|---|
-| `ci.yml` | cada `push` (um run por commit; um push novo cancela o anterior, exceto na `main`) e manualmente | Node 24, quatro jobs em paralelo: `check` (tsc), `test` (`npm test`), `build` (inclui arranque em produção e `GET /api/health`) e `e2e` (Playwright) |
+| `ci.yml` | cada `push` (um run por commit; um push novo cancela o anterior, exceto na `main`) e manualmente | Node 24, cinco jobs em paralelo: `check` (tsc e tipos do Worker), `test` (`npm test`), `build` (inclui arranque em produção e `GET /api/health`), `e2e` (Playwright) e `e2e-worker` (a mesma bateria contra o Worker) |
 | `audit.yml` | segundas-feiras e quando `package.json` ou o lock mudam | `npm audit --omit=dev --audit-level=high`; não bloqueia PRs |
 | `auto-pr.yml` | `push` de ramos que não sejam `main` ou `dependabot/**` | abre um PR em draft para `main`, se ainda não existir |
 | Dependabot | npm: semanal (segunda-feira, 07:00 de Lisboa); Actions: mensal | PRs de segurança no npm (as atualizações de versão estão desligadas) e no máximo um PR mensal de Actions |

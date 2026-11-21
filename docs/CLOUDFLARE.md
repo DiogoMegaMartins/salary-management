@@ -49,6 +49,24 @@ npm run dev:worker
 
 `npm run check:worker` verifica os tipos do Worker (corre também no CI). Para correr os testes e2e contra o Worker, arranca `wrangler dev --port 5057 --local --var ACCESS_CODE:codigo-de-teste-1234` e corre `E2E_PORT=5057 npx playwright test`.
 
+## Cabeçalhos de segurança
+
+O HTML e os ficheiros da interface não passam pelo Express: saem do Workers Static Assets. Por isso o CSP e os restantes cabeçalhos de segurança vêm de `client/public/_headers` (copiado para `dist/public`). As respostas de `/api/*` levam os cabeçalhos do Express. O teste `tests/cabecalhos.test.ts` garante que o CSP do `_headers` tem todas as diretivas do `server/middleware.ts`. Se mudares um, muda o outro.
+
+## Cópia diária para o R2 (opcional)
+
+O Worker tem uma tarefa agendada (03:17 UTC) que guarda o JSON completo de backup num bucket R2 e conserva as últimas 14 cópias. Está desligada até ligares um bucket:
+
+1. Cria o bucket: no painel da Cloudflare, **R2 > Create bucket**, com o nome `salary-management-backups` (precisa de R2 ativo na conta e, no token da API, da permissão para editar o R2).
+2. Em `wrangler.jsonc`, tira o comentário à linha `"r2_buckets"`.
+3. Faz o deploy. A partir daí o Worker escreve `backups/AAAA-MM-DD.json` todos os dias.
+
+Sem o bucket, a tarefa agendada não faz nada. As cópias não levam o código de acesso (a exportação já o exclui).
+
+## Testes do Worker
+
+`npm run test:e2e:worker` corre a bateria de interface contra o Worker em local (`wrangler dev --local`, com um código de teste). No CI é o job `e2e-worker`. O workflow de deploy confirma `/api/health` no endereço publicado e falha se não responder.
+
 ## Armazenamento e reinícios
 
 A Cloudflare descarta o Durable Object quando está inativo e cria outro, no mesmo processo, quando chega um pedido. Os módulos ficam em cache nesse processo, por isso o servidor nunca guarda o armazenamento em variáveis de módulo: `worker/sqlite-shim.ts` lê o armazenamento do pedido em curso (`AsyncLocalStorage`) e `worker/index.ts` cria a app Express uma só vez por processo. Quem mexer nisto deve manter essa regra, ou volta o erro "Cannot perform I/O on behalf of a different Durable Object" (1101).
@@ -56,7 +74,7 @@ A Cloudflare descarta o Durable Object quando está inativo e cria outro, no mes
 ## Limites conhecidos
 
 - **Plano gratuito:** a Cloudflare limita o tempo de processamento por pedido (10 ms nos Workers gratuitos; a documentação dos Durable Objects indica 30 s, mas confirma o que se aplica à tua conta). Se aparecer o erro 1102 ("Worker exceeded resource limits") ou a app mostrar "Sem ligação" ao abrir, vê em Workers & Pages > salary-management > Observability se há "Exceeded CPU Time Limits". Importações grandes são o caso mais provável. O plano pago dos Workers (a partir de 5 USD por mês) sobe o limite.
-- **Código de acesso:** definido só pelo segredo `ACCESS_CODE`. Para o mudar, altera o segredo; a app não o altera pelas Definições.
+- **Código de acesso:** usa 12 ou mais caracteres (a comparação é em texto e a app só obriga a 8). Definido só pelo segredo `ACCESS_CODE`. Para o mudar, altera o segredo; a app não o altera pelas Definições.
 - **IP dos visitantes:** o limite de tentativas usa o IP que a Cloudflare indica (`cf-connecting-ip`).
 - Um só Durable Object: todos os pedidos passam por ele, um de cada vez. Para uma app pessoal chega.
 - O `XLSX` corre dentro do Worker; confirma o descarregamento do Excel depois do primeiro deploy.

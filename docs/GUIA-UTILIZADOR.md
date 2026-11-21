@@ -9,12 +9,13 @@ Mais leituras no Painel (versão 1.10.0):
 - **Ritmo das metas:** numa meta com objetivo e data alvo, um aviso diz quando, ao ritmo dos últimos 3 meses, o objetivo só chega depois do prazo, em que mês chega e quanto seria preciso poupar por mês. As metas fora do ritmo ficam resumidas numa faixa no topo.
 - **Comparação mensal e anual:** líquido, rendimento bruto, descontos, carga fiscal, gastos, poupança, taxa de poupança e total alocado por parcela (com cada parcela por baixo). O botão "Tipo de comparação" tem "Comparar com ano" (escolhes primeiro o ano e depois os meses; o ano de comparação lista só os outros anos) e "Comparar com mês" (escolhes um ano, os meses de base e os de comparação, do mesmo ano; com tamanhos diferentes comparam-se médias mensais). A escolha fica guardada neste dispositivo e vale também no Orçamento; "Repor" volta ao filtro.
 - **Despesas fora do padrão:** passou para a página Despesas. Mostra as categorias do mês escolhido bem acima do habitual (precisa de 3 meses anteriores).
-- **Relatório mensal:** botão no cabeçalho; descarrega em PDF, com opção de ocultar valores.
+- **Relatório:** botão no cabeçalho; descarrega em PDF, com opção de ocultar valores. Em "O que incluir" escolhes o período filtrado ou um ano completo (resumo contra o ano anterior, mês a mês, parcelas, despesas por categoria e valor da carteira).
 
 ## Meses
 Cada mês tem rendimento bruto, subsídio de alimentação, descontos (segurança social e IRS) e a alocação por parcela (valor fixo ou percentagem). Pode duplicar um mês, aplicar as regras por omissão das parcelas e guardar a alocação atual como regras. A distribuição por plataforma e por ativos dentro de cada parcela é planeamento: não cria movimentos.
 
 ## Despesas
+O botão "Todos os meses" faz a pesquisa e os totais valerem para todo o histórico, não só para o mês escolhido. Depois de remover uma despesa, o aviso oferece "Desfazer".
 Registo de despesas, transferências entre parcelas, aportes e retiradas, com data, categoria e nota. As categorias podem ser criadas na própria lista ("+ Nova categoria…"). Eliminar pede confirmação dentro da aplicação. Transferências exigem origem e destino diferentes. Só despesas e retiradas contam como gastos.
 
 ## Parcelas e metas
@@ -28,10 +29,11 @@ Registo de despesas, transferências entre parcelas, aportes e retiradas, com da
 
 ## Carteira
 Acumulado por parcela ao longo do tempo, por ano e por plataforma. Os totais incluem saldos, ajustes e submetas; a tabela por ano mostra os fluxos anuais e uma linha "Saldos, ajustes e submetas" para a conta fechar.
+Em "Valor atual e rentabilidade" registas quanto vale cada parcela de poupança ou investimento numa data ("Registar valor"). A app mostra o que lá puseste (saldo de partida mais alocações até esse mês), o valor, o ganho ou a perda e a percentagem. Não vai buscar cotações: escreves tu o valor. A percentagem não conta o tempo (não é anualizada). Os valores entram no backup e no relatório anual.
 
 ## Orçamento
 Orçado vs real por categoria, projeção até ao fim do ano, runway da reserva de emergência (parcelas marcadas nas definições) e sugestão de distribuição de excedente.
-Em baixo, a despesa por categoria na comparação mensal e anual e as categorias do último mês que fugiram ao habitual (como no Painel).
+Em baixo, a despesa por categoria na comparação mensal e anual. As despesas fora do padrão estão na página Despesas.
 
 ## Definições (antiga página Dados e backups)
 Organizada em cinco separadores; o último separador aberto fica lembrado nesta sessão.
@@ -44,6 +46,9 @@ A rota `#/dados` continua a funcionar.
 
 ## Ajuda
 O menu Ajuda e documentação reúne a ajuda integrada e as regras de cálculo.
+
+## Atalhos de teclado
+`g` e depois uma letra navegam: `p` Painel, `m` Meses, `d` Despesas, `f` Fecho, `a` Parcelas, `c` Carteira, `o` Orçamento, `s` Definições, `h` Ajuda. `/` põe o cursor na pesquisa de Despesas e `?` mostra a lista. Não funcionam enquanto escreves num campo.
 
 ## Dicas
 - Exporta um backup JSON todos os meses.
@@ -67,7 +72,7 @@ Para cada parcela mostra o acumulado decomposto (saldo inicial, alocações, apo
 - Verificar dados: erros (bloqueantes) e avisos (informativos) com sugestão de correção. Não altera nada sozinho.
 - Importar CSV: escolher ficheiro, mapear colunas, pré-visualizar (erros por linha, duplicados, resumo) e confirmar. Aceita ; , ou tab, datas DD/MM/AAAA ou AAAA-MM-DD, montantes 1.234,56 ou 1234.56. Importação transacional; o mesmo ficheiro não é reimportado sem confirmação explícita.
 - Histórico de alterações: movimentos, alocações, fechos, importações e metas.
-- Versão e ambiente aparecem no rodapé do menu lateral.
+- Versão, ambiente e há quantos dias guardaste o último backup aparecem no rodapé do menu lateral.
 
 ## Telemóvel
 - Formulários e campos reorganizam-se conforme a largura disponível em cada cartão; janelas e painéis respeitam a largura e a altura do ecrã.

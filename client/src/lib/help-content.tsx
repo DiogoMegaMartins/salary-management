@@ -638,6 +638,14 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.13.0</H3>
+        <UL>
+          <li>Carteira: "Valor atual e rentabilidade". Escreves quanto vale cada parcela de poupança ou investimento e vês o ganho ou a perda face ao que lá puseste.</li>
+          <li>Relatório anual em PDF (botão <KBD>Relatório</KBD>, em "O que incluir").</li>
+          <li>Despesas: pesquisa em todos os meses e "Desfazer" depois de remover.</li>
+          <li>Atalhos de teclado (<KBD>?</KBD> mostra a lista) e o estado do último backup no menu lateral.</li>
+          <li>Layout: indicadores alinhados, valores com vírgula em Definições e menos espaço vazio. A oferta offline passou para Definições, separador Segurança.</li>
+        </UL>
         <H3>1.12.7</H3>
         <UL>
           <li>Comparação mensal e anual: "Total alocado por parcela" passa a ser uma linha normal, com totais e variação, e as parcelas ficam por baixo como subindicadores.</li>
@@ -743,4 +751,4 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
 ];
 
 export const HELP_VERSION = APP_VERSION;
-export const HELP_UPDATED_AT = "2026-11-19";
+export const HELP_UPDATED_AT = "2026-11-21";

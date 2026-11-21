@@ -1,6 +1,6 @@
 {
   "name": "salary-management-app",
-  "version": "1.12.7",
+  "version": "1.13.0",
   "license": "MIT",
   "type": "module",
   "scripts": {

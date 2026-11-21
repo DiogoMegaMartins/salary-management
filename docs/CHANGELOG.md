@@ -2,7 +2,33 @@
 
 Ordem do mais recente para o mais antigo.
 
-## Por lançar
+## 1.13.0 | 2026-11-21
+
+Auditoria completa: segurança do Worker, limpeza, layout e funcionalidades novas.
+
+**Funcionalidades**
+- Carteira: "Valor atual e rentabilidade". Registas o valor de cada parcela de poupança ou investimento numa data e a app calcula o ganho ou a perda face ao que lá foi posto (saldo de partida mais alocações até esse mês). Nova tabela `valuations`, rotas `POST /api/valuations` e `DELETE /api/valuations/:id`, incluída no backup. Formato de backup v4 (backups v3 continuam a importar).
+- Relatório anual em PDF (resumo contra o ano anterior, mês a mês, parcelas, despesas por categoria e valor da carteira). O botão passou a chamar-se "Relatório" e tem "O que incluir".
+- Despesas: botão "Todos os meses" para pesquisar em todo o histórico; "Desfazer" depois de remover uma despesa.
+- Atalhos de teclado: `g` e uma letra para navegar, `/` para pesquisar, `?` para ver a lista.
+- Menu lateral: mostra há quantos dias foi o último backup (a âmbar quando o lembrete passou).
+- Ecrã do código: distingue falta de ligação de um erro do servidor.
+
+**Segurança (Worker)**
+- Cabeçalhos de segurança (CSP, `nosniff`, `Referrer-Policy`, `Permissions-Policy`) nos ficheiros estáticos, em `client/public/_headers`, com teste que garante o mesmo CSP do servidor Node.
+- O limite de tentativas de código passa a guardar-se na base de dados (tabela `auth_failures`) e sobrevive aos reinícios do objeto. Antes ficava só em memória e reiniciava quando a Cloudflare descartava o objeto.
+- O Worker deixou de devolver o texto do erro interno ao visitante (fica nos registos).
+- CI: novo job `e2e-worker` (bateria de interface contra o Worker em local) e o deploy confirma `/api/health` no fim.
+- Cópia diária opcional para o R2 (tarefa agendada 03:17 UTC; precisa de ligar o bucket, ver `docs/CLOUDFLARE.md`).
+
+**Layout**
+- Indicadores do Painel alinhados; filtro "Período personalizado" sem corte; taxas em Definições com vírgula; estados vazios compactos; total de Meses mais visível e "manual" legível; gráfico de rendimento com linhas retas.
+- O menu duplicado do telemóvel saiu (fica a barra de baixo com "Mais"). A oferta "Aplicação no telemóvel e offline" passou para Definições > Segurança.
+
+**Limpeza**
+- Exportações sem uso passaram a internas, `nanoid` substituído por `crypto.randomUUID`, dependências menores atualizadas.
+
+## Worker da Cloudflare (alterações desde a 1.12.7, publicadas antes da 1.13.0)
 
 - Cloudflare: a app corre num Worker, com a interface em Static Assets e o Express e o SQLite dentro de um Durable Object. Ver `docs/CLOUDFLARE.md`. O servidor Node continua suportado.
 - `server/app.ts`: criação da app Express partilhada pelo servidor Node e pelo Worker.

@@ -18,6 +18,8 @@ Definido em `shared/schema.ts`. Datas são texto `AAAA-MM-DD`. Valores novos em 
 | `goal_entries` | saldos iniciais e ajustes (`kind` inicial/ajuste, `amount`, `date`, submeta opcional) |
 | `contribution_links` | atribuição de movimentos a submetas |
 | `fx_rates` | taxas de conversão manuais |
+| `valuations` | valor de mercado de uma parcela numa data, escrito à mão (`parcel_id`, `date`, `value`, `note`); usado em "Valor atual e rentabilidade" |
+| `auth_failures` | contadores de tentativas de código falhadas por IP (não entra nos backups) |
 | `schema_migrations` | migrações idempotentes |
 
 ## Relações principais
