@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArchiveRestore, ChevronRight, Plus } from "lucide-react";
+import { ArchiveRestore, ArrowLeft, ChevronRight, Plus } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -182,9 +182,12 @@ export default function Parcels() {
 
       {isMobile && (
         <Sheet open={!!sel} onOpenChange={(o) => !o && setSelected(null)}>
-          <SheetContent side="bottom" className="flex h-[88dvh] max-h-[88dvh] flex-col gap-0 overflow-hidden rounded-t-2xl p-0" data-testid="sheet-parcel">
-            <SheetHeader className="shrink-0 px-4 pb-3 pt-4 pr-14 text-left">
-              <SheetTitle>{sel && header(sel)}</SheetTitle>
+          <SheetContent side="bottom" className="flex h-dvh! max-h-dvh! flex-col gap-0 overflow-hidden rounded-none border-0 p-0 [&>button.absolute]:hidden" data-testid="sheet-parcel">
+            <SheetHeader className="flex shrink-0 flex-row items-center gap-1 space-y-0 border-b border-border px-2 pb-2 pt-[max(0.5rem,env(safe-area-inset-top))] text-left">
+              <Button variant="ghost" size="icon" className="h-11 w-11 shrink-0" onClick={() => setSelected(null)} aria-label="Voltar às parcelas" data-testid="button-parcel-back">
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <SheetTitle className="min-w-0 flex-1 truncate">{sel && header(sel)}</SheetTitle>
               <SheetDescription className="sr-only">Meta, submetas, histórico e definições da parcela</SheetDescription>
             </SheetHeader>
             <div className="min-h-0 flex-1 px-4">{detail}</div>
