@@ -11,10 +11,11 @@ const isExpenseLike = (t: { type: string }) => t.type === "expense" || t.type ==
 
 export function expenseView<T extends { monthId: number; date: string; type: string; value: number; parcelId: number | null; category: string; note: string; id: number }>(
   txs: T[],
-  monthId: number,
+  /** `null` = todos os meses (pesquisa em todo o histórico). */
+  monthId: number | null,
   f: ExpenseFilter = {},
 ) {
-  const inMonth = txs.filter((t) => t.monthId === monthId);
+  const inMonth = monthId == null ? txs : txs.filter((t) => t.monthId === monthId);
   const expenses = inMonth.filter(isExpenseLike);
   const q = (f.search ?? "").trim().toLowerCase();
   const filtered = expenses.filter((t) => {
