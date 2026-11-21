@@ -36,7 +36,7 @@ Estratégia trunk-based: a `main` recebe alterações só por pull request, com 
 
 | Workflow | Quando corre | O que faz |
 |---|---|---|
-| `ci.yml` | cada `push` (um run por commit; um push novo cancela o anterior, exceto na `main`) e manualmente | Node 24, cinco jobs em paralelo: `check` (tsc e tipos do Worker), `test` (`npm test`), `build` (inclui arranque em produção e `GET /api/health`), `e2e` (Playwright) e `e2e-worker` (a mesma bateria contra o Worker) |
+| `ci.yml` | cada `push` (um run por commit; um push novo cancela o anterior, exceto na `main`) e manualmente | Node 24, cinco jobs em paralelo: `check` (tsc e tipos do Worker), `test` (`npm test`), `build` (inclui arranque em produção e `GET /api/health`), `e2e` (Playwright) e `e2e-worker` (a mesma bateria contra o Worker). Para gastar menos minutos: `e2e-worker` só corre quando mudou algo que corre no Worker (`worker/`, `server/`, `shared/`, `e2e/`, `wrangler.jsonc`, dependências ou este workflow); nos ramos, o `e2e` corre o computador completo e, no telemóvel, só `acesso`, `navegacao` e `interface`; na `main` corre tudo; o rasto do Playwright só é gravado na repetição de um teste que falhou |
 | `audit.yml` | segundas-feiras e quando `package.json` ou o lock mudam | `npm audit --omit=dev --audit-level=high`; não bloqueia PRs |
 | `auto-pr.yml` | `push` de ramos que não sejam `main` ou `dependabot/**` | abre um PR em draft para `main`, se ainda não existir |
 | Dependabot | npm: semanal (segunda-feira, 07:00 de Lisboa); Actions: mensal | PRs de segurança no npm (as atualizações de versão estão desligadas) e no máximo um PR mensal de Actions |

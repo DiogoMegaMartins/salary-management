@@ -18,7 +18,7 @@ export function Logo({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       className={className}
       fill="none"
-      aria-label="Partição"
+      aria-label="Personal Salary Management"
       role="img"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -172,8 +172,7 @@ export function AppShell({
         <div className="flex items-center gap-2.5 px-1 pt-1">
           <Logo className="h-6 w-6 text-primary" />
           <div className="leading-tight">
-            <div className="text-sm font-semibold tracking-tight">Partição</div>
-            <div className="text-xs text-muted-foreground">Gestão do salário</div>
+            <div className="text-sm font-semibold tracking-tight">Personal Salary Management</div>
           </div>
         </div>
         <NavLinks />

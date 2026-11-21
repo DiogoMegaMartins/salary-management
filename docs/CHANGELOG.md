@@ -11,7 +11,8 @@ Dependências principais atualizadas. Sem alterações de funcionalidades, fórm
 - Tailwind 3 → 4 e tailwind-merge 2 → 3. A configuração passou de `tailwind.config.ts` para `client/src/index.css` (`@theme`); o `autoprefixer` deixou de ser preciso. As regras CSS próprias continuam fora das camadas do Tailwind para prevalecerem como antes; o editor de mês no telemóvel anula agora também a propriedade `translate`. Diferenças visuais de 2 a 4 px em alguns espaçamentos; o indicador do separador ativo na barra do telemóvel passou a ter o fundo que já estava previsto.
 - Recharts 2 → 3.
 - TypeScript 5 → 7: `baseUrl` saiu dos `tsconfig` (opção retirada).
-- Nome da aplicação: "Personal Salary Management" no separador do navegador, no ecrã do código de acesso, no nome da aplicação instalada (manifesto) e no título no iOS.
+- CI mais barato: o teste do Worker só corre quando mudou algo que corre no Worker; nos ramos, a interface no telemóvel corre só o essencial (na `main` corre tudo); o rasto do Playwright só se grava na repetição de um teste falhado.
+- Nome da aplicação: "Personal Salary Management" no menu lateral, no separador do navegador, no ecrã do código de acesso, no nome da aplicação instalada (manifesto) e no título no iOS.
 - Deploy automático só corre com a variável de repositório `AUTO_DEPLOY=true` (por omissão fica só manual) até os "Required reviewers" do ambiente `production` estarem ativos.
 - O pacote `xlsx` volta a instalar-se no ambiente de desenvolvimento na nuvem (host `cdn.sheetjs.com` permitido).
 
