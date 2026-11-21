@@ -480,7 +480,7 @@ export default function Dashboard() {
                           ? "Meta concluída"
                           : g.monthsLeft
                             ? `Faltam ${formatGoalMoney(g.missing, g.parcel.currency || "EUR")} · ~${g.monthsLeft} ${g.monthsLeft === 1 ? "mês" : "meses"} ao ritmo de ${formatGoalMoney(g.pace, g.parcel.currency || "EUR")}/mês`
-                            : `Faltam ${formatGoalMoney(g.missing, g.parcel.currency || "EUR")} · sem contribuições recentes`}
+                            : `Faltam ${formatGoalMoney(g.missing, g.parcel.currency || "EUR")}`}
                       </p>
                       {!g.incomplete && (
                         <GoalPaceLine

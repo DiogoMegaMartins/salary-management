@@ -106,9 +106,12 @@ export function ParcelDetail({
     <div className="min-w-0" data-testid={`parcel-detail-${p.id}`}>
       {confirmDialog}
       <Tabs value={tab} onValueChange={(v) => onTab(v as ParcelTab)}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid h-auto w-full grid-cols-4 gap-0.5 [&>button]:min-h-10 [&>button]:px-1 [&>button]:text-[13px] sm:[&>button]:px-3 sm:[&>button]:text-sm">
           <TabsTrigger value="meta" data-testid="tab-parcel-meta">Meta</TabsTrigger>
-          <TabsTrigger value="submetas" data-testid="tab-parcel-submetas">Submetas{subs.length ? ` (${subs.length})` : ""}</TabsTrigger>
+          <TabsTrigger value="submetas" data-testid="tab-parcel-submetas" className="gap-1">
+            Submetas
+            {subs.length > 0 && <span className="rounded-full bg-muted-foreground/15 px-1.5 text-[11px] leading-5" aria-label={`${subs.length} submetas`}>{subs.length}</span>}
+          </TabsTrigger>
           <TabsTrigger value="historico" data-testid="tab-parcel-historico">Histórico</TabsTrigger>
           <TabsTrigger value="definicoes" data-testid="tab-parcel-definicoes">Definições</TabsTrigger>
         </TabsList>
@@ -138,7 +141,42 @@ export function ParcelDetail({
             </div>
           )}
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2 min-[420px]:flex min-[420px]:flex-wrap">
+            <Button size="sm" className="min-h-11 gap-1.5 min-[420px]:min-h-9" onClick={() => setMovement({ subgoalId: null })} data-testid={`button-movement-${p.id}`}>
+              <ArrowLeftRight className="h-3.5 w-3.5" />Registar entrada/saída
+            </Button>
+            {p.kind !== "gastos" && (
+              <Button size="sm" variant="outline" className="min-h-11 gap-1.5 min-[420px]:min-h-9" onClick={() => setValuing(true)} data-testid={`button-market-${p.id}`}>
+                <TrendingUp className="h-3.5 w-3.5" />Registar valor de mercado
+              </Button>
+            )}
+          </div>
+          <div className="divide-y divide-border/60 border-t border-border">
+            {br.hasOpening && <Row label={`Saldo inicial (${fmtDate(opening!.date)})`} value={money(br.opening)} />}
+            <Row label={br.hasOpening ? "Alocações dos meses desde o saldo inicial" : "Alocações dos meses"} value={money(br.flows)} />
+            {br.txNet !== 0 && <Row label="Aportes e retiradas das Despesas" value={money(br.txNet)} />}
+            {br.adjustments !== 0 && <Row label="Entradas e saídas fora dos meses" value={`${br.adjustments > 0 ? "+" : ""}${money(br.adjustments)}`} />}
+            {subs.length > 0 && <Row label="Submetas (convertidas)" value={money(br.total - br.unallocated)} />}
+            <Row label="Acumulado" value={money(br.total)} strong />
+          </div>
+          {f.ret.latest && (
+            <div
+              className={cn("rounded-md border p-3", f.ret.gain! > 0.004 ? "border-emerald-600/30 bg-emerald-500/5" : f.ret.gain! < -0.004 ? "border-destructive/30 bg-destructive/5" : "border-border bg-muted/30")}
+              data-testid={`market-${p.id}`}
+            >
+              <p className="text-xs text-muted-foreground">Valor de mercado em {fmtDate(f.ret.latest.date)}</p>
+              <div className="mt-0.5 flex flex-wrap items-baseline justify-between gap-x-3">
+                <span className="tnum text-lg font-semibold">{money(f.ret.latest.value)}</span>
+                <span className={cn("tnum text-sm font-medium", f.ret.gain! > 0.004 ? "text-emerald-700 dark:text-emerald-400" : f.ret.gain! < -0.004 ? "text-destructive" : "text-muted-foreground")}>
+                  {f.ret.gain! > 0.004 ? "Ganho " : f.ret.gain! < -0.004 ? "Perda " : "Sem ganho nem perda "}
+                  {Math.abs(f.ret.gain!) > 0.004 ? `${f.ret.gain! > 0 ? "+" : "−"}${money(Math.abs(f.ret.gain!))}` : ""}
+                </span>
+              </div>
+            </div>
+          )}
+          {f.ret.latest && <p className="text-[11px] text-muted-foreground">O ganho compara o valor de mercado com o que puseste até essa data. Não altera o acumulado.</p>}
+
+          <div className="grid gap-3 border-t border-border pt-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor={`target-${p.id}`} className="text-xs text-muted-foreground">Meta ({cur})</Label>
               <BlurInput
@@ -161,41 +199,16 @@ export function ParcelDetail({
             </div>
           </div>
 
-          <div className="divide-y divide-border/60 border-t border-border">
-            {br.hasOpening && <Row label={`Saldo inicial (${fmtDate(opening!.date)})`} value={money(br.opening)} />}
-            <Row label={br.hasOpening ? "Alocações dos meses desde o saldo inicial" : "Alocações dos meses"} value={money(br.flows)} />
-            {br.txNet !== 0 && <Row label="Aportes e retiradas das Despesas" value={money(br.txNet)} />}
-            {br.adjustments !== 0 && <Row label="Entradas e saídas fora dos meses" value={`${br.adjustments > 0 ? "+" : ""}${money(br.adjustments)}`} />}
-            {subs.length > 0 && <Row label="Submetas (convertidas)" value={money(br.total - br.unallocated)} />}
-            <Row label="Acumulado" value={money(br.total)} strong />
-            {f.ret.latest && (
-              <Row
-                testid={`market-${p.id}`}
-                label={`Valor de mercado (${fmtDate(f.ret.latest.date)}) · ${f.ret.gain! >= 0 ? "ganho" : "perda"}`}
-                value={`${money(f.ret.latest.value)} · ${f.ret.gain! > 0 ? "+" : f.ret.gain! < 0 ? "−" : ""}${money(Math.abs(f.ret.gain!))}`}
-                className={f.ret.gain! > 0.004 ? "text-emerald-700 dark:text-emerald-400" : f.ret.gain! < -0.004 ? "text-destructive" : "text-muted-foreground"}
-              />
-            )}
-          </div>
-          {f.ret.latest && <p className="text-[11px] text-muted-foreground">O ganho compara o valor de mercado com o que puseste até essa data. Não altera o acumulado.</p>}
-
-          <div className="flex flex-wrap gap-2">
-            <Button size="sm" className="gap-1.5" onClick={() => setMovement({ subgoalId: null })} data-testid={`button-movement-${p.id}`}>
-              <ArrowLeftRight className="h-3.5 w-3.5" />Registar entrada/saída
-            </Button>
-            {p.kind !== "gastos" && (
-              <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setValuing(true)} data-testid={`button-market-${p.id}`}>
-                <TrendingUp className="h-3.5 w-3.5" />Registar valor de mercado
-              </Button>
-            )}
-          </div>
         </TabsContent>
 
         {/* -------------------------------------------------------------- Submetas */}
         <TabsContent value="submetas" className="space-y-3 pt-2">
-          <p className="text-xs text-muted-foreground">
-            Partes da parcela com saldo próprio: objetivos (ex.: Casa) ou o que está em cada plataforma (ex.: XTB). As alocações dos meses entram em "não distribuído"; usa "Transferir" para as passar para uma submeta.
-          </p>
+          <details className="text-xs text-muted-foreground">
+            <summary className="cursor-pointer select-none py-1">O que são submetas?</summary>
+            <p className="mt-1">
+              Partes da parcela com saldo próprio: objetivos (ex.: Casa) ou o que está em cada plataforma (ex.: XTB). As alocações dos meses entram em "não distribuído"; usa "Transferir" para as passar para uma submeta.
+            </p>
+          </details>
           {br.subs.map((s) => {
             const platform = state.platforms.find((x) => x.id === s.sub.platformId);
             const rate = s.sub.currency !== cur ? latestRate(state, s.sub.currency, cur) : null;
@@ -224,16 +237,16 @@ export function ParcelDetail({
                 )}
                 {s.sub.currency !== cur && <RateLine state={state} from={s.sub.currency} to={cur} rate={rate} testid={`rate-${s.sub.id}`} />}
                 <div className="flex flex-wrap gap-1.5">
-                  <Button size="sm" variant="outline" className="h-8 gap-1 text-xs" onClick={() => setMovement({ subgoalId: s.sub.id })} data-testid={`button-sub-movement-${s.sub.id}`}>
+                  <Button size="sm" variant="outline" className="h-8 gap-1 text-xs pointer-coarse:h-11" onClick={() => setMovement({ subgoalId: s.sub.id })} data-testid={`button-sub-movement-${s.sub.id}`}>
                     <ArrowLeftRight className="h-3 w-3" />Entrada/saída
                   </Button>
-                  <Button size="sm" variant="ghost" className="h-8 gap-1 text-xs" onClick={() => setSubDialog({ editing: full })} data-testid={`button-edit-subgoal-${s.sub.id}`}>
+                  <Button size="sm" variant="ghost" className="h-8 gap-1 text-xs pointer-coarse:h-11" onClick={() => setSubDialog({ editing: full })} data-testid={`button-edit-subgoal-${s.sub.id}`}>
                     <Pencil className="h-3 w-3" />Editar
                   </Button>
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="h-8 gap-1 text-xs text-muted-foreground hover:text-destructive"
+                    className="h-8 gap-1 text-xs text-muted-foreground hover:text-destructive pointer-coarse:h-11"
                     data-testid={`button-delete-subgoal-${s.sub.id}`}
                     onClick={() => ask(`Eliminar a submeta "${s.sub.name}"?`, "Só é possível se não tiver entradas, saídas ou aportes atribuídos.").then((ok) => ok && save.deleteSubgoal.mutate(s.sub.id, { onError: fail("Não foi possível eliminar") }))}
                   >
@@ -244,7 +257,7 @@ export function ParcelDetail({
             );
           })}
           {subs.length > 0 && <Row label="Não distribuído (meta principal)" value={money(br.unallocated)} className="text-muted-foreground" />}
-          <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setSubDialog({ editing: null })} data-testid={`button-new-subgoal-${p.id}`}>
+          <Button size="sm" variant="outline" className="min-h-11 w-full gap-1.5 min-[420px]:min-h-9 min-[420px]:w-auto" onClick={() => setSubDialog({ editing: null })} data-testid={`button-new-subgoal-${p.id}`}>
             <Plus className="h-3.5 w-3.5" />Nova submeta
           </Button>
           {subs.length > 0 && <AssignContributions state={state} parcelId={p.id} cur={cur} subs={subs} />}
@@ -405,8 +418,8 @@ function OpeningBalance({ parcelId, cur, opening, ask }: { parcelId: number; cur
       <Label className="text-xs font-semibold">Saldo inicial</Label>
       <p className="text-[11px] text-muted-foreground">O que a parcela já tinha antes desta data. A partir do mês da data, contam as alocações dos meses; as anteriores ficam incluídas neste saldo.</p>
       <div className="flex flex-wrap gap-1.5">
-        <Input inputMode="decimal" value={v} onChange={(e) => isValidDecimalDraft(e.target.value) && setV(e.target.value)} placeholder={`Valor (${cur})`} aria-label="Saldo inicial" className="tnum h-9 w-32 text-sm" data-testid={`input-opening-${parcelId}`} />
-        <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="Data do saldo inicial" className="h-9 w-40 text-sm" />
+        <Input inputMode="decimal" value={v} onChange={(e) => isValidDecimalDraft(e.target.value) && setV(e.target.value)} placeholder={`Valor (${cur})`} aria-label="Saldo inicial" className="tnum h-9 min-w-0 flex-1 basis-28 text-sm" data-testid={`input-opening-${parcelId}`} />
+        <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="Data do saldo inicial" className="h-9 min-w-0 flex-1 basis-36 text-sm" />
         <Button
           size="sm"
           className="h-9"
@@ -465,34 +478,39 @@ function History({ state, parcelId, cur, subName, ask }: { state: AppState; parc
     <ul className="divide-y divide-border/60 text-sm" data-testid={`history-${parcelId}`}>
       {items.map((it) => (
         <li key={it.key} className="py-2" data-testid={`history-item-${it.key}`}>
-          <div className="flex items-center gap-2">
-            <span className="tnum w-20 shrink-0 text-xs text-muted-foreground">{fmtDate(it.date)}</span>
+          <div className="flex items-start gap-1">
             <div className="min-w-0 flex-1">
-              <p className="font-medium">{it.title}</p>
-              <p className="truncate text-xs text-muted-foreground">{it.where}{it.note ? ` · ${it.note}` : ""}</p>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+                <span className="font-medium">{it.title}</span>
+                <span className={cn("tnum font-medium", it.tone)}>{it.amount}</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                <span className="tnum">{fmtDate(it.date)}</span> · {it.where}{it.note ? ` · ${it.note}` : ""}
+              </p>
             </div>
-            <span className={cn("tnum shrink-0 font-medium", it.tone)}>{it.amount}</span>
-            {it.entryId != null && (
-              <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" aria-label="Editar registo" data-testid={`button-edit-entry-${it.entryId}`}
-                onClick={() => {
-                  const e = state.goalEntries.find((x) => x.id === it.entryId)!;
-                  if (editing === e.id) return setEditing(null);
-                  setEe({ amount: String(e.amount).replace(".", ","), date: e.date, note: e.note ?? "" });
-                  setEditing(e.id);
-                }}>
-                <Pencil className="h-3.5 w-3.5" />
+            <div className="-my-1 flex shrink-0 items-center">
+              {it.entryId != null && (
+                <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 pointer-coarse:h-11 pointer-coarse:w-11" aria-label="Editar registo" data-testid={`button-edit-entry-${it.entryId}`}
+                  onClick={() => {
+                    const e = state.goalEntries.find((x) => x.id === it.entryId)!;
+                    if (editing === e.id) return setEditing(null);
+                    setEe({ amount: String(e.amount).replace(".", ","), date: e.date, note: e.note ?? "" });
+                    setEditing(e.id);
+                  }}>
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+              )}
+              <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 text-muted-foreground hover:text-destructive pointer-coarse:h-11 pointer-coarse:w-11" aria-label="Remover registo"
+                onClick={() =>
+                  ask("Remover este registo?").then((ok) => {
+                    if (!ok) return;
+                    if (it.entryId != null) save.deleteGoalEntry.mutate(it.entryId);
+                    else if (it.valuationId != null) save.deleteValuation.mutate(it.valuationId);
+                  })
+                }>
+                <Trash2 className="h-3.5 w-3.5" />
               </Button>
-            )}
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive" aria-label="Remover registo"
-              onClick={() =>
-                ask("Remover este registo?").then((ok) => {
-                  if (!ok) return;
-                  if (it.entryId != null) save.deleteGoalEntry.mutate(it.entryId);
-                  else if (it.valuationId != null) save.deleteValuation.mutate(it.valuationId);
-                })
-              }>
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
+            </div>
           </div>
           {editing === it.entryId && it.entryId != null && (
             <div className="mt-2 flex flex-wrap gap-1.5 rounded-md bg-muted/30 p-2" data-testid={`form-edit-entry-${it.entryId}`}>

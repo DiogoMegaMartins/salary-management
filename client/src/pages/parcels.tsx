@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArchiveRestore, Plus } from "lucide-react";
+import { ArchiveRestore, ChevronRight, Plus } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -130,7 +130,10 @@ export default function Parcels() {
                         </span>
                         <span className="block truncate pl-[18px] text-xs text-muted-foreground">{meta}</span>
                       </span>
-                      <span className="tnum text-right text-sm font-medium" data-testid={`text-acc-${p.id}`}>{p.kind === "gastos" && !f.target ? "—" : fmtEur(f.br.total)}</span>
+                      <span className="tnum flex items-center justify-end gap-1 text-right text-sm font-medium" data-testid={`text-acc-${p.id}`}>
+                        {p.kind === "gastos" && !f.target ? "—" : fmtEur(f.br.total)}
+                        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground sm:hidden" aria-hidden="true" />
+                      </span>
                       <span className="col-span-2 min-w-0 sm:col-span-1">
                         {f.target > 0 ? (
                           <>
