@@ -73,6 +73,12 @@ function useYoYComparison(d: Derived) {
   return { sel, setSel, yoy, refYear, free, chosenCount: free ? Math.min(chosen.months.length, base.months.length) : chosen.months.length, noRef: !free && refYear == null };
 }
 
+const NO_DATA = { months: [], computed: [], allMonths: [], allComputed: [] } as unknown as Derived;
+/** true quando o cartão de comparação não tem tabela para mostrar (para o encolher na grelha). */
+export function useYoYEmpty(d: Derived | null) {
+  return !useYoYComparison(d ?? NO_DATA).yoy;
+}
+
 /* ------------------------------------------------------------------ controlos */
 
 type ByYear = (readonly [number, number[]])[];

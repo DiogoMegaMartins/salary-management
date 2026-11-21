@@ -75,7 +75,7 @@ Para cada parcela mostra o acumulado decomposto (saldo inicial, alocações, apo
 - Verificar dados: erros (bloqueantes) e avisos (informativos) com sugestão de correção. Não altera nada sozinho.
 - Importar CSV: escolher ficheiro, mapear colunas, pré-visualizar (erros por linha, duplicados, resumo) e confirmar. Aceita ; , ou tab, datas DD/MM/AAAA ou AAAA-MM-DD, montantes 1.234,56 ou 1234.56. Importação transacional; o mesmo ficheiro não é reimportado sem confirmação explícita.
 - Histórico de alterações: movimentos, alocações, fechos, importações e metas.
-- Versão, ambiente e há quantos dias guardaste o último backup aparecem no rodapé do menu lateral.
+- Versão, ambiente e há quantos dias guardaste o último backup aparecem no topo da Ajuda. "Terminar sessão" fica no fundo do menu lateral (no telemóvel, no painel "Mais").
 
 ## Telemóvel
 - Formulários e campos reorganizam-se conforme a largura disponível em cada cartão; janelas e painéis respeitam a largura e a altura do ecrã.

@@ -23,6 +23,11 @@ export type SectionSpec = {
    */
   group?: string;
   groupClass?: string;
+  /**
+   * Altura máxima (unidades de grid) a mostrar enquanto o cartão está vazio. Só vale fora do modo de edição:
+   * o layout guardado não muda e o cartão volta ao tamanho escolhido quando tiver conteúdo.
+   */
+  collapsedH?: number;
 };
 
 export type PageLayoutMap = Record<string, { x: number; y: number; w: number; h: number }>;
@@ -117,6 +122,14 @@ export function EditableSectionGrid({
   const initialLayoutRef = useRef(initialLayout);
   initialLayoutRef.current = initialLayout;
   const activeLayout = draft ?? initialLayout;
+  // cartões vazios encolhem na vista normal; os de baixo sobem (compactação vertical da grelha)
+  const viewLayout = useMemo(
+    () => initialLayout.map((l) => {
+      const c = sections.find((s) => s.id === l.i)?.collapsedH;
+      return c ? { ...l, h: Math.min(l.h, Math.max(c, l.minH ?? 0)), minH: Math.min(l.minH ?? c, c) } : l;
+    }),
+    [initialLayout, sections],
+  );
   const hasCustomLayout = !!savedLayout && Object.keys(savedLayout).length > 0;
   const stackedLayout = useMemo(() => {
     let y = 0;
@@ -150,7 +163,7 @@ export function EditableSectionGrid({
           {hasCustomLayout && width > 0 && !isCompact ? (
             <GridLayout
               width={width}
-              layout={initialLayout}
+              layout={viewLayout}
               gridConfig={{ cols: 12, rowHeight: 28, margin: [16, 16], containerPadding: null, maxRows: Infinity }}
               dragConfig={{ enabled: false }}
               resizeConfig={{ enabled: false }}

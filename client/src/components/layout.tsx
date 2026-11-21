@@ -4,7 +4,6 @@ import { Settings, Eye, EyeOff, LayoutGrid, CalendarCheck, Moon, Sun, LayoutDash
 import { useAppState, useTheme } from "@/lib/app";
 import { usePrivacy } from "@/lib/privacy";
 import { layoutEditor, useLayoutEditor } from "@/lib/layout-editor";
-import { AppInfo } from "@/components/data-tools";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { OfflineStatus } from "@/components/offline-status";
@@ -157,7 +156,7 @@ export function AppShell({
   children,
 }: {
   title: string;
-  subtitle?: string;
+  subtitle?: React.ReactNode;
   actions?: React.ReactNode;
   filters?: React.ReactNode;
   children: React.ReactNode;
@@ -179,8 +178,7 @@ export function AppShell({
         </div>
         <NavLinks />
         <div className="mt-auto px-1 text-xs text-muted-foreground">
-          <LogoutButton className="-mx-1 mb-3 w-[calc(100%+0.5rem)] px-2 py-2 text-sm" />
-          <AppInfo />
+          <LogoutButton className="-mx-1 w-[calc(100%+0.5rem)] px-2 py-2 text-sm" />
         </div>
       </aside>
 
@@ -191,7 +189,7 @@ export function AppShell({
               <h1 className="break-words text-lg font-semibold tracking-tight md:text-xl" data-testid="text-page-title">
                 {title}
               </h1>
-              {subtitle && <p className="break-words text-xs text-muted-foreground md:text-sm">{subtitle}</p>}
+              {subtitle && <div className="break-words text-xs text-muted-foreground md:text-sm">{subtitle}</div>}
             </div>
           </div>
           <div className="flex min-w-0 flex-wrap items-center gap-2">

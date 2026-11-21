@@ -25,9 +25,11 @@ test.describe("Atalhos de teclado e estado do backup", () => {
     await expect(page.getByTestId("dialog-shortcuts")).toHaveCount(0);
   });
 
-  test("o rodapé do menu mostra o estado do último backup", async ({ page }, info) => {
-    test.skip(info.project.name === "telemovel", "o menu lateral só existe no computador");
+  test("a Ajuda mostra a versão e o estado do último backup; o menu já não", async ({ page }) => {
     await entrar(page);
+    await expect(page.getByTestId("backup-status")).toHaveCount(0);
+    await page.goto("/#/ajuda");
+    await expect(page.getByTestId("app-info")).toContainText(/Versão \d+\.\d+\.\d+/);
     await expect(page.getByTestId("backup-status")).toContainText(/backup/i);
   });
 });

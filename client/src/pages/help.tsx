@@ -1,3 +1,4 @@
+import { AppInfo } from "@/components/data-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { Search, Printer, Download, Link2, Check, ChevronDown, List } from "lucide-react";
@@ -149,7 +150,7 @@ export default function HelpPage() {
   return (
     <AppShell
       title="Ajuda e documentação"
-      subtitle={`Versão ${HELP_VERSION} · atualizado em ${HELP_UPDATED_AT}`}
+      subtitle={<AppInfo updatedAt={HELP_UPDATED_AT} />}
       actions={
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" className="gap-1.5" onClick={exportMarkdown} data-testid="button-export-help">
