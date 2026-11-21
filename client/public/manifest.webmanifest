@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Partição do Salário",
-  "short_name": "Partição",
+  "name": "Personal Salary Management",
+  "short_name": "Salary Mgmt",
   "lang": "pt-PT",
   "start_url": "./#/meses",
   "scope": "./",
