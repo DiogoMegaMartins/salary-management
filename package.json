@@ -1,6 +1,6 @@
 {
   "name": "salary-management-app",
-  "version": "1.12.7",
+  "version": "1.13.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -12,6 +12,7 @@
     "test": "tsx --test tests/*.test.ts",
     "check-db": "tsx script/check-db.ts",
     "test:e2e": "playwright test",
+    "test:e2e:worker": "cross-env E2E_TARGET=worker playwright test --project=desktop",
     "dev:worker": "wrangler dev",
     "deploy": "npm run build && wrangler deploy",
     "check:worker": "tsc -p worker/tsconfig.json"

@@ -14,6 +14,9 @@
   // registos e erros visíveis em Workers & Pages > salary-management > Observability
   "observability": { "enabled": true },
   "define": { "process.env.NODE_ENV": "\"production\"" },
+  // Cópia diária (03:17 UTC). Só faz algo se o bucket R2 abaixo estiver ligado; ver docs/CLOUDFLARE.md.
+  "triggers": { "crons": ["17 3 * * *"] },
+  // "r2_buckets": [{ "binding": "BACKUPS", "bucket_name": "salary-management-backups" }],
   "durable_objects": {
     "bindings": [{ "name": "SALARY", "class_name": "SalaryDO" }]
   },

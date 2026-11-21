@@ -7,14 +7,15 @@ export type ExpenseFilter = { categoryKey?: string; parcelId?: number; parcelIds
 export const UNCLASSIFIED = "__sem_categoria__";
 
 /** Despesas = tipos expense e withdrawal (a mesma regra de despesasExtraOf usada nos Meses). Transferências e aportes ficam de fora. */
-export const isExpenseLike = (t: { type: string }) => t.type === "expense" || t.type === "withdrawal";
+const isExpenseLike = (t: { type: string }) => t.type === "expense" || t.type === "withdrawal";
 
 export function expenseView<T extends { monthId: number; date: string; type: string; value: number; parcelId: number | null; category: string; note: string; id: number }>(
   txs: T[],
-  monthId: number,
+  /** `null` = todos os meses (pesquisa em todo o histórico). */
+  monthId: number | null,
   f: ExpenseFilter = {},
 ) {
-  const inMonth = txs.filter((t) => t.monthId === monthId);
+  const inMonth = monthId == null ? txs : txs.filter((t) => t.monthId === monthId);
   const expenses = inMonth.filter(isExpenseLike);
   const q = (f.search ?? "").trim().toLowerCase();
   const filtered = expenses.filter((t) => {

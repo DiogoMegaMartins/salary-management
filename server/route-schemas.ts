@@ -75,6 +75,13 @@ export const fxRateCreateSchema = z.strictObject({
   date: isoDate,
 });
 
+export const valuationCreateSchema = z.strictObject({
+  parcelId: id,
+  date: isoDate,
+  value: z.number().min(0).max(1e10),
+  note: text(200).optional(),
+});
+
 /* ------------------------------------------------------ recorrências e reservas */
 export const recurringSchema = z.strictObject({
   name,

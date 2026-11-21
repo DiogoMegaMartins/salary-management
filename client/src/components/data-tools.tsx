@@ -8,7 +8,9 @@ import { useConfirm } from "@/components/confirm";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { errMsg } from "@/components/catalogs";
+import { Link } from "wouter";
 import { useAppState } from "@/lib/app";
+import { cn, daysSince } from "@/lib/utils";
 import { parseCsv } from "@shared/evo08";
 
 const NONE = "-1";
@@ -16,11 +18,27 @@ const NONE = "-1";
 /** Versão e ambiente da aplicação. */
 export function AppInfo() {
   const q = useQuery<any>({ queryKey: ["/api/app-info"], staleTime: 60000 });
+  const { data } = useAppState();
   if (!q.data) return null;
+  // última cópia de segurança guardada (exportada) e se o lembrete já passou
+  const s = data?.settings;
+  const since = s ? daysSince(s.lastBackupAt) : null;
+  const overdue = s ? since === null || since >= s.backupReminderDays : false;
   return (
-    <p className="text-xs text-muted-foreground" data-testid="app-info">
-      Versão {q.data.version} · ambiente: {q.data.environment} · formato de backup v{q.data.schemaVersion}
-    </p>
+    <>
+      <p className="text-xs text-muted-foreground" data-testid="app-info">
+        Versão {q.data.version} · ambiente: {q.data.environment} · formato de backup v{q.data.schemaVersion}
+      </p>
+      {s && (
+        <p className="text-xs" data-testid="backup-status">
+          <Link href="/dados" className={cn("underline-offset-2 hover:underline", overdue ? "font-medium text-amber-700 dark:text-amber-400" : "text-muted-foreground")}>
+            {since === null ? "Ainda sem backup guardado" : since === 0 ? "Backup guardado hoje" : `Último backup há ${since} ${since === 1 ? "dia" : "dias"}`}
+            {overdue ? ": guarda um novo" : ""}
+          </Link>
+        </p>
+      )}
+      <p className="hidden text-xs text-muted-foreground lg:block">Atalhos: carrega em <kbd className="rounded border border-border bg-muted px-1 text-[10px]">?</kbd></p>
+    </>
   );
 }
 

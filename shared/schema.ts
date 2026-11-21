@@ -252,6 +252,16 @@ export const fxRates = sqliteTable("fx_rates", {
 });
 export type FxRate = typeof fxRates.$inferSelect;
 
+/** Valor de mercado de uma parcela numa data, escrito à mão (para calcular o ganho ou a perda face ao que se pôs lá). */
+export const valuations = sqliteTable("valuations", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  parcelId: integer("parcel_id").notNull(),
+  date: text("date").notNull(), // AAAA-MM-DD
+  value: real("value").notNull(),
+  note: text("note").notNull().default(""),
+});
+export type Valuation = typeof valuations.$inferSelect;
+
 /** Normaliza nomes para comparar duplicados (espaços e maiúsculas/minúsculas). */
 export function normName(s: string): string {
   return String(s ?? "").trim().replace(/\s+/g, " ").toLocaleLowerCase("pt-PT");

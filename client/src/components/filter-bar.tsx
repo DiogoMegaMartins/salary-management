@@ -26,7 +26,7 @@ export function FilterBar({ d, showParcels = true }: { d: Derived; showParcels?:
     </Button>
     <div className={`${mobileOpen ? "flex" : "hidden"} flex-wrap items-center gap-2 md:flex`}>
       <Select value={f.preset} onValueChange={(v) => f.setPreset(v as any)}>
-        <SelectTrigger className="h-8 w-[168px] text-xs" data-testid="select-period-preset">
+        <SelectTrigger className="h-8 w-[196px] text-xs" data-testid="select-period-preset">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

@@ -72,12 +72,41 @@ export function ipKey(ip: string | undefined): string {
   return v;
 }
 
-/** Limitador de falhas por IP (janela fixa). */
-export function makeLimiter(max: number, windowMs: number) {
-  const fails = new Map<string, { n: number; first: number }>();
+export type FailRecord = { n: number; first: number };
+/** Onde se guardam as falhas. Em memória por omissão; a app liga-o à base de dados (ver `server/limiter-store.ts`). */
+export interface LimiterStore {
+  get(scope: string, key: string): FailRecord | undefined;
+  set(scope: string, key: string, rec: FailRecord): void;
+  delete(scope: string, key: string): void;
+}
+
+function memoryStore(): LimiterStore {
+  const m = new Map<string, FailRecord>();
+  const k = (scope: string, key: string) => `${scope}\0${key}`;
+  return {
+    get: (scope, key) => m.get(k(scope, key)),
+    set(scope, key, rec) {
+      if (m.size > 1000) m.clear();
+      m.set(k(scope, key), rec);
+    },
+    delete: (scope, key) => void m.delete(k(scope, key)),
+  };
+}
+
+let store: LimiterStore = memoryStore();
+/**
+ * Num Worker da Cloudflare o objeto é descartado quando está inativo, e contadores só em memória voltavam
+ * a zero: o limite de tentativas não protegia. Com o armazenamento na base de dados, sobrevive aos reinícios.
+ */
+export function setLimiterStore(s: LimiterStore) {
+  store = s;
+}
+
+/** Limitador de falhas por IP (janela fixa). `scope` separa os contadores no armazenamento. */
+export function makeLimiter(max: number, windowMs: number, scope = "auth") {
   const live = (ip: string) => {
-    const r = fails.get(ip);
-    if (r && Date.now() - r.first > windowMs) { fails.delete(ip); return undefined; }
+    const r = store.get(scope, ip);
+    if (r && Date.now() - r.first > windowMs) { store.delete(scope, ip); return undefined; }
     return r;
   };
   return {
@@ -86,11 +115,10 @@ export function makeLimiter(max: number, windowMs: number) {
       return r && r.n >= max ? Math.ceil((windowMs - (Date.now() - r.first)) / 1000) : 0;
     },
     fail(ip: string) {
-      if (fails.size > 1000) for (const k of Array.from(fails.keys())) live(k);
       const r = live(ip);
-      fails.set(ip, { n: (r?.n ?? 0) + 1, first: r?.first ?? Date.now() });
+      store.set(scope, ip, { n: (r?.n ?? 0) + 1, first: r?.first ?? Date.now() });
     },
-    reset(ip: string) { fails.delete(ip); },
+    reset(ip: string) { store.delete(scope, ip); },
   };
 }
 
@@ -105,6 +133,6 @@ export function publicState<T extends { settings: { accessCode?: string } }>(sta
 }
 
 /** 5 falhas por IP (ou /64) em 15 minutos, mais um teto global de 60 falhas por minuto contra rotação de IPs. */
-export const authLimiter = makeLimiter(5, 15 * 60 * 1000);
-export const globalLimiter = makeLimiter(60, 60 * 1000);
+export const authLimiter = makeLimiter(5, 15 * 60 * 1000, "auth");
+export const globalLimiter = makeLimiter(60, 60 * 1000, "global");
 export const GLOBAL_KEY = "*";

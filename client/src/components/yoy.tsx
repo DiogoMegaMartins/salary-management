@@ -32,7 +32,7 @@ const pp = (x: number) => {
 };
 
 /** Meses e ano de referência em uso: a escolha guardada ou, sem ela, os meses do filtro. */
-export function useYoYComparison(d: Derived) {
+function useYoYComparison(d: Derived) {
   const [sel, setSel] = useYoYSelection();
   const chosen = useMemo(() => {
     if (sel.mode !== "manual") return { months: d.months, computed: d.computed };
@@ -142,7 +142,7 @@ function MonthPicker({
 
 const countLabel = (n: number) => (n === 0 ? "Nenhum mês" : `${n} ${n === 1 ? "mês" : "meses"}`);
 
-export function YoYControls({ d, sel, setSel }: { d: Derived; sel: YoYSelection; setSel: (s: YoYSelection) => void }) {
+function YoYControls({ d, sel, setSel }: { d: Derived; sel: YoYSelection; setSel: (s: YoYSelection) => void }) {
   // um mês por ano e mês (dois dezembros contam como um)
   const byYear = useMemo<ByYear>(() => {
     const out = new Map<number, number[]>();

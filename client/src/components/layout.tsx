@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Settings, Eye, EyeOff, LayoutGrid, CalendarCheck, Moon, Sun, LayoutDashboard, CalendarRange, PieChart, Wallet, Menu, Target, HelpCircle, Receipt, Ellipsis } from "lucide-react";
+import { Settings, Eye, EyeOff, LayoutGrid, CalendarCheck, Moon, Sun, LayoutDashboard, CalendarRange, PieChart, Wallet, Target, HelpCircle, Receipt, Ellipsis } from "lucide-react";
 import { useAppState, useTheme } from "@/lib/app";
 import { usePrivacy } from "@/lib/privacy";
 import { layoutEditor, useLayoutEditor } from "@/lib/layout-editor";
@@ -8,14 +8,9 @@ import { AppInfo } from "@/components/data-tools";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { OfflineStatus } from "@/components/offline-status";
+import { KeyboardShortcuts } from "@/components/shortcuts";
 import { offlineInfo } from "@/lib/offline";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export function Logo({ className }: { className?: string }) {
   return (
@@ -190,25 +185,6 @@ export function AppShell({
       <header className="app-header col-start-1 lg:col-start-2 [@media(min-height:760px)]:sticky top-0 z-20 flex min-w-0 flex-col gap-3 border-b border-border bg-background/85 px-4 py-3 backdrop-blur-sm md:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 flex-[1_1_16rem] items-center gap-3">
-            <div className="shrink-0 lg:hidden">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon" aria-label="Abrir menu de navegação" data-testid="button-menu">
-                    <Menu className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-52">
-                  {NAV.map((item) => (
-                    <DropdownMenuItem key={item.href} asChild>
-                      <Link href={item.href} className="flex items-center gap-2">
-                        <item.icon className="h-4 w-4" />
-                        {item.label}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
             <div className="min-w-0">
               <h1 className="break-words text-lg font-semibold tracking-tight md:text-xl" data-testid="text-page-title">
                 {title}
@@ -243,6 +219,7 @@ export function AppShell({
         {filters}
         <OfflineStatus />
       </header>
+      <KeyboardShortcuts />
 
       <main className="min-h-0 min-w-0 col-start-1 lg:col-start-2 overflow-y-auto [overscroll-behavior:contain] px-4 py-5 md:px-6 md:py-6">
         {failed ? (

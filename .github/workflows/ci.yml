@@ -116,3 +116,27 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 7
+  # A mesma bateria de interface, só em computador, contra o Worker da Cloudflare (workerd em local).
+  e2e-worker:
+    name: e2e-worker
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test:e2e:worker
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report-worker
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

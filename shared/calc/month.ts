@@ -16,7 +16,7 @@ export const MONTH_NAMES = [
   "Dezembro",
 ];
 
-export const MONTH_SHORT = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+const MONTH_SHORT = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
 export const KINDS = [
   { value: "gastos", label: "Gastos" },
@@ -41,18 +41,18 @@ export function descontosOf(m: Month): number {
   return ss + irs;
 }
 
-export function ssOf(m: Month): number {
+function ssOf(m: Month): number {
   if (m.descontosMode === "manual") return 0;
   return (m.base + m.outrosIrsSs) * m.taxaSs;
 }
 
-export function irsOf(m: Month): number {
+function irsOf(m: Month): number {
   if (m.descontosMode === "manual") return 0;
   return (m.base + m.outrosIrs) * m.taxaIrsBase + m.outrosIrsSs * m.taxaIrsExtra;
 }
 
 /** Vencimento líquido. */
-export function netOf(m: Month, s: Settings): number {
+function netOf(m: Month, s: Settings): number {
   const adj = s.excludeOutrosIrsFromNet ? m.outrosIrs : 0;
   return grossOf(m) - descontosOf(m) - adj;
 }
@@ -83,7 +83,7 @@ export function despesasExtraOf(txs: Transaction[]): number {
     .reduce((a, t) => a + t.value, 0);
 }
 
-export function aportesExtraOf(txs: Transaction[]): number {
+function aportesExtraOf(txs: Transaction[]): number {
   return txs.filter((t) => t.type === "contribution").reduce((a, t) => a + t.value, 0);
 }
 

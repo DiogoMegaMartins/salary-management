@@ -23,7 +23,7 @@ export default defineConfig({
   ],
   // A app tem de estar compilada (npm run build) antes de correr os testes.
   webServer: {
-    command: "node e2e/serve.mjs",
+    command: process.env.E2E_TARGET === "worker" ? "node e2e/serve-worker.mjs" : "node e2e/serve.mjs",
     url: `http://127.0.0.1:${port}/api/health`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

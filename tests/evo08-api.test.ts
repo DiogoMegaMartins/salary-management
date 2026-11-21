@@ -38,7 +38,7 @@ test("versão e ambiente são expostos", async () => {
   assert.equal(r.status, 200);
   assert.match(r.json.version, /^\d+\.\d+\.\d+$/);
   assert.equal(r.json.environment, "desenvolvimento");
-  assert.equal(r.json.schemaVersion, 3);
+  assert.equal(r.json.schemaVersion, 4);
 });
 
 test("migração: colunas e tabelas novas existem e os dados antigos têm valores por omissão", () => {
@@ -202,7 +202,7 @@ test("CSV: rollback completo se uma linha falhar a meio (mês inexistente)", asy
 
 test("backups: exportação inclui versão de formato e a importação valida antes do restauro", async () => {
   const exp = (await call("GET", "/api/export/json")).json;
-  assert.equal(exp.schemaVersion, 3);
+  assert.equal(exp.schemaVersion, 4);
   assert.ok(Array.isArray(exp.months));
   const snap = JSON.stringify(state().months.map((m) => m.id));
   assert.equal((await call("POST", "/api/import", { ...exp, schemaVersion: 99 })).status, 400);

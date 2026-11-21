@@ -4,7 +4,7 @@ import { MONTH_NAMES, type MonthComputed } from "./month";
 
 /* ------------------------------------------------------------------ ritmo das metas */
 
-export type GoalPaceStatus =
+type GoalPaceStatus =
   | "sem_objetivo" // a meta não tem valor-alvo
   | "atingida" // acumulado já cobre o objetivo
   | "sem_prazo" // há objetivo mas não há data-alvo
@@ -85,7 +85,7 @@ export function goalPace(i: {
 
 /* ------------------------------------------------------------ comparação com o ano anterior */
 
-export type YoYTotals = {
+type YoYTotals = {
   net: number;
   gross: number;
   descontos: number;
@@ -100,7 +100,7 @@ export type YoYTotals = {
 };
 
 /** Um mês (ou os meses que partilham o mesmo ano e mês) e o seu par no ano de referência. */
-export type YoYPair = { current: Month[]; previous: Month[] };
+type YoYPair = { current: Month[]; previous: Month[] };
 
 export type YearOverYear = {
   /** meses do período que têm par no ano de referência (um par por ano e mês) */

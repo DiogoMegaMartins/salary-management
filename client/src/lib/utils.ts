@@ -16,3 +16,11 @@ export function dateInMonth(year: number, month: number, now: Date = new Date())
   if (now.getFullYear() === year && now.getMonth() + 1 === month) return localToday(now);
   return `${year}-${pad2(month)}-${pad2(new Date(year, month, 0).getDate())}`;
 }
+
+/** Dias desde uma data ISO; null se vazia ou inválida. */
+export function daysSince(iso: string): number | null {
+  if (!iso) return null;
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return null;
+  return Math.floor((Date.now() - then) / 86400000);
+}

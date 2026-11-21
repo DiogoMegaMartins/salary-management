@@ -309,12 +309,18 @@ export default function Parcels() {
             node: (
         <div className="flex flex-wrap items-center gap-3 rounded-lg border border-card-border bg-card px-4 py-3 text-xs">
           <span className="text-muted-foreground">Regras por omissão:</span>
-          <Badge variant="secondary" className="tnum">
-            {fmtPct(percentSum / 100, 1)} do disponível
-          </Badge>
-          <Badge variant="secondary" className="tnum">
-            {fmtEur(fixedSum)} fixos
-          </Badge>
+          {percentSum === 0 && fixedSum === 0 ? (
+            <span className="text-muted-foreground">nenhuma parcela tem regra definida</span>
+          ) : (
+            <>
+              <Badge variant="secondary" className="tnum">
+                {fmtPct(percentSum / 100, 1)} do disponível
+              </Badge>
+              <Badge variant="secondary" className="tnum">
+                {fmtEur(fixedSum)} fixos
+              </Badge>
+            </>
+          )}
           {percentSum > 100 && (
             <span className="text-destructive">A soma das percentagens passa dos 100% do disponível.</span>
           )}

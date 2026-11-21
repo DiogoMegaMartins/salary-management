@@ -166,7 +166,7 @@ export default function Months() {
                   <td className="tnum px-3 py-2.5 text-right text-muted-foreground">
                     {fmtEur(r.descontos)}
                     {r.month.descontosMode === "manual" && (
-                      <span className="ml-1 text-[11px] uppercase text-muted-foreground">man.</span>
+                      <span className="ml-1 rounded bg-muted px-1 py-0.5 text-[10px] font-medium uppercase text-muted-foreground" title="Descontos introduzidos à mão (não calculados)">manual</span>
                     )}
                   </td>
                   <td className="tnum px-3 py-2.5 text-right font-medium">{fmtEur(r.net)}</td>
@@ -234,7 +234,7 @@ export default function Months() {
               ))}
             </tbody>
             <tfoot>
-              <tr className="border-t border-border bg-accent/30 text-xs font-medium">
+              <tr className="border-t-2 border-border bg-muted/70 text-sm font-semibold">
                 <td className="px-4 py-2.5">Total ({rows.length})</td>
                 <td className="tnum px-3 py-2.5 text-right">{fmtEur(totals.gross)}</td>
                 <td className="tnum px-3 py-2.5 text-right">{fmtEur(totals.descontos)}</td>

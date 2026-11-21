@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useConfirm } from "@/components/confirm";
 import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import { useAppState, useDerived, useSave } from "@/lib/app";
 import { SectionCard } from "@/components/kpi";
 import { AnomaliesCard } from "@/components/insights";
@@ -32,11 +33,11 @@ function usePersisted<T>(key: string, initial: T): [T, (v: T) => void] {
   return [v, set];
 }
 const pad = (n: number) => String(n).padStart(2, "0");
-const dayLabel = (iso: string) => {
+const dayLabel = (iso: string, withYear = false) => {
   const [y, m, d] = iso.split("-").map(Number);
   // calendário puro: sem Date/fuso horário
   const wd = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"][new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
-  return `${pad(d)}/${pad(m)} · ${wd}`;
+  return `${pad(d)}/${pad(m)}${withYear ? `/${y}` : ""} · ${wd}`;
 };
 
 type Draft = { id?: number; date: string; value: string; category: string; parcelId: string; note: string };
@@ -54,6 +55,7 @@ export default function ExpensesPage() {
   const [parcel, setParcel] = usePersisted("sm.exp.parcel", ALL);
   const [platform, setPlatform] = usePersisted("sm.exp.platform", ALL);
   const [search, setSearch] = usePersisted("sm.exp.search", "");
+  const [allMonths, setAllMonths] = usePersisted("sm.exp.all", false); // pesquisar em todo o histórico
   const [favs, setFavs] = usePersisted<string[]>("sm.exp.favs", []);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [saving, setSaving] = useState(false); // protege contra duplo envio
@@ -66,13 +68,13 @@ export default function ExpensesPage() {
     if (!data || !month) return null;
     const platformParcels =
       platform === ALL ? undefined : (data.parcelPlatforms ?? []).filter((l) => String(l.platformId) === platform).map((l) => l.parcelId);
-    return expenseView(data.transactions, month.id, {
+    return expenseView(data.transactions, allMonths ? null : month.id, {
       categoryKey: cat === ALL ? undefined : cat,
       parcelId: parcel === ALL ? undefined : Number(parcel),
       parcelIds: platformParcels,
       search,
     });
-  }, [data, month, cat, parcel, platform, search]);
+  }, [data, month, cat, parcel, platform, search, allMonths]);
 
   if (data && !isLoading && sorted.length === 0) {
     return (
@@ -161,7 +163,7 @@ export default function ExpensesPage() {
             </Select>
           </div>
           <div className="rounded-md border border-card-border bg-card px-4 py-2" data-testid="expense-month-total">
-            <p className="text-xs text-muted-foreground">Total de despesas do mês</p>
+            <p className="text-xs text-muted-foreground">{allMonths ? "Total de despesas (todos os meses)" : "Total de despesas do mês"}</p>
             <p className="tnum text-lg font-semibold">{fmtEur(view.monthTotal)}</p>
           </div>
           {view.filteredCount !== view.count && (
@@ -187,6 +189,17 @@ export default function ExpensesPage() {
 
         <div className="flex flex-wrap gap-2">
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Pesquisar descrição" aria-label="Pesquisar descrição" className="h-9 w-56 text-sm" data-testid="input-expense-search" />
+          <Button
+            variant={allMonths ? "default" : "outline"}
+            size="sm"
+            className="h-9"
+            aria-pressed={allMonths}
+            title="Procura em todos os meses, não só no escolhido"
+            onClick={() => setAllMonths(!allMonths)}
+            data-testid="button-all-months"
+          >
+            Todos os meses
+          </Button>
           <Select value={cat} onValueChange={setCat}>
             <SelectTrigger className="h-9 w-44 text-xs" aria-label="Categoria" data-testid="select-expense-category"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -276,7 +289,7 @@ export default function ExpensesPage() {
             {view.days.map((d) => (
               <section key={d.date} data-testid={`day-${d.date}`}>
                 <div className="flex items-baseline justify-between border-b border-border pb-1 text-xs">
-                  <h3 className="font-semibold">{dayLabel(d.date)}</h3>
+                  <h3 className="font-semibold">{dayLabel(d.date, allMonths)}</h3>
                   <span className="tnum font-semibold" data-testid={`day-total-${d.date}`}>{fmtEur(d.total)}</span>
                 </div>
                 {d.items.map((t) => (
@@ -291,7 +304,25 @@ export default function ExpensesPage() {
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
                     <Button variant="ghost" size="icon" className="h-7 w-7 hover:text-destructive" aria-label="Remover" data-testid={`button-delete-expense-${t.id}`}
-                      onClick={() => ask(`Remover a despesa de ${fmtEur(t.value)}${t.note ? ` (${t.note})` : ""}?`).then((ok) => ok && save.deleteTransaction.mutate(t.id, { onError: fail("Não foi possível remover") }))}>
+                      onClick={() => ask(`Remover a despesa de ${fmtEur(t.value)}${t.note ? ` (${t.note})` : ""}?`).then((ok) => ok && save.deleteTransaction.mutate(t.id, {
+                        onError: fail("Não foi possível remover"),
+                        onSuccess: () => toast({
+                          title: "Despesa removida",
+                          description: `${fmtEur(t.value)}${t.note ? ` · ${t.note}` : ""}`,
+                          action: (
+                            <ToastAction
+                              altText="Desfazer a remoção"
+                              data-testid="button-undo-delete"
+                              onClick={() => save.createTransaction.mutate(
+                                { monthId: t.monthId, date: t.date.slice(0, 10), type: t.type, value: t.value, parcelId: t.parcelId, targetParcelId: t.targetParcelId, category: t.category, note: t.note } as any,
+                                { onError: fail("Não foi possível desfazer") },
+                              )}
+                            >
+                              Desfazer
+                            </ToastAction>
+                          ),
+                        }),
+                      }))}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
@@ -301,7 +332,7 @@ export default function ExpensesPage() {
           </div>
         )}
         {derived && (
-          <SectionCard title="Despesas fora do padrão" description={`${month.label} ${month.year} contra o habitual de cada categoria`}>
+          <SectionCard className="min-h-0" title="Despesas fora do padrão" description={`${month.label} ${month.year} contra o habitual de cada categoria`}>
             <AnomaliesCard d={derived} monthId={month.id} />
           </SectionCard>
         )}

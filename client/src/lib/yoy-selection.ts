@@ -23,7 +23,7 @@ const KEY = "sm-yoy-selection-v1";
 const EVENT = "sm:yoy-selection";
 
 /** Valida o que veio do armazenamento; qualquer coisa estranha volta à omissão. */
-export function parseYoYSelection(raw: unknown): YoYSelection {
+function parseYoYSelection(raw: unknown): YoYSelection {
   try {
     const o = typeof raw === "string" ? JSON.parse(raw) : raw;
     if (!o || typeof o !== "object") return DEFAULT_YOY_SELECTION;

@@ -1,7 +1,7 @@
 /** Saldos iniciais, ajustes, submetas, atribuições de aportes e taxas de conversão (EVO-04). */
-import type { Subgoal, GoalEntry, ContributionLink, FxRate } from "@shared/schema";
+import type { Subgoal, GoalEntry, ContributionLink, FxRate, Valuation } from "@shared/schema";
 import { eq } from "drizzle-orm";
-import { parcels, transactions, platforms, subgoals, goalEntries, contributionLinks, fxRates, normName } from "@shared/schema";
+import { parcels, transactions, platforms, subgoals, goalEntries, contributionLinks, fxRates, valuations, normName } from "@shared/schema";
 import { db, sqlite, httpError, roundCents } from "./db";
 
 export const goalMethods = {
@@ -132,5 +132,18 @@ export const goalMethods = {
   },
   deleteFxRate(id: number) {
     db.delete(fxRates).where(eq(fxRates.id, id)).run();
+  },
+
+  /** Valor de mercado de uma parcela numa data (escrito à mão). */
+  createValuation(d: { parcelId: number; date: string; value: number; note?: string }): Valuation {
+    const parcel = db.select().from(parcels).where(eq(parcels.id, d.parcelId)).get();
+    if (!parcel) throw httpError(404, "Parcela inexistente.");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(d.date))) throw httpError(400, "Data inválida (AAAA-MM-DD).");
+    const value = Number(d.value);
+    if (!Number.isFinite(value) || value < 0) throw httpError(400, "O valor não pode ser negativo.");
+    return db.insert(valuations).values({ parcelId: d.parcelId, date: d.date, value: roundCents(value), note: String(d.note ?? "").trim() }).returning().get();
+  },
+  deleteValuation(id: number) {
+    db.delete(valuations).where(eq(valuations.id, id)).run();
   },
 };

@@ -1,5 +1,7 @@
 import type { Category, Month } from "@shared/schema";
 import { markdownToPdf } from "@shared/pdf";
+import { buildAnnualReportMarkdown } from "@shared/annual-report";
+import { goalTotalOf } from "@/components/goal-panel";
 import type { Derived } from "@/lib/app";
 import {
   budgetVsRealByCategory,
@@ -20,7 +22,7 @@ export type ReportOptions = {
 
 const mask = (s: string, hide: boolean) => (hide ? "•••••" : s);
 
-export function buildMonthlyReportMarkdown(
+function buildMonthlyReportMarkdown(
   d: Derived,
   categories: Category[],
   opts: ReportOptions,
@@ -156,6 +158,27 @@ export function buildMonthlyReportPdf(
     title: `Relatório mensal — ${d.periodLabel}`,
     footer: "Partição do Salário",
   });
+}
+
+/** PDF do relatório de um ano completo (independente do período filtrado). */
+export function buildAnnualReportPdf(d: Derived, year: number, opts: ReportOptions): Uint8Array {
+  // saldo de partida de cada parcela, como na Carteira: acumulado completo menos o histórico de alocações
+  const base: Record<number, number> = {};
+  for (const p of d.parcels) {
+    const hist = d.allComputed.reduce((a, c) => a + (c.byParcel[p.id] ?? 0), 0);
+    base[p.id] = goalTotalOf(d.state, p, d.allComputed) - hist;
+  }
+  const md = buildAnnualReportMarkdown({
+    year,
+    computed: d.allComputed,
+    parcels: d.parcels,
+    transactions: d.allTransactions,
+    valuations: d.state.valuations ?? [],
+    base,
+    hideAmounts: opts.hideAmounts,
+    generatedAt: new Date().toLocaleString("pt-PT", { dateStyle: "long", timeStyle: "short" }),
+  });
+  return markdownToPdf(md, { title: `Relatório anual ${year}`, footer: "Partição do Salário" });
 }
 
 export function downloadPdf(bytes: Uint8Array, filename: string) {

@@ -7,6 +7,7 @@ import { ChartTooltip, LegendDots, axisProps, eurAxis, gridProps } from "@/compo
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppState, useDerived } from "@/lib/app";
 import { goalTotalOf } from "@/components/goal-panel";
+import { ValuationsCard } from "@/components/valuations";
 import { fmtEur, fmtPct, monthLabelShort } from "@shared/calc";
 import { EditableSectionGrid, type SectionSpec } from "@/components/editable-section-grid";
 import { usePageLayout } from "@/lib/page-layout";
@@ -130,7 +131,7 @@ export default function Portfolio() {
               node: (
                 <SectionCard
                   title="Evolução do acumulado"
-                  description="Soma acumulada das alocações de cada parcela, mês a mês"
+                  description="Soma acumulada das alocações de cada parcela, mês a mês. O gráfico mostra o período filtrado; os indicadores de cima contam todo o histórico."
                 >
                 <div className="[.grid-widget_&]:flex [.grid-widget_&]:h-full [.grid-widget_&]:flex-col">
                   <div className="h-[320px] [.grid-widget_&]:h-auto [.grid-widget_&]:min-h-0 [.grid-widget_&]:flex-1">
@@ -222,9 +223,15 @@ export default function Portfolio() {
               ),
             },
             {
+              id: "valor-carteira",
+              title: "Valor atual e rentabilidade",
+              defaultLayout: { x: 0, y: 30, w: 12, h: 15 },
+              node: <ValuationsCard d={d} base={model.base} />,
+            },
+            {
               id: "exposicao-plataforma",
               title: "Exposição por plataforma",
-              defaultLayout: { x: 0, y: 30, w: 12, h: 11 },
+              defaultLayout: { x: 0, y: 45, w: 12, h: 11 },
               node: (
                 <SectionCard
                   title="Exposição por plataforma"

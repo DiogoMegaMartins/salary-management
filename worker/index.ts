@@ -6,6 +6,8 @@ interface Env {
   SALARY: DurableObjectNamespace<SalaryDO>;
   ACCESS_CODE?: string;
   ASSETS: Fetcher;
+  /** Opcional: bucket R2 para as cópias diárias (ver docs/CLOUDFLARE.md). Sem ele, a tarefa agendada não faz nada. */
+  BACKUPS?: R2Bucket;
 }
 
 const PORT = 8080;
@@ -44,6 +46,18 @@ export class SalaryDO extends DurableObject<Env> {
     });
   }
 
+  /** Exportação completa em JSON (a mesma de Definições > Backups), para a cópia agendada. */
+  async backupJson(): Promise<string> {
+    await this.ready;
+    const headers = new Headers({ "x-sm-client": "1" });
+    if (this.env.ACCESS_CODE) headers.set("x-codigo-acesso", this.env.ACCESS_CODE);
+    const res = await storageContext.run(this.ctx.storage, () =>
+      handleAsNodeRequest(PORT, new Request("http://localhost/api/export/json", { headers })),
+    );
+    if (!res.ok) throw new Error(`A exportação falhou (${res.status}).`);
+    return res.text();
+  }
+
   async fetch(request: Request): Promise<Response> {
     await this.ready;
     // O Express usa o IP do cliente para limitar tentativas. A Cloudflare dá-o em cf-connecting-ip
@@ -61,10 +75,19 @@ export default {
     try {
       return await env.SALARY.getByName("principal").fetch(request);
     } catch (err) {
-      // Sem isto a Cloudflare responde só "error code: 1101". O texto do erro vai nos registos e, truncado, na resposta.
-      const detail = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
-      console.error("O Worker falhou:", detail, err instanceof Error ? (err.stack ?? "") : "");
-      return Response.json({ message: "O servidor falhou ao responder.", detail: detail.slice(0, 300) }, { status: 500 });
+      // Sem isto a Cloudflare responde só "error code: 1101". O motivo vai para os registos; o visitante não o vê.
+      console.error("O Worker falhou:", err instanceof Error ? `${err.name}: ${err.message}\n${err.stack ?? ""}` : String(err));
+      return Response.json({ message: "O servidor falhou ao responder." }, { status: 500 });
     }
+  },
+  /** Cópia diária para o R2, se o bucket BACKUPS estiver ligado. Guarda as últimas 14. */
+  async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
+    if (!env.BACKUPS) return;
+    const json = await env.SALARY.getByName("principal").backupJson();
+    const dia = new Date().toISOString().slice(0, 10);
+    await env.BACKUPS.put(`backups/${dia}.json`, json, { httpMetadata: { contentType: "application/json" } });
+    const lista = await env.BACKUPS.list({ prefix: "backups/" });
+    const antigos = lista.objects.map((o) => o.key).sort().slice(0, -14);
+    if (antigos.length) await env.BACKUPS.delete(antigos);
   },
 } satisfies ExportedHandler<Env>;

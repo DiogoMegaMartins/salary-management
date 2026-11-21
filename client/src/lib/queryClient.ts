@@ -7,7 +7,7 @@ const API_BASE = "__PORT_5000__".startsWith("__") ? "" : "__PORT_5000__";
 /* Sessão de acesso: o código fica em memória e em sessionStorage (apagado ao fechar o separador),
    com expiração por inatividade. Cada pedido à API renova o prazo. */
 const SESSION_KEY = "sm.session";
-export const SESSION_IDLE_MS = 30 * 60 * 1000;
+const SESSION_IDLE_MS = 30 * 60 * 1000;
 let accessCode = "";
 function persist(code: string) {
   try {
@@ -99,7 +99,7 @@ async function rawRequest(method: string, url: string, data?: unknown): Promise<
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
-export const getQueryFn: <T>(options: {
+const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>

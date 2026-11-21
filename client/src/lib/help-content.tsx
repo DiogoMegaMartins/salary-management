@@ -233,11 +233,12 @@ export const HELP_SECTIONS: HelpSection[] = [
           vezes o desvio dos até 12 meses anteriores, pelo menos 1,5 vezes a média e acima de 20 €. Uma categoria sem gasto nos meses
           anteriores aparece como <em>Novo</em> a partir de 40 €. São precisos pelo menos 3 meses anteriores com dados.
         </P>
-        <H3>Relatório mensal em PDF</H3>
+        <H3>Relatório em PDF</H3>
         <P>
-          O botão <KBD>Relatório mensal</KBD> (no Painel e no Orçamento) gera uma fotografia do período filtrado, em PDF, com os
-          indicadores, o orçamento contra o real, as parcelas e os meses incluídos. O ficheiro é criado no teu dispositivo e a opção
-          <em> Ocultar valores de património</em> troca os montantes por marcadores.
+          O botão <KBD>Relatório</KBD> (no Painel e no Orçamento) gera uma fotografia em PDF. Em <em>O que incluir</em> escolhes o
+          período filtrado (indicadores, orçamento contra o real, parcelas e meses incluídos) ou um <strong>ano completo</strong>
+          (resumo contra o ano anterior, mês a mês, parcelas, despesas por categoria e valor da carteira). O ficheiro é criado no teu
+          dispositivo e a opção <em>Ocultar valores de património</em> troca os montantes por marcadores.
         </P>
       </>
     ),
@@ -468,7 +469,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         <OL>
           <li>Abre a aplicação no teu endereço HTTPS próprio (a pré-visualização incorporada pode bloquear o armazenamento offline).</li>
           <li>Em <KBD>Definições</KBD>, define um código de acesso com pelo menos 8 caracteres e volta a entrar.</li>
-          <li>Em <KBD>Aplicação no telemóvel e offline</KBD>, toca em <KBD>Preparar este dispositivo</KBD>.</li>
+          <li>Em <KBD>Definições</KBD>, separador <KBD>Segurança</KBD>, na secção <KBD>Aplicação no telemóvel e offline</KBD>, toca em <KBD>Preparar este dispositivo</KBD>.</li>
           <li>No menu do navegador, escolhe <KBD>Adicionar ao ecrã principal</KBD> para a abrir como uma aplicação.</li>
         </OL>
         <P>Não prepares dispositivos partilhados. A cópia local fica cifrada e o código é pedido ao abrir uma nova sessão.</P>
@@ -637,6 +638,14 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.13.0</H3>
+        <UL>
+          <li>Carteira: "Valor atual e rentabilidade". Escreves quanto vale cada parcela de poupança ou investimento e vês o ganho ou a perda face ao que lá puseste.</li>
+          <li>Relatório anual em PDF (botão <KBD>Relatório</KBD>, em "O que incluir").</li>
+          <li>Despesas: pesquisa em todos os meses e "Desfazer" depois de remover.</li>
+          <li>Atalhos de teclado (<KBD>?</KBD> mostra a lista) e o estado do último backup no menu lateral.</li>
+          <li>Layout: indicadores alinhados, valores com vírgula em Definições e menos espaço vazio. A oferta offline passou para Definições, separador Segurança.</li>
+        </UL>
         <H3>1.12.7</H3>
         <UL>
           <li>Comparação mensal e anual: "Total alocado por parcela" passa a ser uma linha normal, com totais e variação, e as parcelas ficam por baixo como subindicadores.</li>
@@ -742,4 +751,4 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
 ];
 
 export const HELP_VERSION = APP_VERSION;
-export const HELP_UPDATED_AT = "2026-11-19";
+export const HELP_UPDATED_AT = "2026-11-21";
