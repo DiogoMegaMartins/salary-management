@@ -109,13 +109,7 @@ export function ParcelDetail({
     <div className="min-w-0" data-testid={`parcel-detail-${p.id}`}>
       {confirmDialog}
       <Tabs value={tab} onValueChange={(v) => onTab(v as ParcelTab)} className={fill ? "flex h-full min-h-0 flex-col" : undefined}>
-        <TabsList
-          className={cn(
-            "grid h-auto w-full shrink-0 grid-cols-4 gap-0.5 [&>button]:min-h-10 [&>button]:px-1 [&>button]:text-[13px] sm:[&>button]:px-3 sm:[&>button]:text-sm",
-            // separadores com sublinhado (mais claros num ecrã pequeno do que um quadrado branco sobre cinzento)
-            fill && "gap-0 rounded-none border-b border-border bg-transparent p-0 [&>button]:min-h-12 [&>button]:rounded-none [&>button]:border-b-2 [&>button]:border-transparent [&>button]:font-medium data-[orientation=horizontal]:items-stretch [&>button[data-state=active]]:border-primary [&>button[data-state=active]]:bg-transparent [&>button[data-state=active]]:text-primary [&>button[data-state=active]]:shadow-none",
-          )}
-        >
+        <TabsList className="grid w-full shrink-0 grid-cols-4 [&>button]:px-1 [&>button]:text-[13px] sm:[&>button]:px-3 sm:[&>button]:text-sm">
           <TabsTrigger value="meta" data-testid="tab-parcel-meta">Meta</TabsTrigger>
           <TabsTrigger value="submetas" data-testid="tab-parcel-submetas" className="gap-1">
             Submetas

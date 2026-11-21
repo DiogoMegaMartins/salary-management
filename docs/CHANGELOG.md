@@ -2,6 +2,13 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.16.0 | 2026-11-21
+
+Separadores com linha verde em toda a aplicação.
+
+- Os separadores de Definições, Fecho e planeamento, editor de Mês e da parcela passam a ter o mesmo estilo: texto cinzento, e o ativo com texto e linha verdes por baixo. Deixam de quebrar em duas linhas dentro de uma caixa cinzenta: se não couberem (telemóvel), deslocam na horizontal e o separador escolhido vem para a vista.
+- Em Definições e Fecho, os separadores ficam fixos no topo enquanto o conteúdo desloca.
+
 ## 1.15.0 | 2026-11-21
 
 Dependências principais atualizadas. Sem alterações de funcionalidades, fórmulas nem esquema de dados.
