@@ -16,7 +16,6 @@ jobs:
     timeout-minutes: 3
     outputs:
       docs_only: ${{ steps.diff.outputs.docs_only }}
-      worker: ${{ steps.diff.outputs.worker }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -27,16 +26,12 @@ jobs:
           AFTER: ${{ github.sha }}
         run: |
           docs_only=false
-          worker=true # sem comparação possível (ex.: ramo novo), corre tudo
           if [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
             other=$(git diff --name-only "$BEFORE" "$AFTER" | grep -Ev '\.md$|^docs/' || true)
             [ -z "$other" ] && docs_only=true
-            # o teste do Worker só interessa se mudou algo que corre no Worker (servidor, cálculos, configuração, dependências)
-            if git diff --name-only "$BEFORE" "$AFTER" | grep -Eq '^(worker/|server/|shared/|e2e/|wrangler\.jsonc|package(-lock)?\.json|tsconfig|playwright\.config|\.github/workflows/ci\.yml)'; then worker=true; else worker=false; fi
           fi
           echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
-          echo "worker=$worker" >> "$GITHUB_OUTPUT"
-          echo "docs_only=$docs_only worker=$worker"
+          echo "docs_only=$docs_only"
   check:
     name: check
     needs: changes
@@ -98,12 +93,17 @@ jobs:
           echo "A app não respondeu em /api/health" >&2
           kill $pid || true
           exit 1
+  # Interface (Playwright) contra o Worker da Cloudflare em local (workerd): é o que corre em produção.
+  # Nos ramos: computador completo e, no telemóvel, só o essencial (acesso, navegação e interface).
+  # Na main (depois do merge): computador e telemóvel completos.
   e2e:
     name: e2e
     needs: changes
     if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 12
+    env:
+      E2E_TARGET: worker
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -112,12 +112,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      # Na main (depois do merge) corre tudo. Nos ramos, o computador completo e, no telemóvel, só o essencial
-      # (acesso, navegação e interface): poupa cerca de 1,5 min por push sem perder os erros de layout mais comuns.
-      - name: Interface (completa na main)
+      - name: Interface completa (main)
         if: github.ref == 'refs/heads/main'
-        run: npm run test:e2e
-      - name: Interface (reduzida nos ramos)
+        run: npx playwright test
+      - name: Interface reduzida (ramos)
         if: github.ref != 'refs/heads/main'
         run: |
           npx playwright test --project=desktop
@@ -130,14 +128,13 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 7
-  # A mesma bateria de interface, só em computador, contra o Worker da Cloudflare (workerd em local).
-  # Só corre se mudou algo que corre no Worker (servidor, cálculos, configuração, dependências).
-  e2e-worker:
-    name: e2e-worker
+  # O servidor Node (Express) também é suportado (correr em local, Docker): só se testa na main, depois do merge.
+  e2e-node:
+    name: e2e-node
     needs: changes
-    if: needs.changes.outputs.docs_only != 'true' && needs.changes.outputs.worker == 'true'
+    if: github.ref == 'refs/heads/main' && needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -146,11 +143,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npm run test:e2e:worker
+      - run: npx playwright test
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: playwright-report-worker
+          name: playwright-report-node
           path: |
             playwright-report/
             test-results/

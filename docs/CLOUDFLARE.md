@@ -77,7 +77,7 @@ Sem o bucket, a tarefa agendada não faz nada. As cópias não levam o código d
 
 ## Testes do Worker
 
-`npm run test:e2e:worker` corre a bateria de interface contra o Worker em local (`wrangler dev --local`, com um código de teste). No CI é o job `e2e-worker`. O workflow de deploy confirma `/api/health` no endereço publicado e falha se não responder.
+`npm run test:e2e:worker` corre a bateria de interface contra o Worker em local (`wrangler dev --local`, com um código de teste). No CI, o job `e2e` corre a bateria contra o Worker (computador e telemóvel). O workflow de deploy confirma `/api/health` no endereço publicado e falha se não responder.
 
 ## Armazenamento e reinícios
 
