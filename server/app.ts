@@ -3,6 +3,8 @@ import type { Request } from "express";
 import { createServer } from "node:http";
 import { registerRoutes } from "./routes";
 import { installBase } from "./middleware";
+import { setLimiterStore } from "./access";
+import { sqliteLimiterStore } from "./limiter-store";
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -22,6 +24,7 @@ export function log(message: string, source = "express") {
 export async function buildApp() {
   const app = express();
   const httpServer = createServer(app);
+  setLimiterStore(sqliteLimiterStore);
 
   installBase(app);
 

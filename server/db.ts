@@ -245,6 +245,13 @@ CREATE TABLE IF NOT EXISTS import_batches (
   rows INTEGER NOT NULL DEFAULT 0,
   at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS auth_failures (
+  scope TEXT NOT NULL,
+  key TEXT NOT NULL,
+  n INTEGER NOT NULL,
+  first INTEGER NOT NULL,
+  PRIMARY KEY (scope, key)
+);
 CREATE TABLE IF NOT EXISTS schema_migrations (
   id TEXT PRIMARY KEY,
   applied_at TEXT NOT NULL
