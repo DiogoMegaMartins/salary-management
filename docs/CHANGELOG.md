@@ -2,6 +2,17 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.15.0 | 2026-11-21
+
+Dependências principais atualizadas. Sem alterações de funcionalidades, fórmulas nem esquema de dados.
+
+- React 18 → 19 e todos os componentes Radix na versão mais recente. Havia duas versões da camada de diálogos e, com React 19, confirmar dentro de um diálogo (ex.: "Descartar as alterações?") reabria a pergunta; ficou uma só.
+- Vite 7 → 8 (com `@vitejs/plugin-react` 6 e esbuild 0.28).
+- Tailwind 3 → 4 e tailwind-merge 2 → 3. A configuração passou de `tailwind.config.ts` para `client/src/index.css` (`@theme`); o `autoprefixer` deixou de ser preciso. As regras CSS próprias continuam fora das camadas do Tailwind para prevalecerem como antes; o editor de mês no telemóvel anula agora também a propriedade `translate`. Diferenças visuais de 2 a 4 px em alguns espaçamentos; o indicador do separador ativo na barra do telemóvel passou a ter o fundo que já estava previsto.
+- Recharts 2 → 3.
+- TypeScript 5 → 7: `baseUrl` saiu dos `tsconfig` (opção retirada).
+- O pacote `xlsx` volta a instalar-se no ambiente de desenvolvimento na nuvem (host `cdn.sheetjs.com` permitido).
+
 ## 1.14.0 | 2026-11-21
 
 Parcelas e metas refeitas, sessão e deploy com aprovação.
