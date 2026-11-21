@@ -24,7 +24,7 @@ export type CategoryBudgetRow = {
 };
 
 /** Chave de comparação de categorias. */
-export const catKey = (s: string) => s.trim().toLowerCase();
+const catKey = (s: string) => s.trim().toLowerCase();
 
 export function budgetVsRealByCategory(
   txs: Transaction[],

@@ -142,4 +142,3 @@ export function buildDashboardModel(d: Derived | null | undefined, data: AppData
   };
 }
 
-export type DashboardModel = NonNullable<ReturnType<typeof buildDashboardModel>>;

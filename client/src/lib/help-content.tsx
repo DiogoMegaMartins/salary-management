@@ -468,7 +468,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         <OL>
           <li>Abre a aplicação no teu endereço HTTPS próprio (a pré-visualização incorporada pode bloquear o armazenamento offline).</li>
           <li>Em <KBD>Definições</KBD>, define um código de acesso com pelo menos 8 caracteres e volta a entrar.</li>
-          <li>Em <KBD>Aplicação no telemóvel e offline</KBD>, toca em <KBD>Preparar este dispositivo</KBD>.</li>
+          <li>Em <KBD>Definições</KBD>, separador <KBD>Segurança</KBD>, na secção <KBD>Aplicação no telemóvel e offline</KBD>, toca em <KBD>Preparar este dispositivo</KBD>.</li>
           <li>No menu do navegador, escolhe <KBD>Adicionar ao ecrã principal</KBD> para a abrir como uma aplicação.</li>
         </OL>
         <P>Não prepares dispositivos partilhados. A cópia local fica cifrada e o código é pedido ao abrir uma nova sessão.</P>

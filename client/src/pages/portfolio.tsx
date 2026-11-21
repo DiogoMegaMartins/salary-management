@@ -130,7 +130,7 @@ export default function Portfolio() {
               node: (
                 <SectionCard
                   title="Evolução do acumulado"
-                  description="Soma acumulada das alocações de cada parcela, mês a mês"
+                  description="Soma acumulada das alocações de cada parcela, mês a mês. O gráfico mostra o período filtrado; os indicadores de cima contam todo o histórico."
                 >
                 <div className="[.grid-widget_&]:flex [.grid-widget_&]:h-full [.grid-widget_&]:flex-col">
                   <div className="h-[320px] [.grid-widget_&]:h-auto [.grid-widget_&]:min-h-0 [.grid-widget_&]:flex-1">

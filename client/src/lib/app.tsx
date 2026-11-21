@@ -237,7 +237,7 @@ export const PERIOD_PRESETS: { value: PeriodPreset; label: string }[] = [
   { value: "ultimos_12", label: "Últimos 12 meses" },
 ];
 
-export type Filters = {
+type Filters = {
   year: number | "todos";
   setYear: (y: number | "todos") => void;
   fromMonth: number;

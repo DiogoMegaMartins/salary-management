@@ -9,7 +9,7 @@ export { APP_VERSION } from "@shared/version";
 export const ENV_NAME = process.env.NODE_ENV === "production" ? "produção" : "desenvolvimento";
 
 /** Máximo de entradas guardadas no histórico; as mais antigas saem quando é excedido. */
-export const CHANGE_LOG_MAX = 20000;
+const CHANGE_LOG_MAX = 20000;
 export function logChange(entity: string, entityId: number | null, action: string, summary: string) {
   const row = db.insert(changeLog).values({ at: new Date().toISOString(), entity, entityId, action, summary: summary.slice(0, 300) }).returning().get();
   if (row.id % 500 === 0) (db as any).$client.prepare("DELETE FROM change_log WHERE id <= ?").run(row.id - CHANGE_LOG_MAX);

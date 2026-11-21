@@ -341,7 +341,7 @@ export function fingerprint(text: string): string {
 
 /* ----------------------------------------------------------------- 1. composição dos totais */
 
-export type CompositionLine = { label: string; amount: number; kind: "historico" | "inicial" | "movimentos" | "ajustes" | "submetas"; sources: { label: string; amount: number; date?: string }[] };
+type CompositionLine = { label: string; amount: number; kind: "historico" | "inicial" | "movimentos" | "ajustes" | "submetas"; sources: { label: string; amount: number; date?: string }[] };
 export type Composition = { parcelId: number; periodFlow: number; accumulated: number; lines: CompositionLine[]; check: number };
 
 /**

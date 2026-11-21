@@ -7,7 +7,7 @@ export type ExpenseFilter = { categoryKey?: string; parcelId?: number; parcelIds
 export const UNCLASSIFIED = "__sem_categoria__";
 
 /** Despesas = tipos expense e withdrawal (a mesma regra de despesasExtraOf usada nos Meses). Transferências e aportes ficam de fora. */
-export const isExpenseLike = (t: { type: string }) => t.type === "expense" || t.type === "withdrawal";
+const isExpenseLike = (t: { type: string }) => t.type === "expense" || t.type === "withdrawal";
 
 export function expenseView<T extends { monthId: number; date: string; type: string; value: number; parcelId: number | null; category: string; note: string; id: number }>(
   txs: T[],

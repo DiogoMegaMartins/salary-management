@@ -29,7 +29,7 @@ import { CatalogsSection } from "@/components/catalogs";
 import { VerifyData, ChangeHistory, CsvImport } from "@/components/data-tools";
 import { OfflineSettings } from "@/components/offline-status";
 
-export function daysSince(iso: string): number | null {
+function daysSince(iso: string): number | null {
   if (!iso) return null;
   const then = new Date(iso).getTime();
   if (Number.isNaN(then)) return null;
@@ -85,7 +85,6 @@ export default function DataPage() {
 
   return (
     <AppShell title="Definições" subtitle="Cálculo, catálogos, backups, segurança e histórico">
-      <OfflineSettings />
       <Tabs value={tab} onValueChange={setTab} className="space-y-4" data-testid="settings-tabs">
         <TabsList className="h-auto flex-wrap" data-testid="settings-tablist">
           <TabsTrigger value="calculo" data-testid="settings-tab-calculo">Cálculo</TabsTrigger>
@@ -390,6 +389,7 @@ export default function DataPage() {
 
         </div></TabsContent>
         <TabsContent value="seguranca" className="mt-0"><div className="space-y-4">
+        <OfflineSettings />
         <AccessCodeCard
           hasCode={!!(s.accessCode ?? "").trim()}
           onSave={(code) => {

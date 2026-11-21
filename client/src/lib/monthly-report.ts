@@ -20,7 +20,7 @@ export type ReportOptions = {
 
 const mask = (s: string, hide: boolean) => (hide ? "•••••" : s);
 
-export function buildMonthlyReportMarkdown(
+function buildMonthlyReportMarkdown(
   d: Derived,
   categories: Category[],
   opts: ReportOptions,

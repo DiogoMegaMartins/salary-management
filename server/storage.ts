@@ -20,16 +20,16 @@ import type {
 import { eq, and } from "drizzle-orm";
 import seedData from "./seed.json";
 import { availableOf, allocationAmount, distribute, distributeAssets, type DistLine } from "@shared/calc";
-import { db, sqlite, httpError, roundCents, dataDir, dbPath } from "./db";
+import { db, sqlite, httpError, dataDir } from "./db";
 import { secretCode } from "./access";
 import { catalogMethods } from "./storage-catalogs";
 import { goalMethods } from "./storage-goals";
 
 // reexportados: o resto da aplicação importa daqui
-export { dataDir, dbPath, sqlite, db, httpError, roundCents };
+export { dataDir, sqlite, db, httpError };
 
 /** Divide o texto legado "A | B" em nomes. */
-export function splitPlatformText(text: string): string[] {
+function splitPlatformText(text: string): string[] {
   return String(text ?? "")
     .split(/[|,;]/)
     .map((x) => x.trim().replace(/\s+/g, " "))
