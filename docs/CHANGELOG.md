@@ -12,6 +12,7 @@ Dependências principais atualizadas. Sem alterações de funcionalidades, fórm
 - Recharts 2 → 3.
 - TypeScript 5 → 7: `baseUrl` saiu dos `tsconfig` (opção retirada).
 - CI mais barato: o `e2e` passa a testar o Worker (o que corre em produção), em computador e telemóvel; nos ramos, o telemóvel corre só o essencial; o servidor Node é testado na `main` (`e2e-node`); o rasto do Playwright só se grava na repetição de um teste falhado. O job `e2e-worker` deixou de existir (fundiu-se no `e2e`).
+- Auto PR: a descrição do PR passa a ser feita a partir dos commits (o que mudou, com a explicação de cada commit, e o tamanho) e atualiza-se a cada push, a não ser que seja escrita à mão. Novo `CLAUDE.md` com as regras de commits e PRs e modelo `pull_request_template.md`.
 - Metas e submetas no telemóvel: separadores compactos (o número de submetas passa a um selo), botões principais de largura total no topo da Meta, bloco próprio para o valor de mercado (ganho ou perda), histórico em duas linhas sem partir palavras, seta nas parcelas da lista, explicação das submetas recolhida e botões com altura de toque. No Painel, a meta sem contribuições já não repete o aviso duas vezes.
 - Ao terminar sessão, o código deixa de ficar escrito na caixa do ecrã de acesso (e o navegador não o preenche sozinho).
 - Nome da aplicação: "Personal Salary Management" no menu lateral, no separador do navegador, no ecrã do código de acesso, no nome da aplicação instalada (manifesto) e no título no iOS.

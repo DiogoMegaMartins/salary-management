@@ -140,7 +140,7 @@ Opcional. A cópia local do estado e a fila de alterações ficam cifradas (AES-
 flowchart LR
   Dev["Commit numa branch<br/>claude/*, feat/*, fix/*"] --> Push["push"]
   Push --> CI["CI: check, test, build, e2e<br/>(Node 24)"]
-  Push --> Auto["Auto PR<br/>abre PR em draft"]
+  Push --> Auto["Auto PR<br/>abre PR em draft e escreve a descrição"]
   Auto --> PR["Pull request"]
   CI --> PR
   PR --> Merge["Squash and merge na main"]
