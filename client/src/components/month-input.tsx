@@ -57,7 +57,7 @@ export function MonthInput({ value, onChange, clearable, className, ...rest }: P
         }}
         aria-label={`${label}: ano`}
         data-testid={tid ? `${tid}-year` : undefined}
-        className={cn("tnum w-[4.5rem] shrink-0", className)}
+        className={cn("tnum w-18 shrink-0", className)}
       />
       {clearable && (value !== "" || month || year) && (
         <button
@@ -66,7 +66,7 @@ export function MonthInput({ value, onChange, clearable, className, ...rest }: P
           title="Limpar"
           data-testid={tid ? `${tid}-clear` : undefined}
           onClick={() => { setMonth(""); setYear(""); onChange(""); }}
-          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border text-muted-foreground hover:bg-accent hover:text-foreground [@media(pointer:coarse)]:h-11 [@media(pointer:coarse)]:w-11"
+          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border text-muted-foreground hover:bg-accent hover:text-foreground pointer-coarse:h-11 pointer-coarse:w-11"
         >
           <X className="h-4 w-4" aria-hidden />
         </button>

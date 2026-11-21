@@ -36,7 +36,7 @@ function Highlight({ text, query }: { text: string; query: string }) {
     <>
       {parts.map((p, i) =>
         p.match ? (
-          <mark key={i} className="rounded bg-primary/25 px-0.5 text-foreground">
+          <mark key={i} className="rounded-sm bg-primary/25 px-0.5 text-foreground">
             {p.text}
           </mark>
         ) : (
@@ -223,7 +223,7 @@ export default function HelpPage() {
 
         <div ref={contentRef} className="min-w-0" data-testid="help-content">
           <div className="mb-3 flex items-center justify-between gap-2">
-            <h1 id={active.slug} className="min-w-0 break-words text-xl font-semibold tracking-tight">
+            <h1 id={active.slug} className="min-w-0 wrap-break-word text-xl font-semibold tracking-tight">
               {active.title}
             </h1>
             <Button
@@ -237,7 +237,7 @@ export default function HelpPage() {
               {copied === active.slug ? <Check className="h-4 w-4 text-primary" /> : <Link2 className="h-4 w-4" />}
             </Button>
           </div>
-          <article className="min-w-0 max-w-2xl [overflow-wrap:anywhere]">{active.body}</article>
+          <article className="min-w-0 max-w-2xl wrap-anywhere">{active.body}</article>
         </div>
       </div>
     </AppShell>

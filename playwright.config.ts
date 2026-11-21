@@ -12,7 +12,8 @@ export default defineConfig({
   timeout: 30_000,
   use: {
     baseURL: `http://127.0.0.1:${port}`,
-    trace: "retain-on-failure",
+    // no CI só grava o rasto na repetição de um teste que falhou: gravar todos custa cerca de um terço do CPU
+    trace: process.env.CI ? "on-first-retry" : "retain-on-failure",
     screenshot: "only-on-failure",
   },
   // No CI usa-se o Google Chrome que já vem no runner do GitHub: sem descarregar o Chromium nem instalar

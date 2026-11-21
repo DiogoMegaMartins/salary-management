@@ -204,7 +204,7 @@ export function ParcelDetail({
               <div key={s.sub.id} className="space-y-2 rounded-md border border-border p-3" data-testid={`subgoal-${s.sub.id}`}>
                 <div className="flex flex-wrap items-start gap-x-2 gap-y-1">
                   <div className="min-w-0 flex-1">
-                    <p className="break-words font-medium">{s.sub.name}</p>
+                    <p className="wrap-break-word font-medium">{s.sub.name}</p>
                     <p className="mt-0.5 flex flex-wrap gap-1 text-[11px]">
                       <span className="rounded-full bg-muted px-2 py-0.5 text-muted-foreground">{platform ? `Plataforma · ${platform.name}` : "Objetivo"}</span>
                       {s.sub.currency !== cur && <span className="rounded-full bg-muted px-2 py-0.5 text-muted-foreground">{s.sub.currency}</span>}
@@ -260,7 +260,7 @@ export function ParcelDetail({
           <div className="grid grid-cols-[auto_1fr] items-end gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Cor</Label>
-              <input type="color" value={p.color} onChange={(e) => save.parcel.mutate({ id: p.id, patch: { color: e.target.value } })} className="block h-9 w-11 cursor-pointer rounded border border-border bg-transparent p-0" aria-label={`Cor de ${p.name}`} data-testid={`input-color-${p.id}`} />
+              <input type="color" value={p.color} onChange={(e) => save.parcel.mutate({ id: p.id, patch: { color: e.target.value } })} className="block h-9 w-11 cursor-pointer rounded-sm border border-border bg-transparent p-0" aria-label={`Cor de ${p.name}`} data-testid={`input-color-${p.id}`} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor={`name-${p.id}`} className="text-xs text-muted-foreground">Nome</Label>

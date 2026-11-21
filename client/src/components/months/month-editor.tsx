@@ -341,7 +341,7 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
                   <div className="allocation-row grid grid-cols-[minmax(0,1fr)_92px_120px_96px] items-center gap-2">
                     <span className="allocation-name flex min-w-0 items-center gap-2 text-sm">
                       <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: p.color }} />
-                      <span className="break-words">{p.name}</span>
+                      <span className="wrap-break-word">{p.name}</span>
                     </span>
                     <Select
                       value={mode}

@@ -54,7 +54,7 @@ function renderStack(list: SectionSpec[]) {
     while (j < list.length && list[j].group === s.group) j++;
     out.push(
       <div key={`group-${s.group}-${s.id}`} className={s.groupClass}>
-        {list.slice(i, j).map((x) => <div key={x.id} className="min-w-0 [&>*]:h-full">{x.node}</div>)}
+        {list.slice(i, j).map((x) => <div key={x.id} className="min-w-0 *:h-full">{x.node}</div>)}
       </div>,
     );
     i = j;

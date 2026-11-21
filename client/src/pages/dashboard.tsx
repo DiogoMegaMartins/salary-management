@@ -214,8 +214,8 @@ export default function Dashboard() {
               title="Rendimento e poupança"
               description="Líquido, subsídio de alimentação e taxa de poupança mês a mês"
             >
-            <div className="[.grid-widget_&]:flex [.grid-widget_&]:h-full [.grid-widget_&]:flex-col">
-              <div className="h-[300px] [.grid-widget_&]:h-auto [.grid-widget_&]:min-h-0 [.grid-widget_&]:flex-1">
+            <div className="in-[.grid-widget]:flex in-[.grid-widget]:h-full in-[.grid-widget]:flex-col">
+              <div className="h-[300px] in-[.grid-widget]:h-auto in-[.grid-widget]:min-h-0 in-[.grid-widget]:flex-1">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={model.series} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
                     <defs>
@@ -311,7 +311,7 @@ export default function Dashboard() {
                     .map((p) => (
                       <div key={p.parcel.id} className="flex items-center gap-2 text-xs">
                         <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: p.parcel.color }} />
-                        <span className="min-w-0 break-words">{p.parcel.name}</span>
+                        <span className="min-w-0 wrap-break-word">{p.parcel.name}</span>
                         <span className="tnum ml-auto font-medium">{fmtPct(p.share)}</span>
                       </div>
                     ))}
@@ -329,8 +329,8 @@ export default function Dashboard() {
             title="Divisão por parcela"
             description="Como cada mês foi repartido, com o valor disponível como referência"
           >
-          <div className="[.grid-widget_&]:flex [.grid-widget_&]:h-full [.grid-widget_&]:flex-col">
-            <div className="h-[320px] [.grid-widget_&]:h-auto [.grid-widget_&]:min-h-0 [.grid-widget_&]:flex-1">
+          <div className="in-[.grid-widget]:flex in-[.grid-widget]:h-full in-[.grid-widget]:flex-col">
+            <div className="h-[320px] in-[.grid-widget]:h-auto in-[.grid-widget]:min-h-0 in-[.grid-widget]:flex-1">
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={model.series} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
                   <CartesianGrid {...gridProps} />
@@ -390,7 +390,7 @@ export default function Dashboard() {
                         role="button"
                         tabIndex={0}
                         aria-label={`Ver movimentos de ${p.parcel.name}`}
-                        className="cursor-pointer border-b border-border/60 last:border-0 transition-colors hover:bg-muted/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring"
+                        className="cursor-pointer border-b border-border/60 last:border-0 transition-colors hover:bg-muted/40 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-ring"
                         onClick={() => openParcelDrill(p.parcel)}
                         onKeyDown={(e) => {
                           if (e.key === "Enter" || e.key === " ") {
@@ -454,7 +454,7 @@ export default function Dashboard() {
                       <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-2 text-sm">
                         <span className="flex min-w-0 items-center gap-2">
                           <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: g.parcel.color }} />
-                          <span className="min-w-0 break-words">
+                          <span className="min-w-0 wrap-break-word">
                             {g.parcel.name}
                           </span>
                         </span>
@@ -528,8 +528,8 @@ export default function Dashboard() {
               defaultLayout: { x: 0, y: 39, w: 6, h: 9 },
               node: (
             <SectionCard title="Bruto vs. descontos" description="Quanto do rendimento bruto fica retido">
-            <div className="[.grid-widget_&]:flex [.grid-widget_&]:h-full [.grid-widget_&]:flex-col">
-              <div className="h-[240px] [.grid-widget_&]:h-auto [.grid-widget_&]:min-h-0 [.grid-widget_&]:flex-1">
+            <div className="in-[.grid-widget]:flex in-[.grid-widget]:h-full in-[.grid-widget]:flex-col">
+              <div className="h-[240px] in-[.grid-widget]:h-auto in-[.grid-widget]:min-h-0 in-[.grid-widget]:flex-1">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={model.series} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
                     <CartesianGrid {...gridProps} />
@@ -559,8 +559,8 @@ export default function Dashboard() {
               defaultLayout: { x: 6, y: 39, w: 6, h: 9 },
               node: (
             <SectionCard title="Gastos, poupança e investimento" description="Divisão por tipo de parcela">
-            <div className="[.grid-widget_&]:flex [.grid-widget_&]:h-full [.grid-widget_&]:flex-col">
-              <div className="h-[240px] [.grid-widget_&]:h-auto [.grid-widget_&]:min-h-0 [.grid-widget_&]:flex-1">
+            <div className="in-[.grid-widget]:flex in-[.grid-widget]:h-full in-[.grid-widget]:flex-col">
+              <div className="h-[240px] in-[.grid-widget]:h-auto in-[.grid-widget]:min-h-0 in-[.grid-widget]:flex-1">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={model.series} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
                     <CartesianGrid {...gridProps} />

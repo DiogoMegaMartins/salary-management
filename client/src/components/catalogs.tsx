@@ -77,7 +77,7 @@ export function PlatformPicker({
             ) : (
               selected.map((p) => (
                 <Badge key={p.id} variant="secondary" className="min-w-0 max-w-full whitespace-normal text-[11px]">
-                  <span className="min-w-0 [overflow-wrap:anywhere]">{p.name}{p.archived ? " (arquivada)" : ""}</span>
+                  <span className="min-w-0 wrap-anywhere">{p.name}{p.archived ? " (arquivada)" : ""}</span>
                 </Badge>
               ))
             )}
@@ -95,14 +95,14 @@ export function PlatformPicker({
               key={p.id}
               type="button"
               onClick={() => toggle(p.id)}
-              className="flex w-full items-center gap-2 whitespace-normal rounded px-2 py-1.5 text-left text-xs hover:bg-muted"
+              className="flex w-full items-center gap-2 whitespace-normal rounded-sm px-2 py-1.5 text-left text-xs hover:bg-muted"
               aria-pressed={value.includes(p.id)}
               data-testid={`option-platform-${p.id}`}
             >
-              <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded border" aria-hidden="true">
+              <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border" aria-hidden="true">
                 {value.includes(p.id) && <Check className="h-3 w-3" />}
               </span>
-              <span className="min-w-0 [overflow-wrap:anywhere]">{p.name}</span>
+              <span className="min-w-0 wrap-anywhere">{p.name}</span>
               {p.archived ? <span className="text-muted-foreground">(arquivada)</span> : null}
             </button>
           ))}

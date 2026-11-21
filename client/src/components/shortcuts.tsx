@@ -60,16 +60,16 @@ export function KeyboardShortcuts() {
         <dl className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-1.5 text-sm">
           {GO_SHORTCUTS.map((s) => (
             <div key={s.key} className="contents">
-              <dt className="whitespace-nowrap"><kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-xs">g</kbd> <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-xs">{s.key}</kbd></dt>
+              <dt className="whitespace-nowrap"><kbd className="rounded-sm border border-border bg-muted px-1.5 py-0.5 text-xs">g</kbd> <kbd className="rounded-sm border border-border bg-muted px-1.5 py-0.5 text-xs">{s.key}</kbd></dt>
               <dd className="text-muted-foreground">Ir para {s.label}</dd>
             </div>
           ))}
           <div className="contents">
-            <dt><kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-xs">/</kbd></dt>
+            <dt><kbd className="rounded-sm border border-border bg-muted px-1.5 py-0.5 text-xs">/</kbd></dt>
             <dd className="text-muted-foreground">Pesquisar (em Despesas)</dd>
           </div>
           <div className="contents">
-            <dt><kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-xs">?</kbd></dt>
+            <dt><kbd className="rounded-sm border border-border bg-muted px-1.5 py-0.5 text-xs">?</kbd></dt>
             <dd className="text-muted-foreground">Mostrar ou fechar esta lista</dd>
           </div>
         </dl>

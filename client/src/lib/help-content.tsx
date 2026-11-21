@@ -25,7 +25,7 @@ const CODE = ({ children }: { children: ReactNode }) => (
   </pre>
 );
 const KBD = ({ children }: { children: ReactNode }) => (
-  <code className="rounded bg-muted px-1.5 py-0.5 text-xs font-medium">{children}</code>
+  <code className="rounded-sm bg-muted px-1.5 py-0.5 text-xs font-medium">{children}</code>
 );
 
 /** Diagrama simples da arquitetura; usa as cores do tema para funcionar em claro e escuro. */
@@ -641,6 +641,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.15.0</H3>
+        <UL>
+          <li>Bibliotecas principais atualizadas (React 19, Vite 8, Tailwind 4, Recharts 3, TypeScript 7). Sem alterações às fórmulas nem aos dados.</li>
+        </UL>
         <H3>1.14.0</H3>
         <UL>
           <li>Parcelas e metas: lista à esquerda e o detalhe da parcela à direita, com separadores Meta, Submetas, Histórico e Definições.</li>

@@ -41,10 +41,10 @@ export function OfflineStatus() {
               const a = review.state.allocations.find((a: any) => a.monthId === monthId && a.parcelId === Number(parts[5]));
               server = (parts[8] === "assets" ? review.state.allocationAssets : review.state.allocationPlatforms).filter((x: any) => x.allocationId === a?.id && (parts[8] !== "assets" || x.platformId === Number(parts[7])));
             }
-            return <section key={i} className="space-y-2 rounded border border-border p-3 text-xs">
+            return <section key={i} className="space-y-2 rounded-sm border border-border p-3 text-xs">
               <h3 className="font-semibold">{month?.label} {month?.year}{parcel ? ` · ${parcel.name}` : ""}</h3>
-              <p className="break-words">Servidor: {JSON.stringify(server)}</p>
-              <p className="break-words">Alteração local: {JSON.stringify(op.data)}</p>
+              <p className="wrap-break-word">Servidor: {JSON.stringify(server)}</p>
+              <p className="wrap-break-word">Alteração local: {JSON.stringify(op.data)}</p>
             </section>;
           })}
         </div>

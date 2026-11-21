@@ -132,8 +132,7 @@ export function AccessGate({ children }: { children: React.ReactNode }) {
         <div className="mb-8 flex items-center gap-2.5">
           <Logo className="h-7 w-7 text-primary" />
           <div className="leading-tight">
-            <div className="text-sm font-semibold">Partição</div>
-            <div className="text-xs text-muted-foreground">Gestão do salário</div>
+            <div className="text-sm font-semibold">Personal Salary Management</div>
           </div>
         </div>
 

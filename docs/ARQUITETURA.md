@@ -6,7 +6,7 @@ Aplicação full-stack numa só porta: o servidor Express serve a API REST (`/ap
 ```mermaid
 flowchart LR
   subgraph Cliente["Navegador ou telemóvel"]
-    UI["Interface React 18<br/>Vite, Tailwind, wouter (hash), React Query"]
+    UI["Interface React 19<br/>Vite 8, Tailwind 4, wouter (hash), React Query"]
     CalcC["shared/calc<br/>cálculos puros"]
     Offline["Cópia offline cifrada<br/>AES-GCM, Cache Storage"]
     SW["Service worker<br/>só ficheiros da app"]

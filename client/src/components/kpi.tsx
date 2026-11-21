@@ -81,7 +81,7 @@ export function Kpi({
           <Link
             href={`/ajuda/${helpSlug}`}
             onClick={(e) => e.stopPropagation()}
-            className="-mr-2 -my-2 inline-flex min-h-9 min-w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="-mr-2 -my-2 inline-flex min-h-9 min-w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={`Saber mais sobre ${label}`}
             data-testid={`link-help-${testId}`}
           >
@@ -136,9 +136,9 @@ export function SectionCard({
   className?: string;
 }) {
   return (
-    <section className={cn("section-card flex h-full min-w-0 min-h-[280px] flex-col rounded-lg border border-card-border bg-card [.grid-widget_&]:min-h-0", className)}>
+    <section className={cn("section-card flex h-full min-w-0 min-h-[280px] flex-col rounded-lg border border-card-border bg-card in-[.grid-widget]:min-h-0", className)}>
       <header className="flex flex-wrap items-center justify-between gap-2 border-b border-card-border px-4 py-3">
-        <div className="min-w-0 break-words">
+        <div className="min-w-0 wrap-break-word">
           <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
           {description && <p className="text-xs text-muted-foreground">{description}</p>}
         </div>

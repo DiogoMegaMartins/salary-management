@@ -133,8 +133,8 @@ export default function Portfolio() {
                   title="Evolução do acumulado"
                   description="Soma acumulada das alocações de cada parcela, mês a mês. O gráfico mostra o período filtrado; os indicadores de cima contam todo o histórico."
                 >
-                <div className="[.grid-widget_&]:flex [.grid-widget_&]:h-full [.grid-widget_&]:flex-col">
-                  <div className="h-[320px] [.grid-widget_&]:h-auto [.grid-widget_&]:min-h-0 [.grid-widget_&]:flex-1">
+                <div className="in-[.grid-widget]:flex in-[.grid-widget]:h-full in-[.grid-widget]:flex-col">
+                  <div className="h-[320px] in-[.grid-widget]:h-auto in-[.grid-widget]:min-h-0 in-[.grid-widget]:flex-1">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={model.series} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
                         <CartesianGrid {...gridProps} />

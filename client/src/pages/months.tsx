@@ -128,7 +128,7 @@ export default function Months() {
         </div>
         <div className="hidden overflow-x-auto rounded-lg border border-card-border bg-card md:block">
           <table className="w-full min-w-[900px] text-sm">
-            <thead className="sticky top-0 z-[1] bg-card">
+            <thead className="sticky top-0 z-1 bg-card">
               <tr className="border-b border-border text-xs text-muted-foreground">
                 <th className="px-4 py-2.5 text-left font-medium">Mês</th>
                 <th className="px-3 py-2.5 text-right font-medium">Bruto</th>
@@ -166,7 +166,7 @@ export default function Months() {
                   <td className="tnum px-3 py-2.5 text-right text-muted-foreground">
                     {fmtEur(r.descontos)}
                     {r.month.descontosMode === "manual" && (
-                      <span className="ml-1 rounded bg-muted px-1 py-0.5 text-[10px] font-medium uppercase text-muted-foreground" title="Descontos introduzidos à mão (não calculados)">manual</span>
+                      <span className="ml-1 rounded-sm bg-muted px-1 py-0.5 text-[10px] font-medium uppercase text-muted-foreground" title="Descontos introduzidos à mão (não calculados)">manual</span>
                     )}
                   </td>
                   <td className="tnum px-3 py-2.5 text-right font-medium">{fmtEur(r.net)}</td>

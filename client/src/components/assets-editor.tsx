@@ -53,7 +53,7 @@ export function AssetsEditor({ monthId, parcelId, allocationId, platformId, plat
       {!open && saved.length > 0 && (
         <ul className="ml-4 mt-0.5 space-y-0.5 text-muted-foreground">
           {saved.map((x, i) => (
-            <li key={x.id} className="flex flex-wrap gap-2 break-words"><span>{x.name}</span><span className="tnum">{x.percent}% = {fmtEur((savedR.amountsCents[i] ?? 0) / 100)}</span>{x.note && <span className="break-words">· {x.note}</span>}</li>
+            <li key={x.id} className="flex flex-wrap gap-2 wrap-break-word"><span>{x.name}</span><span className="tnum">{x.percent}% = {fmtEur((savedR.amountsCents[i] ?? 0) / 100)}</span>{x.note && <span className="wrap-break-word">· {x.note}</span>}</li>
           ))}
         </ul>
       )}
