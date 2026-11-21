@@ -1,15 +1,17 @@
 name: Deploy (Cloudflare)
 # À mão: Actions > Deploy (Cloudflare) > Run workflow.
-# Automático (opcional): depois do merge de um PR, quando o CI da main passa, mas SÓ se existir a variável do
-# repositório AUTO_DEPLOY = true (Settings > Secrets and variables > Actions > Variables). Só a ativa depois de
-# o ambiente "production" ter "Required reviewers" (Settings > Environments > production): é isso que faz o
-# deploy esperar pela tua aprovação. Sem a variável, o automático nunca corre.
+# Automático (opcional): o CI (ci.yml) dispara este workflow no fim, depois do merge para a main, mas SÓ se existir a
+# variável do repositório AUTO_DEPLOY = true (Settings > Secrets and variables > Actions > Variables). Sem a variável
+# (ou com outro valor), nada é disparado e este workflow nem aparece em Actions. Só a ativa depois de o ambiente
+# "production" ter "Required reviewers" (Settings > Environments > production): é isso que faz o deploy esperar
+# pela tua aprovação.
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
+    inputs:
+      sha:
+        description: "Commit a publicar (vazio = o mais recente da branch escolhida). O CI preenche-o no deploy automático."
+        required: false
+        default: ""
 concurrency:
   group: deploy-cloudflare
   cancel-in-progress: false
@@ -17,13 +19,6 @@ permissions:
   contents: read
 jobs:
   deploy:
-    # automático só quando o CI da main passou num push (merge); nunca para PRs nem CI falhado
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (vars.AUTO_DEPLOY == 'true' &&
-       github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.event == 'push' &&
-       github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment:
@@ -32,8 +27,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          # publica exatamente o commit que o CI validou (no arranque manual, o último da branch escolhida)
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          # no deploy automático publica exatamente o commit que o CI validou; à mão, o último da branch escolhida
+          ref: ${{ inputs.sha || github.sha }}
       - uses: actions/setup-node@v7
         with:
           node-version: 24

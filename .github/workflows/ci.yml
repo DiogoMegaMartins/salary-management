@@ -152,3 +152,24 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 7
+  # Deploy automático (opcional): dispara o workflow "Deploy (Cloudflare)" depois do merge, só se tudo passou e
+  # se existir a variável de repositório AUTO_DEPLOY = true. Sem a variável, este job fica "skipped" e nada é
+  # disparado. O deploy espera pela aprovação do ambiente "production" (Required reviewers).
+  auto-deploy:
+    name: auto-deploy
+    needs: [check, test, build, e2e, e2e-node]
+    if: >-
+      github.ref == 'refs/heads/main' && vars.AUTO_DEPLOY == 'true' &&
+      needs.check.result == 'success' && needs.test.result == 'success' && needs.build.result == 'success' &&
+      needs.e2e.result == 'success' && needs.e2e-node.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Disparar o Deploy (Cloudflare) para este commit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: gh workflow run deploy.yml --ref main -f sha=${{ github.sha }}

@@ -72,6 +72,7 @@ export function ParcelDetail({
   onTab,
   onNewType,
   onDelete,
+  fill,
 }: {
   state: AppState;
   d: Derived;
@@ -80,6 +81,8 @@ export function ParcelDetail({
   onTab: (t: ParcelTab) => void;
   onNewType: () => void;
   onDelete: () => void;
+  /** No telemóvel (painel de altura fixa): os separadores ficam fixos no topo e só o conteúdo desloca. */
+  fill?: boolean;
 }) {
   const save = useSave();
   const { toast } = useToast();
@@ -105,8 +108,14 @@ export function ParcelDetail({
   return (
     <div className="min-w-0" data-testid={`parcel-detail-${p.id}`}>
       {confirmDialog}
-      <Tabs value={tab} onValueChange={(v) => onTab(v as ParcelTab)}>
-        <TabsList className="grid h-auto w-full grid-cols-4 gap-0.5 [&>button]:min-h-10 [&>button]:px-1 [&>button]:text-[13px] sm:[&>button]:px-3 sm:[&>button]:text-sm">
+      <Tabs value={tab} onValueChange={(v) => onTab(v as ParcelTab)} className={fill ? "flex h-full min-h-0 flex-col" : undefined}>
+        <TabsList
+          className={cn(
+            "grid h-auto w-full shrink-0 grid-cols-4 gap-0.5 [&>button]:min-h-10 [&>button]:px-1 [&>button]:text-[13px] sm:[&>button]:px-3 sm:[&>button]:text-sm",
+            // separadores com sublinhado (mais claros num ecrã pequeno do que um quadrado branco sobre cinzento)
+            fill && "gap-0 rounded-none border-b border-border bg-transparent p-0 [&>button]:min-h-12 [&>button]:rounded-none [&>button]:border-b-2 [&>button]:border-transparent [&>button]:font-medium data-[orientation=horizontal]:items-stretch [&>button[data-state=active]]:border-primary [&>button[data-state=active]]:bg-transparent [&>button[data-state=active]]:text-primary [&>button[data-state=active]]:shadow-none",
+          )}
+        >
           <TabsTrigger value="meta" data-testid="tab-parcel-meta">Meta</TabsTrigger>
           <TabsTrigger value="submetas" data-testid="tab-parcel-submetas" className="gap-1">
             Submetas
@@ -117,7 +126,7 @@ export function ParcelDetail({
         </TabsList>
 
         {/* ------------------------------------------------------------------ Meta */}
-        <TabsContent value="meta" className="space-y-4 pt-2">
+        <TabsContent value="meta" className={cn("space-y-4 pt-2", fill && "min-h-0 flex-1 overflow-y-auto pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-4")}>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="text-xs text-muted-foreground">Acumulado (o que puseste)</p>
@@ -202,7 +211,7 @@ export function ParcelDetail({
         </TabsContent>
 
         {/* -------------------------------------------------------------- Submetas */}
-        <TabsContent value="submetas" className="space-y-3 pt-2">
+        <TabsContent value="submetas" className={cn("space-y-3 pt-2", fill && "min-h-0 flex-1 overflow-y-auto pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-4")}>
           <details className="text-xs text-muted-foreground">
             <summary className="cursor-pointer select-none py-1">O que são submetas?</summary>
             <p className="mt-1">
@@ -264,12 +273,12 @@ export function ParcelDetail({
         </TabsContent>
 
         {/* ------------------------------------------------------------- Histórico */}
-        <TabsContent value="historico" className="pt-2">
+        <TabsContent value="historico" className={cn("pt-2", fill && "min-h-0 flex-1 overflow-y-auto pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-4")}>
           <History state={state} parcelId={p.id} cur={cur} subName={subName} ask={ask} />
         </TabsContent>
 
         {/* ------------------------------------------------------------ Definições */}
-        <TabsContent value="definicoes" className="space-y-4 pt-2">
+        <TabsContent value="definicoes" className={cn("space-y-4 pt-2", fill && "min-h-0 flex-1 overflow-y-auto pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-4")}>
           <div className="grid grid-cols-[auto_1fr] items-end gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Cor</Label>
