@@ -1,6 +1,12 @@
 name: Deploy (Cloudflare)
-# Só corre quando o pedes (Actions > Deploy (Cloudflare) > Run workflow), nunca sozinho.
+# Arranca sozinho quando o CI da main acaba com sucesso (depois do merge de um PR) e também à mão
+# (Actions > Deploy (Cloudflare) > Run workflow). Em ambos os casos espera pela tua aprovação: o job usa o
+# ambiente "production", que tem de ter "Required reviewers" (Settings > Environments > production).
 on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 concurrency:
   group: deploy-cloudflare
@@ -9,10 +15,22 @@ permissions:
   contents: read
 jobs:
   deploy:
+    # automático só quando o CI da main passou num push (merge); nunca para PRs nem CI falhado
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    environment:
+      name: production
+      url: https://salary-management.private-finances.workers.dev
     steps:
       - uses: actions/checkout@v7
+        with:
+          # publica exatamente o commit que o CI validou (no arranque manual, o último da branch escolhida)
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/setup-node@v7
         with:
           node-version: 24

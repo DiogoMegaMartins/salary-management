@@ -65,10 +65,12 @@ function useYoYComparison(d: Derived) {
     () =>
       free
         ? compareMonthSets(chosen.months, chosen.computed, base.months, base.computed)
-        : yearOverYear(chosen.months, chosen.computed, d.allMonths, d.allComputed, refYear),
+        : refYear == null
+          ? null // o ano de comparação escolhe-se sempre à mão (sem ano anterior por omissão)
+          : yearOverYear(chosen.months, chosen.computed, d.allMonths, d.allComputed, refYear),
     [free, chosen, base, d.allMonths, d.allComputed, refYear],
   );
-  return { sel, setSel, yoy, refYear, free, chosenCount: free ? Math.min(chosen.months.length, base.months.length) : chosen.months.length };
+  return { sel, setSel, yoy, refYear, free, chosenCount: free ? Math.min(chosen.months.length, base.months.length) : chosen.months.length, noRef: !free && refYear == null };
 }
 
 /* ------------------------------------------------------------------ controlos */
@@ -277,17 +279,19 @@ function YoYControls({ d, sel, setSel }: { d: Derived; sel: YoYSelection; setSel
   );
 }
 
-function Empty({ manual, noMonths, free }: { manual: boolean; noMonths: boolean; free?: boolean }) {
+function Empty({ manual, noMonths, free, noRef }: { manual: boolean; noMonths: boolean; free?: boolean; noRef?: boolean }) {
   return (
     <p className="flex items-start gap-2 py-3 text-xs text-muted-foreground" data-testid="yoy-empty">
       <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-      {free && noMonths
+      {noRef && !noMonths
+        ? "Escolhe o ano de comparação para ver a tabela."
+        : free && noMonths
         ? "Escolhe pelo menos um mês de cada lado: os meses de base (iniciais) e os de comparação (finais)."
         : noMonths
         ? "Não há meses escolhidos. Escolhe pelo menos um mês."
         : manual
           ? "Nenhum dos meses escolhidos tem o mesmo mês no ano de comparação. Muda o ano ou os meses."
-          : "Sem os mesmos meses do ano anterior para comparar neste período. A comparação aparece quando houver pelo menos um mês com o seu par um ano antes."}
+          : "Os meses escolhidos não existem no ano de comparação. Muda o ano ou os meses."}
     </p>
   );
 }
@@ -315,13 +319,13 @@ function colsOf(yoy: YoYData) {
 
 
 export function YearOverYearCard({ d }: { d: Derived }) {
-  const { sel, setSel, yoy, refYear, chosenCount, free } = useYoYComparison(d);
+  const { sel, setSel, yoy, refYear, chosenCount, free, noRef } = useYoYComparison(d);
   const parcels = useMemo(() => (yoy ? parcelYearOverYear(d.allParcels, yoy) : []), [d.allParcels, yoy]);
   return (
     <div data-testid="yoy-card" className="space-y-3">
       <YoYControls d={d} sel={sel} setSel={setSel} />
       {!yoy ? (
-        <Empty manual={sel.mode === "manual"} noMonths={chosenCount === 0} free={free} />
+        <Empty manual={sel.mode === "manual"} noMonths={chosenCount === 0} free={free} noRef={noRef} />
       ) : (
         <>
           <p className="text-xs text-muted-foreground">{summary(yoy.pairs.length, refYear, yoy)}</p>
@@ -411,14 +415,14 @@ function ColGroup() {
 
 /** Despesa por categoria face ao ano de comparação (Orçamento); usa a mesma escolha do Painel. */
 export function CategoryYearOverYear({ d }: { d: Derived }) {
-  const { sel, setSel, yoy, refYear, chosenCount, free } = useYoYComparison(d);
+  const { sel, setSel, yoy, refYear, chosenCount, free, noRef } = useYoYComparison(d);
   const rows = useMemo(() => (yoy ? categoryYearOverYear(d.allTransactions, yoy).slice(0, 10) : []), [d.allTransactions, yoy]);
   const cols = yoy ? colsOf(yoy) : { swap: false, first: "", second: "" };
   return (
     <div className="space-y-3" data-testid="yoy-categories-card">
       <YoYControls d={d} sel={sel} setSel={setSel} />
       {!yoy ? (
-        <Empty manual={sel.mode === "manual"} noMonths={chosenCount === 0} free={free} />
+        <Empty manual={sel.mode === "manual"} noMonths={chosenCount === 0} free={free} noRef={noRef} />
       ) : (
         <>
           <p className="text-xs text-muted-foreground">{summary(yoy.pairs.length, refYear, yoy)}</p>

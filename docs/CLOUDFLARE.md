@@ -25,7 +25,7 @@ A Cloudflare mantém o histórico do SQLite dos Durable Objects, com recuperaç�
 
 1. Na Cloudflare, cria um token de API com a permissão "Edit Cloudflare Workers" e anota o ID da conta.
 2. No GitHub, em Settings > Secrets and variables > Actions, cria `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`.
-3. Em Actions, corre "Deploy (Cloudflare)". Corre os testes e depois `npm run deploy`.
+3. Em Actions, corre "Deploy (Cloudflare)" e aprova-o (ver "Deploy automático com aprovação"). Corre os testes e depois `npm run deploy`.
 4. Define o código de acesso (uma vez, escreve-o quando pedido):
 
 ```bash
@@ -33,6 +33,18 @@ npx wrangler secret put ACCESS_CODE
 ```
 
 5. Abre o endereço `https://salary-management.private-finances.workers.dev`. A primeira parte é o nome do Worker (`name` em `wrangler.jsonc`); `private-finances` é o subdomínio da conta, que se escolhe uma vez em Workers & Pages e é único em toda a Cloudflare (se já estiver ocupado, escolhe outro e o endereço muda).
+
+## Deploy automático com aprovação
+
+Depois de um merge para a `main`, quando o CI dessa `main` acaba com sucesso, o workflow "Deploy (Cloudflare)" arranca sozinho e fica à espera da tua aprovação. Publica exatamente o commit que o CI validou. Se o CI falhar, não arranca. Também o podes correr à mão em Actions, e esse arranque também espera pela aprovação.
+
+A aprovação vem do ambiente `production` do GitHub. Configura-o uma vez:
+
+1. No GitHub, em Settings > Environments, abre `production` (aparece depois do primeiro deploy; podes criá-lo antes com "New environment").
+2. Ativa "Required reviewers" e escolhe-te a ti.
+3. Em "Deployment branches and tags", escolhe "Selected branches and tags" e acrescenta `main`.
+
+Sem "Required reviewers", o deploy corre sem pedir aprovação. Para aprovar: em Actions, abre a execução "Deploy (Cloudflare)" em espera e carrega em "Review deployments" > "Approve and deploy". O GitHub também envia uma notificação.
 
 ## Migrar os dados atuais
 

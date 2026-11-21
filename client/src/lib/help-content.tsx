@@ -222,9 +222,9 @@ export const HELP_SECTIONS: HelpSection[] = [
           parcela. O primeiro botão, <em>Tipo de comparação</em>, tem duas opções: <em>Comparar com ano</em> e <em>Comparar com mês</em>.
         </P>
         <UL>
-          <li><strong>Comparar com ano:</strong> o segundo botão tem primeiro os anos e, por baixo, os meses do ano escolhido (com <em>Selecionar todos</em> ou <em>Limpar seleção</em>). O terceiro botão lista só os outros anos. Sem escolha de ano, compara com o ano anterior de cada mês.</li>
+          <li><strong>Comparar com ano:</strong> o segundo botão tem primeiro os anos e, por baixo, os meses do ano escolhido (com <em>Selecionar todos</em> ou <em>Limpar seleção</em>). O terceiro botão lista só os outros anos. A tabela só aparece depois de escolheres o ano de comparação: não há ano por omissão.</li>
           <li><strong>Comparar com mês:</strong> escolhes um ano, depois os meses de <em>Base (inicial)</em> e a seguir os de <em>Comparação (final)</em>. A variação vai da base para a comparação; com tamanhos diferentes, compara médias mensais.</li>
-          <li><strong>Memória:</strong> a escolha fica guardada neste dispositivo e vale também no Orçamento. <em>Repor</em> volta aos meses do filtro e ao ano anterior.</li>
+          <li><strong>Memória:</strong> a escolha fica guardada neste dispositivo e vale também no Orçamento. <em>Repor</em> volta aos meses do filtro e limpa o ano de comparação.</li>
         </UL>
         <P>Se nenhum dos meses escolhidos tiver par no ano de comparação, o cartão explica porquê.</P>
         <H3>Despesas fora do padrão</H3>
@@ -390,7 +390,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         <P>Para investigar um desvio, use o drill-down do Painel a partir do KPI de Gastos ou de uma parcela.</P>
         <H3>Comparação mensal e anual</H3>
         <P>
-          Em baixo, o Orçamento mostra a despesa por categoria contra os mesmos meses do ano anterior (com a variação em euros e em
+          Em baixo, o Orçamento mostra a despesa por categoria contra os mesmos meses do ano que escolheres (com a variação em euros e em
           percentagem), com a escolha do Painel. As categorias que fugiram ao habitual ficam na página Despesas.
         </P>
       </>

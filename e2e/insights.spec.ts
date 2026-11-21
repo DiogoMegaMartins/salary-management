@@ -82,6 +82,10 @@ test.describe("Leituras sobre o histórico", () => {
       await page.reload();
       const cartao = page.getByTestId("yoy-card");
       await expect(cartao).toBeVisible();
+      // sem ano de comparação por omissão: pede para escolher
+      await expect(page.getByTestId("yoy-empty")).toContainText("Escolhe o ano de comparação");
+      await clicar(page.getByTestId("yoy-ref-select"));
+      await page.getByRole("option", { name: "Comparar com 2025" }).click();
       await expect(cartao).toContainText("1 mês comparado");
       await expect(page.getByTestId("yoy-row-net")).toContainText("+");
 
@@ -145,8 +149,7 @@ test.describe("Leituras sobre o histórico", () => {
       await page.reload();
       const cartao = page.getByTestId("yoy-card");
       await expect(cartao).toBeVisible();
-      // métricas novas
-      for (const linha of ["gross", "descontos", "tax"]) await expect(page.getByTestId(`yoy-row-${linha}`)).toBeVisible();
+      await expect(page.getByTestId("yoy-empty")).toContainText("Escolhe o ano de comparação");
 
       // escolher só o último mês (Setembro 2026) e comparar com 2025
       await clicar(page.getByTestId("yoy-months-trigger"));
@@ -159,10 +162,11 @@ test.describe("Leituras sobre o histórico", () => {
       await page.getByTestId("yoy-months-month-2026-09").click();
       await page.keyboard.press("Escape");
       await expect(page.getByTestId("yoy-months-trigger")).toContainText("1 mês");
-      await expect(cartao).toContainText("1 mês comparado com o mesmo mês do ano anterior");
       await clicar(page.getByTestId("yoy-ref-select"));
       await page.getByRole("option", { name: "Comparar com 2025" }).click();
       await expect(cartao).toContainText("1 mês comparado com o mesmo mês de 2025");
+      // métricas novas
+      for (const linha of ["gross", "descontos", "tax"]) await expect(page.getByTestId(`yoy-row-${linha}`)).toBeVisible();
 
       // o ano escolhido não aparece como ano de comparação
       await clicar(page.getByTestId("yoy-ref-select"));
