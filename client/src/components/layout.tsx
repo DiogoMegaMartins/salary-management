@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { OfflineStatus } from "@/components/offline-status";
 import { KeyboardShortcuts } from "@/components/shortcuts";
+import { LogoutButton } from "@/components/logout";
 import { offlineInfo } from "@/lib/offline";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
@@ -140,6 +141,7 @@ function BottomNav() {
                 {n.label}
               </Link>
             ))}
+            <LogoutButton className="min-h-12 px-3 text-base text-foreground hover:bg-muted [&>svg]:h-5 [&>svg]:w-5" onDone={() => setMoreOpen(false)} />
           </div>
         </SheetContent>
       </Sheet>
@@ -177,7 +179,7 @@ export function AppShell({
         </div>
         <NavLinks />
         <div className="mt-auto px-1 text-xs text-muted-foreground">
-          <p className="leading-relaxed">Espaço privado. Só tu vês estes dados.</p>
+          <LogoutButton className="-mx-1 mb-3 w-[calc(100%+0.5rem)] px-2 py-2 text-sm" />
           <AppInfo />
         </div>
       </aside>
