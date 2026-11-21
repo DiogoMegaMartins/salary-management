@@ -359,7 +359,7 @@ function MetricsTable({ yoy, parcels }: { yoy: YoYData; parcels: ReturnType<type
   const allocPrev = Math.round(parcels.reduce((a, r) => a + r.previous, 0) * 100) / 100;
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[30rem] table-fixed text-left text-sm">
+      <table className="w-full min-w-120 table-fixed text-left text-sm">
         <ColGroup />
         <thead>
           <tr className="text-xs text-muted-foreground">
@@ -436,7 +436,7 @@ export function CategoryYearOverYear({ d }: { d: Derived }) {
             <p className="py-2 text-xs text-muted-foreground">Sem despesas com categoria nos meses comparados.</p>
           ) : (
             <div className="overflow-x-auto" data-testid="yoy-categories">
-              <table className="w-full min-w-[30rem] table-fixed text-left text-sm">
+              <table className="w-full min-w-120 table-fixed text-left text-sm">
                 <ColGroup />
                 <thead>
                   <tr className="text-left text-xs text-muted-foreground">

@@ -25,7 +25,7 @@ const CODE = ({ children }: { children: ReactNode }) => (
   </pre>
 );
 const KBD = ({ children }: { children: ReactNode }) => (
-  <code className="rounded bg-muted px-1.5 py-0.5 text-xs font-medium">{children}</code>
+  <code className="rounded-sm bg-muted px-1.5 py-0.5 text-xs font-medium">{children}</code>
 );
 
 /** Diagrama simples da arquitetura; usa as cores do tema para funcionar em claro e escuro. */

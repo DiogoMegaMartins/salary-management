@@ -108,7 +108,7 @@ export function MovementDialog({
                 aria-checked={kind === k}
                 data-testid={`movement-kind-${k}`}
                 onClick={() => setKind(k)}
-                className={`rounded-md px-2 py-1.5 text-sm transition-colors ${kind === k ? "bg-background font-medium shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                className={`rounded-md px-2 py-1.5 text-sm transition-colors ${kind === k ? "bg-background font-medium shadow-xs" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {k === "entrada" ? "Entrada" : k === "saida" ? "Saída" : k === "transferir" ? "Transferir" : "Corrigir total"}
               </button>

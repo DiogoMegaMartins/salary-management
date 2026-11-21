@@ -39,7 +39,7 @@ export function AppInfo({ updatedAt }: { updatedAt?: string }) {
           </Link>
         </>
       )}
-      <span className="hidden lg:inline-flex lg:items-center">{sep}Atalhos: carrega em&nbsp;<kbd className="rounded border border-border bg-muted px-1 text-[10px]">?</kbd></span>
+      <span className="hidden lg:inline-flex lg:items-center">{sep}Atalhos: carrega em&nbsp;<kbd className="rounded-sm border border-border bg-muted px-1 text-[10px]">?</kbd></span>
     </p>
   );
 }

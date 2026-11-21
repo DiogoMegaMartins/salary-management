@@ -24,7 +24,7 @@ export function DashboardSubgoals({ subs }: { subs: SubBreakdown[] }) {
         return (
           <li key={sub.id} className="min-w-0 space-y-1.5" data-testid={`dashboard-subgoal-${sub.id}`}>
             <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-xs">
-              <span className="min-w-0 break-words font-medium">{sub.name}</span>
+              <span className="min-w-0 wrap-break-word font-medium">{sub.name}</span>
               {hasTarget && <span className="tnum text-muted-foreground">{fmtPct(pct, 0)}</span>}
             </div>
             <dl className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-1 text-xs">

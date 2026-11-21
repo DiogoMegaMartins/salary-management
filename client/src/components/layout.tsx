@@ -102,7 +102,7 @@ function BottomNav() {
   }, []);
   useEffect(() => setMoreOpen(false), [location]);
   const moreActive = MORE.some((n) => isActive(n.href, location));
-  const item = "relative flex min-h-[3.25rem] flex-1 flex-col items-center justify-center gap-0.5 px-1 text-[11px] font-medium transition-colors active:scale-95";
+  const item = "relative flex min-h-13 flex-1 flex-col items-center justify-center gap-0.5 px-1 text-[11px] font-medium transition-colors active:scale-95";
   return (
     <>
       {!typing && (
@@ -167,8 +167,8 @@ export function AppShell({
   const state = useAppState();
   const failed = state.isError && !state.data;
   return (
-    <div className="grid h-[100dvh] grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)_auto] bg-background lg:grid-cols-[236px_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)]">
-      <aside className="hidden lg:flex lg:row-span-2 flex-col gap-6 border-r border-sidebar-border bg-sidebar p-4 overflow-y-auto [overscroll-behavior:contain]">
+    <div className="grid h-dvh grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)_auto] bg-background lg:grid-cols-[236px_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)]">
+      <aside className="hidden lg:flex lg:row-span-2 flex-col gap-6 border-r border-sidebar-border bg-sidebar p-4 overflow-y-auto overscroll-contain">
         <div className="flex items-center gap-2.5 px-1 pt-1">
           <Logo className="h-6 w-6 text-primary" />
           <div className="leading-tight">
@@ -186,10 +186,10 @@ export function AppShell({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 flex-[1_1_16rem] items-center gap-3">
             <div className="min-w-0">
-              <h1 className="break-words text-lg font-semibold tracking-tight md:text-xl" data-testid="text-page-title">
+              <h1 className="wrap-break-word text-lg font-semibold tracking-tight md:text-xl" data-testid="text-page-title">
                 {title}
               </h1>
-              {subtitle && <div className="break-words text-xs text-muted-foreground md:text-sm">{subtitle}</div>}
+              {subtitle && <div className="wrap-break-word text-xs text-muted-foreground md:text-sm">{subtitle}</div>}
             </div>
           </div>
           <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -221,7 +221,7 @@ export function AppShell({
       </header>
       <KeyboardShortcuts />
 
-      <main className="min-h-0 min-w-0 col-start-1 lg:col-start-2 overflow-y-auto [overscroll-behavior:contain] px-4 py-5 md:px-6 md:py-6">
+      <main className="min-h-0 min-w-0 col-start-1 lg:col-start-2 overflow-y-auto overscroll-contain px-4 py-5 md:px-6 md:py-6">
         {failed ? (
           <div role="alert" className="mx-auto mt-10 max-w-md space-y-3 rounded-lg border border-border bg-card p-5 text-center" data-testid="state-error">
             <p className="font-medium">Não foi possível carregar os dados.</p>

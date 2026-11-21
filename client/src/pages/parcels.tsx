@@ -119,7 +119,7 @@ export default function Parcels() {
                       onClick={() => setSelected(p.id)}
                       className={cn(
                         "grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1.5 border-l-[3px] px-4 py-3 text-left transition-colors sm:grid-cols-[minmax(0,1fr)_auto_8.5rem]",
-                        on ? "border-l-primary bg-primary/[0.06]" : "border-l-transparent hover:bg-muted/50",
+                        on ? "border-l-primary bg-primary/6" : "border-l-transparent hover:bg-muted/50",
                       )}
                       data-testid={`card-parcel-${p.id}`}
                     >
