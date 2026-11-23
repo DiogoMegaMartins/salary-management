@@ -101,6 +101,9 @@ export const settings = sqliteTable("settings", {
 
   // layouts personalizados (arrastar/redimensionar) por página, serializados em JSON
   pageLayouts: text("page_layouts").notNull().default("{}"),
+
+  // funcionalidades desligadas (JSON só com o que está desligado, ex.: {"parcelas":false}); vazio = tudo ligado
+  features: text("features").notNull().default("{}"),
 });
 
 export type Settings = typeof settings.$inferSelect;

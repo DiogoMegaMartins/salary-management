@@ -36,9 +36,11 @@ test("mutações exigem o cabeçalho de cliente (anti-CSRF) e não aceitam formu
 });
 
 test("definições: valida tipos, recusa campos desconhecidos e layouts inválidos", async () => {
-  for (const bad of [{ id: 9 }, { defaultTaxaSs: null }, { defaultTaxaSs: "x" }, { pageLayouts: "null" }, { pageLayouts: "[1]" }, { backupReminderDays: 0 }, { accessCode: "abc" }, { emergencyParcelIds: "1;drop" }])
+  for (const bad of [{ id: 9 }, { defaultTaxaSs: null }, { defaultTaxaSs: "x" }, { pageLayouts: "null" }, { pageLayouts: "[1]" }, { features: "null" }, { features: "[1]" }, { features: '{"nada":false}' }, { features: '{"parcelas":"não"}' }, { features: 5 }, { backupReminderDays: 0 }, { accessCode: "abc" }, { emergencyParcelIds: "1;drop" }])
     assert.equal((await call("PATCH", "/api/settings", bad)).status, 400, JSON.stringify(bad));
   assert.equal((await call("PATCH", "/api/settings", { includeMeal: true })).json.includeMeal, 1);
+  assert.equal((await call("PATCH", "/api/settings", { features: '{"parcelas":false}' })).json.features, '{"parcelas":false}');
+  assert.equal((await call("PATCH", "/api/settings", { features: "{}" })).json.features, "{}");
 });
 
 test("código de acesso: guardado com hash, nunca devolvido, nem no estado nem no backup", async () => {
