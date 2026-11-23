@@ -10,7 +10,7 @@ export function FeaturesSettings({ settings }: { settings: AppState["settings"] 
   const { toast } = useToast();
   const on = parseFeatures(settings.features);
   return (
-    <SectionCard title="Funcionalidades" description="Liga só o que usas. Desligar esconde; não apaga dados, e ao ligar de novo tudo volta.">
+    <SectionCard description="Liga só o que usas. Desligar esconde; não apaga dados, e ao ligar de novo tudo volta.">
       <ul className="divide-y" data-testid="features-list">
         {FEATURES.map((f) => {
           const blocked = !!f.requires && !on[f.requires];
