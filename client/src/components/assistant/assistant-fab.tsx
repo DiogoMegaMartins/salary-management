@@ -42,7 +42,7 @@ export function AssistantFab() {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
           side={isMobile ? "bottom" : "right"}
-          className={`flex flex-col gap-0 overflow-hidden p-0 [&>button.absolute]:hidden ${isMobile ? "h-dvh! max-h-dvh! rounded-none border-0" : "w-[420px] max-w-[420px]"}`}
+          className={`flex flex-col gap-0 overflow-hidden p-0 [&>button.absolute]:hidden ${isMobile ? "h-dvh! max-h-dvh! w-dvw! max-w-dvw! rounded-none border-0" : "w-[420px] max-w-[420px]"}`}
           data-testid="assistant-sheet"
         >
           <div className="flex items-center justify-between gap-2 border-b px-4 py-3">
