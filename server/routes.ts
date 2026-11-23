@@ -5,6 +5,7 @@ import {
   contributionLinkCreateSchema, fxRateCreateSchema, valuationCreateSchema, recurringSchema, reserveSchema, reservePaySchema, occurrenceKeySchema,
   closeMonthSchema, reopenMonthSchema,
 } from "./route-schemas";
+import { aiStatus, parseSentence } from "./ai";
 import { settingsPatchSchema, monthCreateSchema, monthPatchSchema, parcelCreateSchema, parcelPatchSchema, categoryCreateSchema, issueMessage } from "./validation";
 import type { ZodType } from "zod";
 import * as evo8 from "./evo08";
@@ -143,6 +144,19 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       return res.status(e.status ?? 400).json({ message: e.message });
     }
     res.json(Object.keys(patch).length ? storage.updateParcel(id, patch) : storage.getState().parcels.find((p) => p.id === id));
+  });
+
+  /* ---------------------------------------- assistente com IA (frases livres) */
+  app.get("/api/assistant/ai-status", (_req, res) => res.json(aiStatus(storage.getState().settings)));
+  app.post("/api/assistant/parse", async (req, res) => {
+    try {
+      const state = storage.getState();
+      const categories = (state.categories ?? []).filter((c) => c.active).map((c) => c.name);
+      res.json(await parseSentence({ sentence: req.body?.sentence, clientToday: req.body?.today, categories, settings: state.settings }));
+    } catch (e: any) {
+      if (!e.status) console.error(e);
+      res.status(e.status ?? 500).json({ message: e.status ? e.message : "Erro interno." });
+    }
   });
 
   /* --------------------------------------------- catálogos (EVO-02) */
