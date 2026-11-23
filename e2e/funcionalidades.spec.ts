@@ -74,3 +74,42 @@ test.describe("Menu, rotas e Painel", () => {
     await expect(page.getByText("Parcelas no período", { exact: true })).toBeVisible();
   });
 });
+
+test.describe("Editor do mês", () => {
+  test.beforeEach(async ({ request }) => ligarTudo(request));
+  test.afterEach(async ({ request }) => ligarTudo(request));
+
+  test("com movimentos desligados some o separador; com divisão e movimentos desligados some a barra", async ({ page, request }) => {
+    await desligar(request, "movimentos");
+    await entrar(page);
+    await page.goto("/#/meses");
+    await page.getByTestId("button-new-month").click();
+    await expect(page.getByTestId("month-editor")).toBeVisible();
+    await expect(page.getByTestId("tab-movimentos")).toHaveCount(0);
+    await expect(page.getByTestId("tab-divisao")).toHaveCount(1);
+    await page.getByTestId("button-close-month-editor").click();
+
+    await desligar(request, "movimentos", "divisao");
+    await page.reload();
+    await page.getByTestId("button-new-month").click();
+    await expect(page.getByTestId("month-editor")).toBeVisible();
+    await expect(page.getByTestId("tab-divisao")).toHaveCount(0);
+    await expect(page.getByTestId("tab-vencimento")).toHaveCount(0); // sem barra de separadores
+    await expect(page.getByLabel("Etiqueta").or(page.getByText("Etiqueta")).first()).toBeVisible();
+  });
+
+  test("com IRS Jovem desligado o campo não aparece; ligado, aparece", async ({ page, request }) => {
+    await desligar(request, "irsJovem");
+    await entrar(page);
+    await page.goto("/#/meses");
+    await page.getByTestId("button-new-month").click();
+    await expect(page.getByTestId("month-editor")).toBeVisible();
+    await expect(page.getByTestId("select-irs-jovem")).toHaveCount(0);
+    await page.getByTestId("button-close-month-editor").click();
+
+    await ligarTudo(request);
+    await page.reload();
+    await page.getByTestId("button-new-month").click();
+    await expect(page.getByTestId("select-irs-jovem")).toBeVisible();
+  });
+});

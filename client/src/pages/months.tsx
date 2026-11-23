@@ -8,11 +8,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAppState, useDerived, useSave } from "@/lib/app";
+import { useFeatures } from "@/lib/features";
 import type { Month } from "@shared/schema";
 import { MONTH_NAMES, computeMonth, fmtEur, fmtPct } from "@shared/calc";
 import { MonthEditor } from "@/components/months/month-editor";
 
 export default function Months() {
+  const features = useFeatures();
   const { data, isLoading } = useAppState();
   const d = useDerived(data);
   const save = useSave();
@@ -116,7 +118,7 @@ export default function Months() {
                 <div key={label}><dt className="text-xs text-muted-foreground">{label}</dt><dd className="tnum font-medium">{fmtEur(Number(value))}</dd></div>)}
             </dl>
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm" onClick={() => { setEditorTab("divisao"); setCreating(false); setEditing(r.month); }} data-testid={`button-mobile-division-${r.month.id}`}>Dividir valores</Button>
+              {features.divisao && <Button variant="outline" size="sm" onClick={() => { setEditorTab("divisao"); setCreating(false); setEditing(r.month); }} data-testid={`button-mobile-division-${r.month.id}`}>Dividir valores</Button>}
               <Button variant="ghost" size="icon" aria-label={`Duplicar ${r.month.label}`} onClick={() => {
                 const month = r.month.month === 12 ? 1 : r.month.month + 1;
                 save.duplicateMonth.mutate({ id: r.month.id, year: r.month.year + (r.month.month === 12 ? 1 : 0), month, label: MONTH_NAMES[month - 1] });

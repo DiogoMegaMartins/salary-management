@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAppState, useSave } from "@/lib/app";
+import { useFeatures } from "@/lib/features";
 import type { Month } from "@shared/schema";
 import { errMsg } from "@/components/catalogs";
 import { MONTH_NAMES, allocationAmount, availableOf, descontosOf, fmtEur, grossOf, mealOf, reconcileMonth } from "@shared/calc";
@@ -22,6 +23,7 @@ import { TransactionsPanel } from "@/components/months/transactions-panel";
 
 export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Month; isNew: boolean; onClose: () => void; initialTab: string }) {
   const { data } = useAppState();
+  const features = useFeatures();
   const save = useSave();
   const { toast } = useToast();
   const [form, setForm] = useState<Month>(month);
@@ -116,13 +118,15 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
         </DialogHeader>
 
         <div className="month-editor-body min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-4">
-        <Tabs defaultValue={initialTab}>
-          <TabsList className="month-tabs grid w-full grid-cols-3">
-            <TabsTrigger value="vencimento" data-testid="tab-vencimento">Vencimento</TabsTrigger>
-            <TabsTrigger value="divisao" disabled={isDraft} data-testid="tab-divisao">Divisão</TabsTrigger>
-            <TabsTrigger value="movimentos" disabled={isDraft} data-testid="tab-movimentos">Movimentos</TabsTrigger>
-          </TabsList>
-          {isDraft && (
+        <Tabs defaultValue={(initialTab === "divisao" && !features.divisao) || (initialTab === "movimentos" && !features.movimentos) ? "vencimento" : initialTab}>
+          {(features.divisao || features.movimentos) && (
+            <TabsList className={`month-tabs grid w-full ${features.divisao && features.movimentos ? "grid-cols-3" : "grid-cols-2"}`}>
+              <TabsTrigger value="vencimento" data-testid="tab-vencimento">Vencimento</TabsTrigger>
+              {features.divisao && <TabsTrigger value="divisao" disabled={isDraft} data-testid="tab-divisao">Divisão</TabsTrigger>}
+              {features.movimentos && <TabsTrigger value="movimentos" disabled={isDraft} data-testid="tab-movimentos">Movimentos</TabsTrigger>}
+            </TabsList>
+          )}
+          {isDraft && (features.divisao || features.movimentos) && (
             <p className="pt-2 text-xs text-muted-foreground">
               Guarda o vencimento para poderes editar a divisão e os movimentos deste mês.
             </p>
@@ -177,6 +181,7 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
                   hint={settings.excludeOutrosIrsFromNet ? "Excluído do líquido (definições)" : undefined}
                 />
                 <NumberField label="Rendimentos isentos" value={form.isentos} onChange={(v) => set("isentos", v)} />
+                {features.irsJovem && (
                 <div className="space-y-1.5">
                   <Label className="text-xs text-muted-foreground">IRS Jovem</Label>
                   <Select value={form.irsJovem || "nenhum"} onValueChange={(v) => set("irsJovem", v === "nenhum" ? "" : v)}>
@@ -191,6 +196,7 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
                     </SelectContent>
                   </Select>
                 </div>
+                )}
               </div>
             </div>
 
@@ -279,7 +285,7 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
             </div>
           </TabsContent>
 
-          <TabsContent value="divisao" className="space-y-4 pt-4">
+          {features.divisao && <TabsContent value="divisao" className="space-y-4 pt-4">
             <div className="division-summary grid grid-cols-3 gap-2 rounded-lg border border-border bg-background p-3" data-testid="division-summary">
               <Summary label="Disponível" value={fmtEur(available)} />
               <Summary label="Alocado" value={fmtEur(allocated)} />
@@ -380,12 +386,14 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
                       {fmtEur(amount)}
                     </span>
                   </div>
-                  <PlatformDistribution
-                    monthId={month.id}
-                    parcelId={p.id}
-                    allocationId={a?.id ?? null}
-                    total={amount}
-                  />
+                  {features.plataformas && (
+                    <PlatformDistribution
+                      monthId={month.id}
+                      parcelId={p.id}
+                      allocationId={a?.id ?? null}
+                      total={amount}
+                    />
+                  )}
                   </fieldset>
                 );
               })}
@@ -412,9 +420,10 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
                 <span className="tnum">{fmtEur(remaining)}</span>
               </Badge>
             </div>
-          </TabsContent>
+          </TabsContent>}
 
-          <TabsContent value="movimentos" className="space-y-4 pt-4">
+          {features.movimentos && <TabsContent value="movimentos" className="space-y-4 pt-4">
+            {features.reconciliacao && (
             <ReconciliationPanel
               rec={rec}
               month={form}
@@ -423,8 +432,9 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
                 save.reconciliation.mutate({ id: month.id, deficitReason, deficitNote })
               }
             />
+            )}
             <TransactionsPanel monthId={month.id} parcels={parcels} transactions={transactions} />
-          </TabsContent>
+          </TabsContent>}
         </Tabs>
         </div>
 
