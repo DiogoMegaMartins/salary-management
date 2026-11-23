@@ -38,6 +38,7 @@ export const settingsPatchSchema = z.strictObject({
   surplusSuggestionThreshold: num.min(0).max(1e9).transform(cents),
   pageLayouts: z.string().max(100_000).refine(parsesToObject, "Layout inválido."),
   features: z.string().max(500).refine(isFeaturesJson, "Funcionalidades inválidas."),
+  onboardingDone: bool01,
 }).partial();
 
 export const issueMessage = (e: z.ZodError) => {

@@ -31,3 +31,22 @@ test("funcionalidades: featuresPatch guarda só o que está desligado", () => {
   assert.equal(featuresPatch('{"parcelas":false}', "parcelas", true), "{}");
   assert.equal(featuresPatch("lixo", "divisao", false), '{"divisao":false}');
 });
+
+import { featuresFromProfile, profileFromFeatures } from "../shared/features";
+
+test("arranque: só salário e despesas liga a divisão e os movimentos e desliga o resto", () => {
+  const f = parseFeatures(featuresFromProfile({ invest: false, goals: false, irsJovem: false }));
+  assert.equal(f.divisao, true);
+  assert.equal(f.movimentos, true);
+  assert.deepEqual([f.plataformas, f.parcelas, f.irsJovem, f.reconciliacao], [false, false, false, false]);
+});
+
+test("arranque: cada resposta liga só a sua funcionalidade", () => {
+  const f = parseFeatures(featuresFromProfile({ invest: true, goals: false, irsJovem: true }));
+  assert.deepEqual([f.plataformas, f.parcelas, f.irsJovem], [true, false, true]);
+});
+
+test("arranque: o perfil volta das funcionalidades atuais (e tudo ligado = tudo marcado)", () => {
+  assert.deepEqual(profileFromFeatures("{}"), { invest: true, goals: true, irsJovem: true });
+  assert.deepEqual(profileFromFeatures(featuresFromProfile({ invest: false, goals: true, irsJovem: false })), { invest: false, goals: true, irsJovem: false });
+});

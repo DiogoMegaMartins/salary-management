@@ -122,6 +122,14 @@ for (const stmt of [
   }
 }
 
+/* arranque no primeiro uso: bases que já têm meses contam como "feito", para quem já usa a app não o ver */
+try {
+  sqlite.exec("ALTER TABLE settings ADD COLUMN onboarding_done INTEGER NOT NULL DEFAULT 0");
+  sqlite.exec("UPDATE settings SET onboarding_done = 1 WHERE (SELECT COUNT(*) FROM months) > 0");
+} catch {
+  /* coluna já existe */
+}
+
 /* ---- EVO-02: catálogos (tabelas novas, aditivas; nada existente é alterado ou apagado) ---- */
 sqlite.exec(`
 CREATE TABLE IF NOT EXISTS platforms (

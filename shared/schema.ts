@@ -106,6 +106,9 @@ export const settings = sqliteTable("settings", {
 
   // funcionalidades desligadas (JSON só com o que está desligado, ex.: {"parcelas":false}); vazio = tudo ligado
   features: text("features").notNull().default("{}"),
+
+  // arranque no primeiro uso já feito (0 = ainda por fazer)
+  onboardingDone: integer("onboarding_done").notNull().default(0),
 });
 
 export type Settings = typeof settings.$inferSelect;

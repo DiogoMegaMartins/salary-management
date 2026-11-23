@@ -45,3 +45,21 @@ export function featuresPatch(json: string | null | undefined, key: FeatureKey, 
   else off[key] = false;
   return JSON.stringify(off);
 }
+
+/** O que a pessoa diz que acompanha no arranque. Divisão e Movimentos ficam sempre ligados. */
+export type Profile = { invest: boolean; goals: boolean; irsJovem: boolean };
+
+/** Funcionalidades (JSON só com o desligado) para um perfil: reconciliação fica desligada (só em "ligar tudo"). */
+export function featuresFromProfile(p: Profile): string {
+  const off: Record<string, false> = { reconciliacao: false };
+  if (!p.invest) off.plataformas = false;
+  if (!p.goals) off.parcelas = false;
+  if (!p.irsJovem) off.irsJovem = false;
+  return JSON.stringify(off);
+}
+
+/** Perfil que corresponde às funcionalidades de agora (para pré-selecionar ao repetir o arranque). */
+export function profileFromFeatures(json: string | null | undefined): Profile {
+  const f = parseFeatures(json);
+  return { invest: f.plataformas, goals: f.parcelas, irsJovem: f.irsJovem };
+}
