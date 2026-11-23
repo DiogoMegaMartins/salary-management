@@ -344,6 +344,12 @@ export const HELP_SECTIONS: HelpSection[] = [
           22/11/2026 (ou usa &quot;Hoje&quot; e &quot;Ontem&quot;). Antes de gravar mostra um cartão &quot;Vou registar…&quot; com o que vai acontecer; só grava quando carregas em
           Confirmar. Esc fecha o assistente. Se não o queres, desliga-o em Definições › Funcionalidades.
         </P>
+        <H3>Assistente com IA (opcional)</H3>
+        <P>
+          Se o servidor tiver uma chave de API da Anthropic e ligares &quot;Assistente com IA&quot; em Definições › Funcionalidades, o assistente passa a ter uma caixa para escreveres frases
+          como &quot;gastei 40 no supermercado ontem&quot;. A frase, a data de hoje e os nomes das categorias saem da app para a Anthropic; os teus valores e saldos nunca saem. A IA só preenche os
+          campos: o cartão de confirmação é o mesmo e só grava quem confirma. Há um limite de 50 pedidos por dia. Como ativar: <KBD>docs/ASSISTENTE-IA.md</KBD>.
+        </P>
         <H3>Dividir o salário pelas parcelas</H3>
         <P>
           No menu Divisão, o resumo mostra o disponível, uma barra com o peso de cada parcela e o que falta distribuir (a verde, &quot;Tudo distribuído&quot;).
@@ -658,6 +664,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.22.0</H3>
+        <UL>
+          <li>Assistente com IA para frases livres (&quot;gastei 40 no supermercado ontem&quot;): pronto mas desligado. Só aparece se o servidor tiver uma chave de API e ligares a opção em Definições › Funcionalidades. A IA só interpreta a frase (nunca vê os teus valores nem grava); tens sempre de confirmar. Limite de 50 pedidos por dia.</li>
+        </UL>
         <H3>1.21.0</H3>
         <UL>
           <li>Assistente: um botão flutuante abre uma conversa passo a passo com quatro tarefas: registar o mês, registar uma despesa, distribuir o que sobra e ver como estás este mês. Mostra sempre o que vai gravar e só grava quando confirmas; &quot;Voltar atrás&quot; corrige a resposta anterior. Desliga-se em Definições › Funcionalidades › Assistente.</li>

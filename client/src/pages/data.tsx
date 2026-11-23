@@ -28,6 +28,7 @@ import { fmtEur } from "@shared/calc";
 import { CatalogsSection } from "@/components/catalogs";
 import { VerifyData, ChangeHistory, CsvImport } from "@/components/data-tools";
 import { FeaturesSettings } from "@/components/features-settings";
+import { AiSettings } from "@/components/ai-settings";
 import { OfflineSettings } from "@/components/offline-status";
 import { daysSince } from "@/lib/utils";
 import { isValidDecimalDraft, parseDecimalDraft } from "@/components/months/number-field";
@@ -251,7 +252,7 @@ export default function DataPage() {
         </SectionCard>
 
         </div></TabsContent>
-        <TabsContent value="funcionalidades" className="mt-0"><FeaturesSettings settings={s} /></TabsContent>
+        <TabsContent value="funcionalidades" className="mt-0"><FeaturesSettings settings={s} /><AiSettings settings={s} /></TabsContent>
         <TabsContent value="catalogos" className="mt-0"><div className="space-y-4">
         <SectionCard
           title="Catálogos"
