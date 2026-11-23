@@ -79,23 +79,22 @@ test.describe("Editor do mês", () => {
   test.beforeEach(async ({ request }) => ligarTudo(request));
   test.afterEach(async ({ request }) => ligarTudo(request));
 
-  test("com movimentos desligados some o separador; com divisão e movimentos desligados some a barra", async ({ page, request }) => {
-    await desligar(request, "movimentos");
+  test("o editor do mês não tem separadores; o resumo da divisão só aparece com Divisão ou Movimentos ligados", async ({ page, request }) => {
     await entrar(page);
     await page.goto("/#/meses");
-    await page.getByTestId("button-new-month").click();
-    await expect(page.getByTestId("month-editor")).toBeVisible();
-    await expect(page.getByTestId("tab-movimentos")).toHaveCount(0);
-    await expect(page.getByTestId("tab-divisao")).toHaveCount(1);
+    const abrirPrimeiro = async () => {
+      await page.locator('[data-testid^="button-edit-"], [data-testid^="button-mobile-edit-"]').filter({ visible: true }).first().click();
+      await expect(page.getByTestId("month-editor")).toBeVisible();
+    };
+    await abrirPrimeiro();
+    await expect(page.getByRole("tab")).toHaveCount(0);
+    await expect(page.getByTestId("division-glance")).toBeVisible();
     await page.getByTestId("button-close-month-editor").click();
 
     await desligar(request, "movimentos", "divisao");
     await page.reload();
-    await page.getByTestId("button-new-month").click();
-    await expect(page.getByTestId("month-editor")).toBeVisible();
-    await expect(page.getByTestId("tab-divisao")).toHaveCount(0);
-    await expect(page.getByTestId("tab-vencimento")).toHaveCount(0); // sem barra de separadores
-    await expect(page.getByLabel("Etiqueta").or(page.getByText("Etiqueta")).first()).toBeVisible();
+    await abrirPrimeiro();
+    await expect(page.getByTestId("division-glance")).toHaveCount(0);
   });
 
   test("com IRS Jovem desligado o campo não aparece; ligado, aparece", async ({ page, request }) => {

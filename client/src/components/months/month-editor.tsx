@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "wouter";
 import { useConfirm } from "@/components/confirm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -15,11 +15,10 @@ import { errMsg } from "@/components/catalogs";
 import { MONTH_NAMES, availableOf, descontosOf, fmtEur, grossOf, mealOf } from "@shared/calc";
 import { editableMonthPatch } from "@shared/month-patch";
 import { NumberField } from "@/components/months/number-field";
-import { DivisionPanel } from "@/components/months/division-panel";
-import { MovementsPanel } from "@/components/months/movements-panel";
+import { DivisionGlance } from "@/components/months/division-glance";
 import { Summary } from "@/components/months/summary";
 
-export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Month; isNew: boolean; onClose: () => void; initialTab: string }) {
+export function MonthEditor({ month, isNew, onClose }: { month: Month; isNew: boolean; onClose: () => void }) {
   const { data } = useAppState();
   const features = useFeatures();
   const save = useSave();
@@ -45,6 +44,15 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
     const dirty = !isClosedMonth && JSON.stringify(form) !== initialForm.current;
     if (dirty && !(await ask("Descartar as alterações?", "Os valores que alteraste neste mês ainda não foram guardados."))) return;
     onClose();
+  };
+
+  const [, navigate] = useLocation();
+  /** A divisão edita-se na página Divisão; com alterações por guardar, pergunta antes de sair. */
+  const openDivision = async () => {
+    const dirty = !isClosedMonth && JSON.stringify(form) !== initialForm.current;
+    if (dirty && !(await ask("Descartar as alterações?", "Os valores que alteraste neste mês ainda não foram guardados."))) return;
+    onClose();
+    navigate(`/divisao/${month.id}`);
   };
 
   const persist = () => {
@@ -99,26 +107,12 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
             {form.label} <span className="text-muted-foreground">{form.year}</span>
           </DialogTitle>
           <DialogDescription>
-            {isNew ? "Preenche os valores do recibo e a divisão do salário." : "Edita os valores do recibo e a divisão."}
+            {isNew ? "Preenche os valores do recibo." : "Edita os valores do recibo."}
           </DialogDescription>
         </DialogHeader>
 
         <div className="month-editor-body min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-4">
-        <Tabs defaultValue={(initialTab === "divisao" && !features.divisao) || (initialTab === "movimentos" && !features.movimentos) ? "vencimento" : initialTab}>
-          {(features.divisao || features.movimentos) && (
-            <TabsList className={`month-tabs grid w-full ${features.divisao && features.movimentos ? "grid-cols-3" : "grid-cols-2"}`}>
-              <TabsTrigger value="vencimento" data-testid="tab-vencimento">Vencimento</TabsTrigger>
-              {features.divisao && <TabsTrigger value="divisao" disabled={isDraft} data-testid="tab-divisao">Divisão</TabsTrigger>}
-              {features.movimentos && <TabsTrigger value="movimentos" disabled={isDraft} data-testid="tab-movimentos">Movimentos</TabsTrigger>}
-            </TabsList>
-          )}
-          {isDraft && (features.divisao || features.movimentos) && (
-            <p className="pt-2 text-xs text-muted-foreground">
-              Guarda o vencimento para poderes editar a divisão e os movimentos deste mês.
-            </p>
-          )}
-
-          <TabsContent value="vencimento" className="space-y-5 pt-4">
+        <div className="space-y-5">
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">Etiqueta</Label>
@@ -269,16 +263,8 @@ export function MonthEditor({ month, isNew, onClose, initialTab }: { month: Mont
               <Summary label="Líquido" value={fmtEur(available - (settings.includeMeal ? mealOf(form) : 0))} strong />
               <Summary label="Disponível" value={fmtEur(available)} strong />
             </div>
-          </TabsContent>
-
-          {features.divisao && <TabsContent value="divisao" className="space-y-4 pt-4">
-            <DivisionPanel month={month} />
-          </TabsContent>}
-
-          {features.movimentos && <TabsContent value="movimentos" className="space-y-4 pt-4">
-            <MovementsPanel month={month} />
-          </TabsContent>}
-        </Tabs>
+          {!isDraft && (features.divisao || features.movimentos) && <DivisionGlance month={month} onOpen={openDivision} />}
+        </div>
         </div>
 
         <DialogFooter className="shrink-0 border-t border-border bg-background px-6 py-4">

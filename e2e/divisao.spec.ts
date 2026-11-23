@@ -77,3 +77,24 @@ test.describe("Página Divisão: estados", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Painel" })).toBeVisible();
   });
 });
+
+test.describe("Do mês para a Divisão", () => {
+  test.beforeEach(async ({ page }) => entrar(page));
+
+  test("o resumo no editor do mês leva à Divisão desse mês", async ({ page }) => {
+    await page.goto("/#/meses");
+    const botao = page.locator('[data-testid^="button-edit-"], [data-testid^="button-mobile-edit-"]').filter({ visible: true }).first();
+    const id = (await botao.getAttribute("data-testid"))!.replace(/\D/g, "");
+    await botao.click();
+    await page.getByTestId("button-open-division").click();
+    await expect(page).toHaveURL(new RegExp(`#/divisao/${id}$`));
+    await expect(page.getByTestId("division-panel")).toBeVisible();
+  });
+
+  test("em mês novo (ainda não guardado) não há resumo da divisão", async ({ page }) => {
+    await page.goto("/#/meses");
+    await page.getByTestId("button-new-month").click();
+    await expect(page.getByTestId("month-editor")).toBeVisible();
+    await expect(page.getByTestId("division-glance")).toHaveCount(0);
+  });
+});
