@@ -2,6 +2,15 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.21.0 | 2026-11-23
+
+Assistente guiado (fase 5 do plano "meses mais simples").
+
+- Botão flutuante que abre uma conversa passo a passo (folha de ecrã inteiro no telemóvel, painel lateral no computador), com quatro tarefas: registar o mês (vencimento base, líquido calculado; cria o mês, que já nasce com o modelo, ou preenche o primeiro aberto sem vencimento), registar uma despesa (valor, categoria existente ou nova, data hoje/ontem/`dd/mm`/`dd/mm/aaaa`; recusa meses inexistentes ou fechados), distribuir o que sobra (mesmo cálculo da Divisão) e resumo do mês aberto mais recente.
+- Só grava depois de mostrar um cartão "Vou registar…" e de confirmares; usa as mesmas mutações da interface, por isso valem as mesmas regras (mês fechado, validações). "Voltar atrás" e "Editar" corrigem respostas; Esc fecha. A conversa não se guarda.
+- Nova funcionalidade `assistente` (ligada por defeito) em Definições › Funcionalidades; desligada, o botão desaparece. O botão esconde-se enquanto o arranque está aberto e, no telemóvel, enquanto se escreve.
+- Leitura de valores e datas escritos à mão em `shared/assistant.ts` (testada); o cálculo de "distribuir o que sobra" passou para `shared/division.ts` e é partilhado entre a Divisão e o assistente.
+
 ## 1.20.0 | 2026-11-23
 
 Arranque no primeiro uso (fase 4 do plano "meses mais simples").
