@@ -1,6 +1,6 @@
 # Assistente guiado (fase 5)
 
-Data: 2026-11-23. Estado: proposto, a aguardar aprovação. Continua `2026-11-23-meses-e-funcionalidades-design.md` (decisão 5). Fases 1 a 4 entregues; a fase 6 (IA) fica para depois.
+Data: 2026-11-23. Estado: **aprovado e entregue** (fase 5, versão 1.21.0). Continua `2026-11-23-meses-e-funcionalidades-design.md` (decisão 5). A fase 6 (IA para frases livres) está em `2026-11-23-ia-frases-design.md`.
 
 ## Intenção e porquê
 Quem não conhece a app não sabe por onde começar. Um assistente em conversa, com perguntas curtas e botões, leva-o a fazer as tarefas mais comuns sem navegar pelos menus, e torna a app mais fácil, agradável e acessível.

@@ -1,6 +1,6 @@
 # Meses mais simples, funcionalidades ligáveis e assistente
 
-Data: 2026-11-23. Estado: aprovado em conversa (desenho), por fases.
+Data: 2026-11-23. Estado: **aprovado e entregue**, por fases: 1 funcionalidades ligáveis (1.17.0), 2 página Divisão (1.18.0), 3 divisão renovada (1.19.0), 4 arranque (1.20.0), 5 assistente guiado (1.21.0), 6 IA para frases livres, desativada (1.22.0).
 
 ## Intenção e porquê
 A app mostra tudo desde o primeiro minuto (IRS Jovem, plataformas, parcelas, reconciliação). Para quem chega de fora, isso pesa. Queremos que registar um mês seja fácil, agradável e acessível para **todo o tipo de pessoas e perfis**, e que cada pessoa possa **desligar o que não usa**.
@@ -43,14 +43,16 @@ A app mostra tudo desde o primeiro minuto (IRS Jovem, plataformas, parcelas, rec
 5. **Assistente guiado:** fluxo escrito à mão (vencimento do mês, dividir como no mês anterior, destino do que sobra, registar um movimento). Cada escrita mostra-se e só grava depois de confirmar. Usa as mesmas funções de gravação da app.
 
 ## Fases (um PR cada)
+Numeração final (a que ficou depois de se acrescentar a divisão renovada):
 1. Interruptores de funcionalidades (coluna, API, Worker, página Definições › Funcionalidades, esconder menu/Painel).
 2. Mês simples e página Divisão (mover divisão e movimentos, resumo de leitura, testes atualizados).
-3. Arranque no primeiro uso.
-4. Assistente guiado.
-5. (Futura, opcional) Assistente com IA.
+3. Divisão renovada: parcelas por mês, visão de relance, distribuir o que sobra, detalhe por plataforma e ativo e modelo para meses novos (`2026-11-23-divisao-renovada-design.md`).
+4. Arranque no primeiro uso.
+5. Assistente guiado com botão flutuante (`2026-11-23-assistente-guiado-design.md`).
+6. Assistente com IA para frases livres, entregue desativado (`2026-11-23-ia-frases-design.md`).
 
-## Fase futura: assistente com IA
-Frases livres interpretadas por um modelo, que chama as mesmas funções do assistente guiado. O pedido passa pelo Worker; a chave fica como segredo do Worker, não no código. Desligado por defeito, com aviso de que os dados saem para um serviço externo, limite diário de custo, e **nunca grava sem confirmação**. Cada instalação usa a sua chave.
+## Assistente com IA (fase 6, ver `2026-11-23-ia-frases-design.md`)
+Nota: na versão entregue, a IA só traduz a frase em campos (tarefa, valor, categoria, data) que o fluxo guiado valida e confirma; não chama funções nem lê dados. Texto original do desenho: frases livres interpretadas por um modelo, que chama as mesmas funções do assistente guiado. O pedido passa pelo Worker; a chave fica como segredo do Worker, não no código. Desligado por defeito, com aviso de que os dados saem para um serviço externo, limite diário de custo, e **nunca grava sem confirmação**. Cada instalação usa a sua chave.
 
 ## Fica para o construtor
 Formato exato de `features` e migração nos dois motores, nomes de rotas e de `data-testid`, texto das perguntas do arranque, textos de ajuda por campo, ordem dos separadores em móvel.

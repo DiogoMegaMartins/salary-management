@@ -1,6 +1,6 @@
 # Assistente com IA: frases livres (fase 6) — lógica pronta, desativada
 
-Data: 2026-11-23. Estado: **aprovado em conversa** (abordagem A, 50 pedidos por dia, Haiku por defeito) e **implementado desativado**: só passa a existir quando houver uma chave de API configurada e a pessoa ligar a opção. Continua `2026-11-23-assistente-guiado-design.md`.
+Data: 2026-11-23. Estado: **aprovado e entregue desativado** (fase 6, versão 1.22.0; abordagem A, 50 pedidos por dia, Haiku por defeito): só passa a existir quando houver uma chave de API configurada e a pessoa ligar a opção. Continua `2026-11-23-assistente-guiado-design.md`.
 
 ## Intenção
 Escrever "gastei 40 no supermercado ontem" em vez de seguir as perguntas, sem que a IA veja ou grave dados financeiros.
