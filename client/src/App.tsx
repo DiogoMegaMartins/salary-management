@@ -19,6 +19,7 @@ const DataPage = lazy(() => import("@/pages/data"));
 const HelpPage = lazy(() => import("@/pages/help"));
 import { useFeatures } from "@/lib/features";
 import type { FeatureKey } from "@shared/features";
+import { AssistantFab } from "@/components/assistant/assistant-fab";
 import { Onboarding } from "@/components/onboarding";
 import { AccessGate } from "@/components/lock-screen";
 
@@ -60,6 +61,7 @@ function App() {
               <Suspense fallback={<div className="p-6 text-sm text-muted-foreground" role="status">A carregar…</div>}>
                 <AppRouter />
               </Suspense>
+              <AssistantFab />
             </Router>
           </AccessGate>
         </FiltersProvider>

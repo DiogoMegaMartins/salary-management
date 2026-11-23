@@ -3,7 +3,7 @@
  * Guardadas em `settings.features` como JSON só com o que está desligado (`{"parcelas":false}`).
  * Chave em falta, JSON inválido ou valor que não é booleano = ligada, por isso dados e backups antigos ficam "tudo ligado".
  */
-export type FeatureKey = "divisao" | "movimentos" | "parcelas" | "plataformas" | "irsJovem" | "reconciliacao";
+export type FeatureKey = "divisao" | "movimentos" | "parcelas" | "plataformas" | "irsJovem" | "reconciliacao" | "assistente";
 
 export const FEATURES: { key: FeatureKey; label: string; help: string; requires?: FeatureKey }[] = [
   { key: "divisao", label: "Divisão do salário", help: "Repartir o vencimento por parcelas" },
@@ -12,6 +12,7 @@ export const FEATURES: { key: FeatureKey; label: string; help: string; requires?
   { key: "plataformas", label: "Plataformas e carteira", help: "Investimentos e valor de mercado" },
   { key: "irsJovem", label: "IRS Jovem", help: "Campos de isenção no vencimento" },
   { key: "reconciliacao", label: "Reconciliação", help: "Comparar com o extrato do banco", requires: "movimentos" },
+  { key: "assistente", label: "Assistente", help: "Botão de ajuda por conversa, com perguntas e botões" },
 ];
 
 function rawOff(json: string | null | undefined): Record<string, unknown> {

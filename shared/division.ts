@@ -32,3 +32,22 @@ export function splitLeftover(leftoverCents: number, parts: { id: number; value:
 export function shareOf(amount: number, available: number): number {
   return available > 0 ? Math.round((amount / available) * 1000) / 10 : 0;
 }
+
+export type LeftoverPart = { id: number; name: string; amount: number; fixed: boolean };
+export type LeftoverChange = { id: number; amount: number };
+
+/**
+ * Novos valores em € fixo para repartir o que sobra: tudo para uma parcela (`uma`, a de `targetId` ou a primeira) ou
+ * proporcional ao peso das parcelas em € fixo (`proporcional`). Lista vazia se não houver nada a alterar.
+ */
+export function planLeftover(kind: "uma" | "proporcional", remaining: number, parts: LeftoverPart[], targetId?: number): LeftoverChange[] {
+  const r2 = (n: number) => Math.round(n * 100) / 100;
+  if (remaining <= 0.005) return [];
+  if (kind === "uma") {
+    const chosen = parts.find((p) => p.id === targetId) ?? parts[0];
+    return chosen ? [{ id: chosen.id, amount: r2(chosen.amount + remaining) }] : [];
+  }
+  const split = splitLeftover(Math.round(remaining * 100), parts.filter((p) => p.fixed).map((p) => ({ id: p.id, value: p.amount })));
+  if (!split) return [];
+  return parts.filter((p) => split[p.id] != null).map((p) => ({ id: p.id, amount: r2(p.amount + split[p.id] / 100) }));
+}

@@ -26,3 +26,25 @@ test("percentagem de uma parcela: uma casa decimal e 0 sem disponível", () => {
   assert.equal(shareOf(600, 1255), 47.8);
   assert.equal(shareOf(100, 0), 0);
 });
+
+import { planLeftover } from "../shared/division";
+
+const partes = [
+  { id: 1, name: "A", amount: 600, fixed: true },
+  { id: 2, name: "B", amount: 300, fixed: true },
+  { id: 3, name: "C", amount: 100, fixed: false },
+];
+test("planear o que sobra: tudo para uma parcela (a escolhida ou a primeira)", () => {
+  assert.deepEqual(planLeftover("uma", 100, partes, 2), [{ id: 2, amount: 400 }]);
+  assert.deepEqual(planLeftover("uma", 100, partes), [{ id: 1, amount: 700 }]);
+});
+test("planear o que sobra: proporcional só pelas parcelas em € fixo, com soma exata", () => {
+  const c = planLeftover("proporcional", 90, partes);
+  assert.deepEqual(c, [{ id: 1, amount: 660 }, { id: 2, amount: 330 }]);
+  assert.equal(c.reduce((a, x, i) => a + x.amount - partes[i].amount, 0), 90);
+});
+test("planear o que sobra: sem sobra ou sem parcelas em € fixo não há alterações", () => {
+  assert.deepEqual(planLeftover("uma", 0, partes), []);
+  assert.deepEqual(planLeftover("proporcional", 50, [{ id: 3, name: "C", amount: 100, fixed: false }]), []);
+  assert.deepEqual(planLeftover("uma", 50, []), []);
+});

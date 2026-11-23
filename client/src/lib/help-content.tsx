@@ -338,6 +338,12 @@ export const HELP_SECTIONS: HelpSection[] = [
           no histórico mas deixa de aparecer em novas seleções. Os tipos personalizados herdam o comportamento base
           (gastos, poupança, investimento; despesa, entrada, transferência, ajuste), por isso os indicadores não mudam.
         </P>
+        <H3>Assistente</H3>
+        <P>
+          O botão redondo no canto do ecrã abre o assistente. Escolhe uma tarefa e responde às perguntas: escreve valores como 1450 ou 12,99, e datas como 22/11 ou
+          22/11/2026 (ou usa &quot;Hoje&quot; e &quot;Ontem&quot;). Antes de gravar mostra um cartão &quot;Vou registar…&quot; com o que vai acontecer; só grava quando carregas em
+          Confirmar. Esc fecha o assistente. Se não o queres, desliga-o em Definições › Funcionalidades.
+        </P>
         <H3>Dividir o salário pelas parcelas</H3>
         <P>
           No menu Divisão, o resumo mostra o disponível, uma barra com o peso de cada parcela e o que falta distribuir (a verde, &quot;Tudo distribuído&quot;).
@@ -652,6 +658,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.21.0</H3>
+        <UL>
+          <li>Assistente: um botão flutuante abre uma conversa passo a passo com quatro tarefas: registar o mês, registar uma despesa, distribuir o que sobra e ver como estás este mês. Mostra sempre o que vai gravar e só grava quando confirmas; &quot;Voltar atrás&quot; corrige a resposta anterior. Desliga-se em Definições › Funcionalidades › Assistente.</li>
+        </UL>
         <H3>1.20.0</H3>
         <UL>
           <li>Arranque no primeiro uso: uma pergunta (&quot;O que queres acompanhar?&quot;) e a app liga só o que precisas, ou liga tudo. Quem já usava a app não o vê. Em Definições › Funcionalidades há &quot;Repetir o arranque&quot;.</li>

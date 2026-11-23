@@ -4,12 +4,9 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { fmtEur } from "@shared/calc";
-import { splitLeftover } from "@shared/division";
+import { planLeftover, splitLeftover, type LeftoverChange, type LeftoverPart } from "@shared/division";
 
-/** Uma parcela que entra no mês, com o valor atual em euros. */
-export type LeftoverPart = { id: number; name: string; amount: number; fixed: boolean };
-/** Novo valor em € fixo para uma parcela. */
-export type LeftoverChange = { id: number; amount: number };
+export type { LeftoverPart, LeftoverChange } from "@shared/division";
 
 type Kind = "uma" | "proporcional";
 
@@ -38,10 +35,7 @@ export function DistributeLeftoverDialog({
   const chosen = parts.find((p) => String(p.id) === target) ?? parts[0];
   const prop = splitLeftover(leftoverCents, parts.filter((p) => p.fixed).map((p) => ({ id: p.id, value: p.amount })));
 
-  const changes: LeftoverChange[] =
-    kind === "uma"
-      ? chosen ? [{ id: chosen.id, amount: Math.round((chosen.amount + remaining) * 100) / 100 }] : []
-      : prop ? parts.filter((p) => prop[p.id] != null).map((p) => ({ id: p.id, amount: Math.round((p.amount + prop[p.id] / 100) * 100) / 100 })) : [];
+  const changes: LeftoverChange[] = planLeftover(kind, remaining, parts, chosen?.id);
   const nameOf = (id: number) => parts.find((p) => p.id === id)?.name ?? "";
   const gain = (c: LeftoverChange) => c.amount - (parts.find((p) => p.id === c.id)?.amount ?? 0);
 

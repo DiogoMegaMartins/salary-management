@@ -10,6 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { useAppState, useDerived, useSave } from "@/lib/app";
 import { useFeatures } from "@/lib/features";
+import { blankMonth } from "@/lib/new-month";
 import type { Month } from "@shared/schema";
 import { MONTH_NAMES, computeMonth, fmtEur, fmtPct } from "@shared/calc";
 import { MonthEditor } from "@/components/months/month-editor";
@@ -68,29 +69,7 @@ export default function Months() {
             const { year, month } = nextMonth();
             // SM: não persiste ainda — só cria o mês na base de dados quando o utilizador guardar.
             setCreating(true);
-            setEditing({
-              id: -1,
-              year,
-              month,
-              label: MONTH_NAMES[month - 1],
-              sortOrder: 0,
-              base: 0,
-              extraordinaria: 0,
-              outrosIrsSs: 0,
-              outrosIrs: 0,
-              isentos: 0,
-              taxaIrsBase: data.settings.defaultTaxaIrsBase,
-              taxaIrsExtra: data.settings.defaultTaxaIrsExtra,
-              taxaSs: data.settings.defaultTaxaSs,
-              irsJovem: "",
-              descontosMode: "auto",
-              descontosManual: 0,
-              mealDaily: data.settings.defaultMealDaily,
-              mealDays: 0,
-              deficitReason: "",
-              deficitNote: "",
-              notes: "",
-            } as unknown as Month);
+            setEditing(blankMonth(data.settings, year, month));
           }}
         >
           <CalendarPlus className="h-4 w-4" />
