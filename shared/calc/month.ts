@@ -67,6 +67,7 @@ export function availableOf(m: Month, s: Settings): number {
 }
 
 export function allocationAmount(a: Allocation, available: number): number {
+  if ((a as { included?: number }).included === 0) return 0; // parcela fora deste mês: o valor fica guardado, mas não conta
   return a.mode === "percentagem" ? (available * a.value) / 100 : a.value;
 }
 

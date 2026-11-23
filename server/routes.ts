@@ -243,12 +243,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   /* -------------------------------------------------------- alocações */
   app.put("/api/allocations", (req, res) => {
-    const { monthId, parcelId, mode, value } = req.body ?? {};
+    const { monthId, parcelId, mode, value, included } = req.body ?? {};
     const v = Number(value);
     if (!Number.isFinite(v) || v < 0) return res.status(400).json({ message: "Valor inválido." });
     if (mode !== "fixo" && mode !== "percentagem") return res.status(400).json({ message: "Modo inválido." });
     try {
-      res.json(storage.setAllocation(Number(monthId), Number(parcelId), String(mode), v));
+      res.json(storage.setAllocation(Number(monthId), Number(parcelId), String(mode), v, included === undefined ? undefined : included ? 1 : 0));
     } catch (e: any) {
       res.status(e.status ?? 500).json({ message: e.message });
     }

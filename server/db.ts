@@ -104,6 +104,8 @@ for (const stmt of [
   "ALTER TABLE settings ADD COLUMN surplus_suggestion_threshold REAL NOT NULL DEFAULT 50",
   "ALTER TABLE settings ADD COLUMN page_layouts TEXT NOT NULL DEFAULT '{}'",
   "ALTER TABLE settings ADD COLUMN features TEXT NOT NULL DEFAULT '{}'",
+  "ALTER TABLE allocations ADD COLUMN included INTEGER NOT NULL DEFAULT 1",
+  "ALTER TABLE parcels ADD COLUMN default_included INTEGER NOT NULL DEFAULT 1",
   "ALTER TABLE parcels ADD COLUMN type_id INTEGER",
   "ALTER TABLE transactions ADD COLUMN type_id INTEGER",
   "ALTER TABLE parcels ADD COLUMN currency TEXT NOT NULL DEFAULT 'EUR'",

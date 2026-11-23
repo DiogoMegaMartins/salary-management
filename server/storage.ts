@@ -391,7 +391,7 @@ export const storage = {
     return storage.getAssets(monthId, parcelId, platformId);
   },
 
-  setAllocation(monthId: number, parcelId: number, mode: string, value: number): Allocation {
+  setAllocation(monthId: number, parcelId: number, mode: string, value: number, included?: number): Allocation {
     if (mode === "fixo") value = Math.round((value + Number.EPSILON) * 100) / 100; // valores fixos em cêntimos; percentagens ficam como estão
     // não permitir reduzir o total abaixo do que já está distribuído por valor
     const lines = storage.getDistribution(monthId, parcelId);
@@ -412,12 +412,12 @@ export const storage = {
     if (existing) {
       return db
         .update(allocations)
-        .set({ mode, value })
+        .set(included === undefined ? { mode, value } : { mode, value, included })
         .where(eq(allocations.id, existing.id))
         .returning()
         .get();
     }
-    return db.insert(allocations).values({ monthId, parcelId, mode, value }).returning().get();
+    return db.insert(allocations).values({ monthId, parcelId, mode, value, included: included ?? 1 }).returning().get();
   },
 
   /** Substitui todo o estado numa única transação: se algo falhar, nada é alterado. */

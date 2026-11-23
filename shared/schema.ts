@@ -17,6 +17,7 @@ export const parcels = sqliteTable("parcels", {
   archived: integer("archived").notNull().default(0),
   typeId: integer("type_id"), // tipo personalizado (EVO-02); `kind` mantém o comportamento base
   currency: text("currency").notNull().default("EUR"), // moeda de referência da meta (EVO-04)
+  defaultIncluded: integer("default_included").notNull().default(1), // modelo: a parcela entra por defeito nos meses novos
 });
 
 export type Parcel = typeof parcels.$inferSelect;
@@ -72,6 +73,7 @@ export const allocations = sqliteTable("allocations", {
   parcelId: integer("parcel_id").notNull(),
   mode: text("mode").notNull().default("fixo"), // fixo | percentagem
   value: real("value").notNull().default(0),
+  included: integer("included").notNull().default(1), // 0 = parcela fora deste mês (valor e detalhe ficam guardados)
 });
 
 export type Allocation = typeof allocations.$inferSelect;
