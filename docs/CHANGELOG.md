@@ -2,6 +2,15 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.18.0 | 2026-11-23
+
+Mês mais simples e página Divisão (fase 2 do plano "meses mais simples").
+
+- Nova página `/divisao` (menu "Divisão"): seletor de mês e separadores Divisão (por parcelas, com plataformas e regras) e Movimentos (com a reconciliação, se estiver ligada). Aparece se Divisão ou Movimentos estiverem ligados; o mês por omissão é o último aberto, e `#/divisao/<id>` abre um mês concreto.
+- O editor do mês deixa de ter separadores: só vencimento, com um resumo de leitura (alocado, restante, número de movimentos) e um botão para abrir a Divisão desse mês. Há um único sítio onde se edita a divisão. Em "Meses", no telemóvel, "Dividir valores" abre a Divisão do mês.
+- Barra do telemóvel: Painel, Meses, Divisão, Despesas e "Mais" (a Carteira passa para "Mais").
+- O código da divisão e dos movimentos foi extraído do editor para componentes próprios (`DivisionPanel`, `MovementsPanel`) sem mudar o comportamento.
+
 ## 1.17.0 | 2026-11-23
 
 Funcionalidades ligáveis (fase 1 do plano "meses mais simples").
