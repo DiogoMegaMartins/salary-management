@@ -652,6 +652,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.20.0</H3>
+        <UL>
+          <li>Arranque no primeiro uso: uma pergunta (&quot;O que queres acompanhar?&quot;) e a app liga só o que precisas, ou liga tudo. Quem já usava a app não o vê. Em Definições › Funcionalidades há &quot;Repetir o arranque&quot;.</li>
+        </UL>
         <H3>1.19.0</H3>
         <UL>
           <li>Divisão renovada: resumo com barra e &quot;Por distribuir&quot;, interruptor &quot;entra neste mês&quot; por parcela, botões − e +, e &quot;Distribuir o que sobra&quot; com pré-visualização.</li>

@@ -1,4 +1,5 @@
 import { SectionCard } from "@/components/kpi";
+import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useSave, type AppState } from "@/lib/app";
@@ -40,6 +41,12 @@ export function FeaturesSettings({ settings }: { settings: AppState["settings"] 
           );
         })}
       </ul>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t pt-3">
+        <p className="text-xs text-muted-foreground">Não sabes o que ligar? Repete as perguntas do arranque.</p>
+        <Button variant="outline" size="sm" onClick={() => save.settings.mutate({ onboardingDone: 0 })} data-testid="button-repeat-onboarding">
+          Repetir o arranque
+        </Button>
+      </div>
     </SectionCard>
   );
 }
