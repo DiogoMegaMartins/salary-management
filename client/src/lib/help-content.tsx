@@ -107,7 +107,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         <OL>
           <li>Abre <KBD>Meses</KBD> e cria ou seleciona o mês a tratar.</li>
           <li>Introduz os rendimentos e descontos; confirma o valor de líquido disponível apresentado.</li>
-          <li>Regista despesas por categoria na aba <KBD>Movimentos</KBD> do mês, ou usa a divisão por parcelas para o modelo agregado.</li>
+          <li>Regista despesas por categoria no menu <KBD>Divisão</KBD>, separador <KBD>Movimentos</KBD>, ou usa a divisão por parcelas para o modelo agregado.</li>
           <li>Distribui o dinheiro pelas parcelas, se aplicável (poupança, investimento, etc.).</li>
           <li>Verifica o valor <em>por alocar</em> e decide se deve ficar disponível ou ser alocado a uma parcela.</li>
           <li>Consulta o <KBD>Painel</KBD> e revê alertas, taxa de poupança e progresso das metas.</li>
@@ -253,7 +253,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         <P>A página <KBD>Meses</KBD> lista todos os meses registados, com o resumo de bruto, descontos, líquido e restante.</P>
         <UL>
           <li><strong>Criar</strong> — botão "Novo mês" no topo da página.</li>
-          <li><strong>Editar</strong> — clicar numa linha abre o editor com três abas: Vencimento, Divisão e Movimentos.</li>
+          <li><strong>Editar</strong> — clicar numa linha abre o editor do vencimento, com um resumo da divisão e um botão para abrir a Divisão desse mês.</li>
           <li><strong>Duplicar</strong> — disponível no menu de ações de cada mês, copia rendimentos e divisão como ponto de partida para o mês seguinte.</li>
           <li><strong>Concluir/rever</strong> — a reconciliação do mês mostra o estado (zero, excedente ou défice) e, quando há excedente relevante, sugere uma distribuição editável antes de aplicar.</li>
         </UL>
@@ -340,7 +340,7 @@ export const HELP_SECTIONS: HelpSection[] = [
         </P>
         <H3>Distribuir por plataformas (mês)</H3>
         <P>
-          No editor de cada mês, separador Divisão, &quot;Distribuir por plataformas&quot; reparte o valor de uma parcela por
+          No menu Divisão, &quot;Distribuir por plataformas&quot; reparte o valor de uma parcela por
           plataformas, por valor (€) ou por percentagem, nunca os dois ao mesmo tempo. Sem linhas, o valor fica todo na
           parcela; uma distribuição parcial mostra o restante; exceder o total bloqueia a gravação. Em percentagem, os
           valores recalculam quando a parcela muda; em valor, reduzir a parcela abaixo da soma exige corrigir primeiro.
@@ -438,8 +438,8 @@ export const HELP_SECTIONS: HelpSection[] = [
         <P>No telemóvel, a navegação principal fica numa barra no fundo do ecrã, ao alcance do polegar.</P>
         <H3>Barra inferior</H3>
         <UL>
-          <li><KBD>Painel</KBD>, <KBD>Meses</KBD>, <KBD>Despesas</KBD> e <KBD>Carteira</KBD> abrem diretamente a área correspondente; o separador ativo fica destacado.</li>
-          <li><KBD>Mais</KBD> abre as restantes áreas: Fecho e planeamento, Parcelas e metas, Orçamento, Definições e esta ajuda.</li>
+          <li><KBD>Painel</KBD>, <KBD>Meses</KBD>, <KBD>Divisão</KBD> e <KBD>Despesas</KBD> abrem diretamente a área correspondente; o separador ativo fica destacado.</li>
+          <li><KBD>Mais</KBD> abre as restantes áreas: Fecho e planeamento, Parcelas e metas, Carteira, Orçamento, Definições e esta ajuda.</li>
           <li>Um ponto de aviso aparece em <KBD>Mais</KBD> quando existem alterações guardadas só neste dispositivo, ou um conflito para rever.</li>
           <li>A barra esconde-se enquanto o teclado está aberto, para não tapar o campo que estás a editar.</li>
         </UL>
@@ -641,6 +641,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.18.0</H3>
+        <UL>
+          <li>Nova página Divisão: a divisão do salário por parcelas e os movimentos de cada mês passam para um menu próprio, com seletor de mês. O editor do mês fica só com o vencimento e mostra um resumo com um botão para abrir a Divisão. No telemóvel, a Carteira passa para &quot;Mais&quot;.</li>
+        </UL>
         <H3>1.17.0</H3>
         <UL>
           <li>Novo separador Definições › Funcionalidades: liga ou desliga Divisão do salário, Movimentos, Parcelas e metas, Plataformas e carteira, IRS Jovem e Reconciliação. O que desligas some do menu, do mês e do Painel; os dados ficam guardados e voltam quando ligas de novo. Quem já usava a app continua com tudo ligado.</li>

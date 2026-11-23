@@ -11,18 +11,21 @@ const Dashboard = lazy(() => import("@/pages/dashboard"));
 const Months = lazy(() => import("@/pages/months"));
 const Parcels = lazy(() => import("@/pages/parcels"));
 const Portfolio = lazy(() => import("@/pages/portfolio"));
+const DivisionPage = lazy(() => import("@/pages/division"));
 const BudgetPage = lazy(() => import("@/pages/budget"));
 const ExpensesPage = lazy(() => import("@/pages/expenses"));
 const ClosingPage = lazy(() => import("@/pages/closing"));
 const DataPage = lazy(() => import("@/pages/data"));
 const HelpPage = lazy(() => import("@/pages/help"));
-import { useFeature } from "@/lib/features";
+import { useFeatures } from "@/lib/features";
 import type { FeatureKey } from "@shared/features";
 import { AccessGate } from "@/components/lock-screen";
 
 /** Ecrã que só existe com a funcionalidade ligada; desligada, volta ao Painel. */
-function FeatureRoute({ feature, component: C }: { feature: FeatureKey; component: React.ComponentType }) {
-  return useFeature(feature) ? <C /> : <Redirect to="/" replace />;
+function FeatureRoute({ feature, anyOf, component: C }: { feature?: FeatureKey; anyOf?: FeatureKey[]; component: React.ComponentType }) {
+  const features = useFeatures();
+  const on = anyOf ? anyOf.some((k) => features[k]) : feature ? features[feature] : true;
+  return on ? <C /> : <Redirect to="/" replace />;
 }
 
 function AppRouter() {
@@ -30,6 +33,7 @@ function AppRouter() {
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/meses" component={Months} />
+      <Route path="/divisao/:mes?">{() => <FeatureRoute anyOf={["divisao", "movimentos"]} component={DivisionPage} />}</Route>
       <Route path="/despesas" component={ExpensesPage} />
       <Route path="/fecho" component={ClosingPage} />
       <Route path="/parcelas">{() => <FeatureRoute feature="parcelas" component={Parcels} />}</Route>

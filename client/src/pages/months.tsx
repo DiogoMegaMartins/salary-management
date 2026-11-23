@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useLocation } from "wouter";
 import { CalendarPlus, Copy, Pencil, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { FilterBar } from "@/components/filter-bar";
@@ -15,6 +16,7 @@ import { MonthEditor } from "@/components/months/month-editor";
 
 export default function Months() {
   const features = useFeatures();
+  const [, navigate] = useLocation();
   const { data, isLoading } = useAppState();
   const d = useDerived(data);
   const save = useSave();
@@ -22,8 +24,6 @@ export default function Months() {
   const [editing, setEditing] = useState<Month | null>(null);
   const [deleting, setDeleting] = useState<Month | null>(null);
   const [creating, setCreating] = useState(false);
-  const [editorTab, setEditorTab] = useState("vencimento");
-  useEffect(() => { if (!editing) setEditorTab("vencimento"); }, [editing]);
 
   if (isLoading || !d || !data) {
     return (
@@ -118,7 +118,7 @@ export default function Months() {
                 <div key={label}><dt className="text-xs text-muted-foreground">{label}</dt><dd className="tnum font-medium">{fmtEur(Number(value))}</dd></div>)}
             </dl>
             <div className="flex flex-wrap gap-2">
-              {features.divisao && <Button variant="outline" size="sm" onClick={() => { setEditorTab("divisao"); setCreating(false); setEditing(r.month); }} data-testid={`button-mobile-division-${r.month.id}`}>Dividir valores</Button>}
+              {(features.divisao || features.movimentos) && <Button variant="outline" size="sm" onClick={() => navigate(`/divisao/${r.month.id}`)} data-testid={`button-mobile-division-${r.month.id}`}>Dividir valores</Button>}
               <Button variant="ghost" size="icon" aria-label={`Duplicar ${r.month.label}`} onClick={() => {
                 const month = r.month.month === 12 ? 1 : r.month.month + 1;
                 save.duplicateMonth.mutate({ id: r.month.id, year: r.month.year + (r.month.month === 12 ? 1 : 0), month, label: MONTH_NAMES[month - 1] });
@@ -258,7 +258,6 @@ export default function Months() {
           key={editing.id}
           month={d.allMonths.find((m) => m.id === editing.id) ?? editing}
           isNew={creating}
-          initialTab={editorTab}
           onClose={() => {
             setEditing(null);
             setCreating(false);

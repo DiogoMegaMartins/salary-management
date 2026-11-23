@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Settings, Eye, EyeOff, LayoutGrid, CalendarCheck, Moon, Sun, LayoutDashboard, CalendarRange, PieChart, Wallet, Target, HelpCircle, Receipt, Ellipsis } from "lucide-react";
+import { Settings, Eye, EyeOff, LayoutGrid, CalendarCheck, Moon, Sun, LayoutDashboard, CalendarRange, PieChart, Wallet, Target, HelpCircle, Receipt, Ellipsis, Layers } from "lucide-react";
 import { useAppState, useTheme } from "@/lib/app";
 import { usePrivacy } from "@/lib/privacy";
 import { useFeatures } from "@/lib/features";
@@ -32,17 +32,18 @@ export function Logo({ className }: { className?: string }) {
   );
 }
 
-type NavItem = { href: string; label: string; icon: any; feature?: FeatureKey };
+type NavItem = { href: string; label: string; icon: any; features?: FeatureKey[] };
 /** Só os itens cuja funcionalidade está ligada. */
-const visible = (list: NavItem[], f: Record<FeatureKey, boolean>) => list.filter((i) => !i.feature || f[i.feature]);
+const visible = (list: NavItem[], f: Record<FeatureKey, boolean>) => list.filter((i) => !i.features || i.features.some((k) => f[k]));
 
 const NAV: NavItem[] = [
   { href: "/", label: "Painel", icon: LayoutDashboard },
   { href: "/meses", label: "Meses", icon: CalendarRange },
+  { href: "/divisao", label: "Divisão", icon: Layers, features: ["divisao", "movimentos"] as FeatureKey[] },
   { href: "/despesas", label: "Despesas", icon: Receipt },
   { href: "/fecho", label: "Fecho e planeamento", icon: CalendarCheck },
-  { href: "/parcelas", label: "Parcelas e metas", icon: PieChart, feature: "parcelas" as FeatureKey },
-  { href: "/carteira", label: "Carteira", icon: Wallet, feature: "plataformas" as FeatureKey },
+  { href: "/parcelas", label: "Parcelas e metas", icon: PieChart, features: ["parcelas"] as FeatureKey[] },
+  { href: "/carteira", label: "Carteira", icon: Wallet, features: ["plataformas"] as FeatureKey[] },
   { href: "/orcamento", label: "Orçamento", icon: Target },
   { href: "/dados", label: "Definições", icon: Settings },
   { href: "/ajuda", label: "Ajuda e documentação", icon: HelpCircle },
@@ -81,8 +82,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 const TABS: NavItem[] = [
   { href: "/", label: "Painel", icon: LayoutDashboard },
   { href: "/meses", label: "Meses", icon: CalendarRange },
+  { href: "/divisao", label: "Divisão", icon: Layers, features: ["divisao", "movimentos"] as FeatureKey[] },
   { href: "/despesas", label: "Despesas", icon: Receipt },
-  { href: "/carteira", label: "Carteira", icon: Wallet, feature: "plataformas" as FeatureKey },
 ];
 const MORE = NAV.filter((n) => !TABS.some((t) => t.href === n.href));
 const isActive = (href: string, location: string) => (href === "/" ? location === "/" : location.startsWith(href));
