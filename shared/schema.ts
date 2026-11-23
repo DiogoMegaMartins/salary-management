@@ -198,6 +198,28 @@ export const allocationPlatforms = sqliteTable("allocation_platforms", {
 });
 export type AllocationPlatform = typeof allocationPlatforms.$inferSelect;
 
+/** Modelo: plataformas por defeito de uma parcela (espelho de `allocation_platforms`, para os meses novos). */
+export const rulePlatforms = sqliteTable("rule_platforms", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  parcelId: integer("parcel_id").notNull(),
+  platformId: integer("platform_id").notNull(),
+  mode: text("mode").notNull().default("fixo"), // fixo | percentagem
+  value: real("value").notNull().default(0),
+});
+export type RulePlatform = typeof rulePlatforms.$inferSelect;
+
+/** Modelo: ativos por defeito dentro de uma plataforma de uma parcela (espelho de `allocation_assets`). */
+export const ruleAssets = sqliteTable("rule_assets", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  parcelId: integer("parcel_id").notNull(),
+  platformId: integer("platform_id").notNull(),
+  name: text("name").notNull(),
+  percent: real("percent").notNull(),
+  note: text("note").notNull().default(""),
+  position: integer("position").notNull().default(0),
+});
+export type RuleAsset = typeof ruleAssets.$inferSelect;
+
 /** Distribuição opcional por ativos/classes dentro da plataforma de uma alocação (EVO-06). Só nome, % e nota: o valor é derivado. */
 export const allocationAssets = sqliteTable("allocation_assets", {
   id: integer("id").primaryKey({ autoIncrement: true }),

@@ -1,4 +1,4 @@
-import { allocations, months, parcels, settings, transactions, categories, platforms, parcelPlatforms, parcelTypes, txTypes, allocationPlatforms, allocationAssets, subgoals, goalEntries, contributionLinks, fxRates, valuations, monthClosures, changeLog, recurringExpenses, recurrenceSkips, reserves, importBatches, normName } from "@shared/schema";
+import { allocations, months, parcels, settings, transactions, categories, platforms, parcelPlatforms, parcelTypes, txTypes, allocationPlatforms, allocationAssets, rulePlatforms, ruleAssets, subgoals, goalEntries, contributionLinks, fxRates, valuations, monthClosures, changeLog, recurringExpenses, recurrenceSkips, reserves, importBatches, normName } from "@shared/schema";
 import type {
   Allocation,
   Month,
@@ -10,6 +10,8 @@ import type {
   ParcelPlatform,
   AllocationPlatform,
   AllocationAsset,
+  RulePlatform,
+  RuleAsset,
   Subgoal,
   GoalEntry,
   ContributionLink,
@@ -73,6 +75,8 @@ export type FullState = {
   valuations: Valuation[];
   allocationPlatforms: AllocationPlatform[];
   allocationAssets: AllocationAsset[];
+  rulePlatforms: RulePlatform[];
+  ruleAssets: RuleAsset[];
   platforms: Platform[];
   parcelPlatforms: ParcelPlatform[];
   parcelTypes: ParcelType[];
@@ -136,6 +140,8 @@ export const storage = {
       txTypes: db.select().from(txTypes).all(),
       allocationPlatforms: db.select().from(allocationPlatforms).all(),
       allocationAssets: db.select().from(allocationAssets).all(),
+      rulePlatforms: db.select().from(rulePlatforms).all(),
+      ruleAssets: db.select().from(ruleAssets).all(),
       subgoals: db.select().from(subgoals).all(),
       goalEntries: db.select().from(goalEntries).all(),
       contributionLinks: db.select().from(contributionLinks).all(),
@@ -420,6 +426,58 @@ export const storage = {
     return db.insert(allocations).values({ monthId, parcelId, mode, value, included: included ?? 1 }).returning().get();
   },
 
+  /** A parcela tem modelo (regra de valor, fora por defeito, ou plataformas guardadas)? */
+  parcelHasModel(p: Parcel): boolean {
+    return p.defaultValue !== 0 || p.defaultIncluded === 0 || db.select().from(rulePlatforms).where(eq(rulePlatforms.parcelId, p.id)).all().length > 0;
+  },
+
+  /**
+   * Guarda a divisão do mês como modelo: por parcela, se entra, o modo e o valor, as plataformas e os ativos.
+   * Só as parcelas que têm alocação nesse mês.
+   */
+  saveAsModel(monthId: number): void {
+    storage.transaction(() => {
+      for (const a of db.select().from(allocations).where(eq(allocations.monthId, monthId)).all()) {
+        storage.updateParcel(a.parcelId, { defaultMode: a.mode, defaultValue: a.value, defaultIncluded: a.included });
+        db.delete(ruleAssets).where(eq(ruleAssets.parcelId, a.parcelId)).run();
+        db.delete(rulePlatforms).where(eq(rulePlatforms.parcelId, a.parcelId)).run();
+        for (const l of db.select().from(allocationPlatforms).where(eq(allocationPlatforms.allocationId, a.id)).all())
+          db.insert(rulePlatforms).values({ parcelId: a.parcelId, platformId: l.platformId, mode: l.mode, value: l.value }).run();
+        for (const x of db.select().from(allocationAssets).where(eq(allocationAssets.allocationId, a.id)).all())
+          db.insert(ruleAssets).values({ parcelId: a.parcelId, platformId: x.platformId, name: x.name, percent: x.percent, note: x.note, position: x.position }).run();
+      }
+    });
+  },
+
+  /**
+   * Aplica o modelo a um mês: só as parcelas ativas que têm modelo (as outras ficam como estão). Se o detalhe de
+   * plataformas do modelo não couber no valor deste mês, a parcela fica sem detalhe e devolve-se o seu id.
+   */
+  applyModel(monthId: number): { semDetalhe: number[] } {
+    const semDetalhe: number[] = [];
+    storage.transaction(() => {
+      const m = db.select().from(months).where(eq(months.id, monthId)).get();
+      const st = db.select().from(settings).all()[0];
+      for (const p of db.select().from(parcels).all().filter((x) => !x.archived && storage.parcelHasModel(x))) {
+        const old = db.select().from(allocations).where(and(eq(allocations.monthId, monthId), eq(allocations.parcelId, p.id))).get();
+        if (old) {
+          db.delete(allocationAssets).where(eq(allocationAssets.allocationId, old.id)).run();
+          db.delete(allocationPlatforms).where(eq(allocationPlatforms.allocationId, old.id)).run();
+        }
+        const a = storage.setAllocation(monthId, p.id, p.defaultMode, p.defaultValue, p.defaultIncluded);
+        const lines = db.select().from(rulePlatforms).where(eq(rulePlatforms.parcelId, p.id)).all();
+        if (!lines.length) continue;
+        const total = m && st ? allocationAmount({ mode: a.mode, value: a.value } as any, availableOf(m, st)) : 0;
+        const ok = distribute(total, lines.map((l) => ({ platformId: l.platformId, mode: l.mode as any, value: l.value }))).ok;
+        if (!ok) { semDetalhe.push(p.id); continue; }
+        for (const l of lines) db.insert(allocationPlatforms).values({ allocationId: a.id, platformId: l.platformId, mode: l.mode, value: l.value }).run();
+        for (const x of db.select().from(ruleAssets).where(eq(ruleAssets.parcelId, p.id)).all())
+          db.insert(allocationAssets).values({ allocationId: a.id, platformId: x.platformId, name: x.name, percent: x.percent, note: x.note, position: x.position }).run();
+      }
+    });
+    return { semDetalhe };
+  },
+
   /** Substitui todo o estado numa única transação: se algo falhar, nada é alterado. */
   replaceAll(state: {
     settings?: Partial<Settings>;
@@ -434,6 +492,8 @@ export const storage = {
     txTypes?: TxType[];
     allocationPlatforms?: AllocationPlatform[];
     allocationAssets?: AllocationAsset[];
+    rulePlatforms?: RulePlatform[];
+    ruleAssets?: RuleAsset[];
     subgoals?: Subgoal[];
     goalEntries?: GoalEntry[];
     contributionLinks?: ContributionLink[];
@@ -466,6 +526,8 @@ export const storage = {
       db.delete(valuations).run();
       db.delete(allocationAssets).run();
       db.delete(allocationPlatforms).run();
+      db.delete(ruleAssets).run();
+      db.delete(rulePlatforms).run();
       db.delete(allocations).run();
       db.delete(transactions).run();
       db.delete(months).run();
@@ -484,6 +546,8 @@ export const storage = {
       for (const a of state.allocations) db.insert(allocations).values(a as any).run();
       for (const l of state.allocationPlatforms ?? []) db.insert(allocationPlatforms).values(l as any).run();
       for (const x of state.allocationAssets ?? []) db.insert(allocationAssets).values(x as any).run();
+      for (const l of state.rulePlatforms ?? []) db.insert(rulePlatforms).values(l as any).run();
+      for (const x of state.ruleAssets ?? []) db.insert(ruleAssets).values(x as any).run();
       for (const x of state.fxRates ?? []) db.insert(fxRates).values(x as any).run();
       for (const x of state.valuations ?? []) db.insert(valuations).values(x as any).run();
       for (const x of state.subgoals ?? []) db.insert(subgoals).values(x as any).run();
