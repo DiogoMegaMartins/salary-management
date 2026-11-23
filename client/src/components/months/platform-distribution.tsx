@@ -64,7 +64,7 @@ export function PlatformDistribution({
       { monthId, parcelId, lines },
       {
         onSuccess: () => {
-          toast({ title: lines.length ? "Distribuição guardada" : "Distribuição removida", description: "Planeamento apenas: saldos e movimentos não foram alterados." });
+          toast({ title: lines.length ? "Detalhe guardado" : "Detalhe removido", description: "Planeamento apenas: saldos e movimentos não foram alterados." });
           setOpen(false);
         },
         onError: (e) => toast({ title: "Não foi possível guardar", description: errMsg(e), variant: "destructive" }),
@@ -75,26 +75,28 @@ export function PlatformDistribution({
   if (!open) {
     return (
       <>
-      <div className="flex flex-wrap items-center gap-2 pl-5">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1" data-testid={`detail-${parcelId}`}>
         <Button
           variant="ghost"
           size="sm"
-          className="h-7 px-2 text-xs text-muted-foreground"
+          className="h-8 gap-1 px-2 text-xs font-semibold text-primary"
           onClick={begin}
           disabled={allocationId == null}
           title={allocationId == null ? "Guarda a divisão do mês primeiro" : undefined}
           data-testid={`button-distribute-${parcelId}`}
         >
-          Distribuir por plataformas{saved.length ? ` (${saved.length})` : ""}
+          {saved.length ? `Detalhe por plataforma (${saved.length})` : "＋ Detalhar por plataforma"}
         </Button>
-        {saved.length > 0 && (
-          <span className="text-[11px] text-muted-foreground">
+        {saved.length > 0 && savedResult.ok && (
+          <span className="text-xs text-muted-foreground" data-testid={`detail-status-${parcelId}`}>
             {saved.map((l) => nameOf(l.platformId)).join(" · ")}
-            {savedResult.remainingCents > 0 && ` · restante ${fmtEur(savedResult.remainingCents / 100)}`}
+            {savedResult.remainingCents > 0
+              ? <> · <span className="font-medium text-amber-700 dark:text-amber-400">Por detalhar {fmtEur(savedResult.remainingCents / 100)}</span></>
+              : <> · <span className="font-medium text-primary">✔ Detalhe completo</span></>}
           </span>
         )}
         {saved.length > 0 && !savedResult.ok && (
-          <span className="text-[11px] font-medium text-destructive">Excede o total da parcela: corrige a distribuição.</span>
+          <span className="text-xs font-medium text-destructive" role="alert">Excede o total da parcela: corrige o detalhe.</span>
         )}
       </div>
       {allocationId != null && savedResult.ok && saved.map((l, i) => (
@@ -107,7 +109,7 @@ export function PlatformDistribution({
   return (
     <div className="platform-panel ml-5 space-y-2 rounded-lg border border-border bg-muted/20 p-3" data-testid={`panel-distribute-${parcelId}`}>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs font-semibold">Distribuir {fmtEur(total)} por plataformas</p>
+        <p className="text-xs font-semibold">Detalhar {fmtEur(total)} por plataformas</p>
         <Select
           value={mode}
           onValueChange={(v) => {
@@ -201,7 +203,7 @@ export function PlatformDistribution({
           Cancelar
         </Button>
         <Button size="sm" className="h-8 text-xs" disabled={!r.ok || save.setDistribution.isPending} onClick={submit} data-testid={`button-save-dist-${parcelId}`}>
-          Guardar distribuição
+          Guardar detalhe
         </Button>
       </div>
     </div>

@@ -198,7 +198,31 @@ test.describe("Divisão renovada", () => {
     await abrirMes(page, m.mesId);
     await page.reload();
     await expect(page.getByTestId(`allocation-card-${m.a}`)).toBeVisible();
-    await expect(page.getByText("Distribuir por plataformas")).toHaveCount(0);
+    await expect(page.getByTestId(`detail-${m.a}`)).toHaveCount(0);
     await request.patch("/api/settings", { headers: cabecalhosApi(), data: { features: "{}" } });
+  });
+});
+
+test.describe("Detalhe por plataforma (opcional)", () => {
+  let mesId = 0;
+  test.beforeEach(async ({ page }) => entrar(page));
+  test.afterEach(async ({ request }) => {
+    if (mesId) await request.delete(`/api/months/${mesId}`, { headers: cabecalhosApi() });
+    mesId = 0;
+  });
+
+  test("por defeito está fechado; detalhar guarda e mostra o que falta detalhar", async ({ page, request }, info) => {
+    const m = await mesDeTeste(request, info.project.name === "telemovel" ? 13 : 14);
+    mesId = m.mesId;
+    await abrirMes(page, m.mesId);
+    await expect(page.getByTestId(`button-distribute-${m.a}`)).toContainText("Detalhar por plataforma");
+    await expect(page.getByTestId(`panel-distribute-${m.a}`)).toHaveCount(0);
+    await page.getByTestId(`button-distribute-${m.a}`).click();
+    await page.getByTestId(`button-add-dist-line-${m.a}`).click();
+    const campo = page.getByTestId(`input-dist-value-${m.a}-0`);
+    await campo.fill("100");
+    await campo.blur();
+    await page.getByTestId(`button-save-dist-${m.a}`).click();
+    await expect(page.getByTestId(`detail-status-${m.a}`)).toContainText("Por detalhar 200,00");
   });
 });
