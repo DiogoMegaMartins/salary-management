@@ -17,6 +17,7 @@ export const parcels = sqliteTable("parcels", {
   archived: integer("archived").notNull().default(0),
   typeId: integer("type_id"), // tipo personalizado (EVO-02); `kind` mantém o comportamento base
   currency: text("currency").notNull().default("EUR"), // moeda de referência da meta (EVO-04)
+  defaultIncluded: integer("default_included").notNull().default(1), // modelo: a parcela entra por defeito nos meses novos
 });
 
 export type Parcel = typeof parcels.$inferSelect;
@@ -72,6 +73,7 @@ export const allocations = sqliteTable("allocations", {
   parcelId: integer("parcel_id").notNull(),
   mode: text("mode").notNull().default("fixo"), // fixo | percentagem
   value: real("value").notNull().default(0),
+  included: integer("included").notNull().default(1), // 0 = parcela fora deste mês (valor e detalhe ficam guardados)
 });
 
 export type Allocation = typeof allocations.$inferSelect;
@@ -195,6 +197,28 @@ export const allocationPlatforms = sqliteTable("allocation_platforms", {
   value: real("value").notNull().default(0),
 });
 export type AllocationPlatform = typeof allocationPlatforms.$inferSelect;
+
+/** Modelo: plataformas por defeito de uma parcela (espelho de `allocation_platforms`, para os meses novos). */
+export const rulePlatforms = sqliteTable("rule_platforms", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  parcelId: integer("parcel_id").notNull(),
+  platformId: integer("platform_id").notNull(),
+  mode: text("mode").notNull().default("fixo"), // fixo | percentagem
+  value: real("value").notNull().default(0),
+});
+export type RulePlatform = typeof rulePlatforms.$inferSelect;
+
+/** Modelo: ativos por defeito dentro de uma plataforma de uma parcela (espelho de `allocation_assets`). */
+export const ruleAssets = sqliteTable("rule_assets", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  parcelId: integer("parcel_id").notNull(),
+  platformId: integer("platform_id").notNull(),
+  name: text("name").notNull(),
+  percent: real("percent").notNull(),
+  note: text("note").notNull().default(""),
+  position: integer("position").notNull().default(0),
+});
+export type RuleAsset = typeof ruleAssets.$inferSelect;
 
 /** Distribuição opcional por ativos/classes dentro da plataforma de uma alocação (EVO-06). Só nome, % e nota: o valor é derivado. */
 export const allocationAssets = sqliteTable("allocation_assets", {

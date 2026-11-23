@@ -244,7 +244,7 @@ export default function DataPage() {
           <p className="mt-3 text-xs text-muted-foreground">
             Total registado no histórico:{" "}
             <span className="tnum font-medium text-foreground">
-              {fmtEur(data.months.length ? data.allocations.reduce((a, x) => a + (x.mode === "fixo" ? x.value : 0), 0) : 0)}
+              {fmtEur(data.months.length ? data.allocations.reduce((a, x) => a + (x.mode === "fixo" && x.included !== 0 ? x.value : 0), 0) : 0)}
             </span>{" "}
             em alocações de valor fixo, em {data.months.length} meses e {data.parcels.length} parcelas.
           </p>

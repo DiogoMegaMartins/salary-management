@@ -68,7 +68,7 @@ export function useSave() {
     onSuccess: invalidate,
   });
   const allocation = useMutation({
-    mutationFn: async (v: { monthId: number; parcelId: number; mode: string; value: number }) =>
+    mutationFn: async (v: { monthId: number; parcelId: number; mode: string; value: number; included?: boolean }) =>
       (await apiRequest("PUT", "/api/allocations", v)).json(),
     onSuccess: invalidate,
   });

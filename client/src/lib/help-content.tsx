@@ -338,9 +338,20 @@ export const HELP_SECTIONS: HelpSection[] = [
           no histórico mas deixa de aparecer em novas seleções. Os tipos personalizados herdam o comportamento base
           (gastos, poupança, investimento; despesa, entrada, transferência, ajuste), por isso os indicadores não mudam.
         </P>
-        <H3>Distribuir por plataformas (mês)</H3>
+        <H3>Dividir o salário pelas parcelas</H3>
         <P>
-          No menu Divisão, &quot;Distribuir por plataformas&quot; reparte o valor de uma parcela por
+          No menu Divisão, o resumo mostra o disponível, uma barra com o peso de cada parcela e o que falta distribuir (a verde, &quot;Tudo distribuído&quot;).
+          Cada parcela tem um interruptor &quot;entra neste mês&quot;: se ficar de fora, não conta, mas o valor fica guardado para quando voltar.
+          Ajusta com − e + ou escrevendo, em € ou em %. &quot;Distribuir o que sobra&quot; mostra o resultado antes de aplicar (tudo para uma parcela ou proporcional).
+        </P>
+        <H3>Modelo para os meses novos</H3>
+        <P>
+          &quot;Guardar como modelo&quot; guarda, por parcela, se entra, o valor, as plataformas e os ativos do mês aberto. Um mês novo já nasce com o modelo aplicado;
+          &quot;Aplicar modelo&quot; também o repõe num mês existente (pede confirmação se já tiver divisão). Um mês duplicado copia o mês de origem, não o modelo.
+        </P>
+        <H3>Detalhar por plataforma (mês)</H3>
+        <P>
+          Em cada parcela, &quot;Detalhar por plataforma&quot; (opcional) reparte o valor de uma parcela por
           plataformas, por valor (€) ou por percentagem, nunca os dois ao mesmo tempo. Sem linhas, o valor fica todo na
           parcela; uma distribuição parcial mostra o restante; exceder o total bloqueia a gravação. Em percentagem, os
           valores recalculam quando a parcela muda; em valor, reduzir a parcela abaixo da soma exige corrigir primeiro.
@@ -641,6 +652,12 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.19.0</H3>
+        <UL>
+          <li>Divisão renovada: resumo com barra e &quot;Por distribuir&quot;, interruptor &quot;entra neste mês&quot; por parcela, botões − e +, e &quot;Distribuir o que sobra&quot; com pré-visualização.</li>
+          <li>Modelo por parcela (valor, plataformas e ativos) para os meses novos: &quot;Guardar como modelo&quot; e &quot;Aplicar modelo&quot; (antes chamavam-se regras).</li>
+          <li>Detalhe por plataforma fechado por defeito, com &quot;Por detalhar&quot;.</li>
+        </UL>
         <H3>1.18.0</H3>
         <UL>
           <li>Nova página Divisão: a divisão do salário por parcelas e os movimentos de cada mês passam para um menu próprio, com seletor de mês. O editor do mês fica só com o vencimento e mostra um resumo com um botão para abrir a Divisão. No telemóvel, a Carteira passa para &quot;Mais&quot;.</li>

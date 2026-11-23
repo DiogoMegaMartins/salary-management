@@ -93,6 +93,7 @@ export function checkConsistency(d: CheckInput): Issue[] {
   }
   // a distribuição por plataformas tem de caber no total da parcela (baixar o rendimento pode deixá-la acima)
   for (const a of d.allocations) {
+    if ((a as any).included === 0) continue; // parcela fora do mês: o detalhe fica guardado, não se valida
     const lines = d.allocationPlatforms.filter((p) => p.allocationId === a.id);
     if (!lines.length) continue;
     const r = distribute(allocationAmount(a as any, d.availableByMonth[a.monthId] ?? 0), lines.map((l) => ({ platformId: l.platformId, mode: l.mode as any, value: l.value })));

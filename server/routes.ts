@@ -182,7 +182,15 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.delete("/api/parcels/:id", guard((req) => (storage.deleteParcel(Number(req.params.id)), { ok: true })));
 
   /* ------------------------------------------------------------- meses */
-  app.post("/api/months", guard((req) => storage.createMonth(parse(monthCreateSchema, req.body) as any)));
+  // um mês novo nasce com o modelo das parcelas aplicado (se houver); tudo ou nada
+  app.post("/api/months", guard((req) => {
+    const body = parse(monthCreateSchema, req.body) as any;
+    return storage.transaction(() => {
+      const created = storage.createMonth(body);
+      storage.applyModel(created.id);
+      return created;
+    });
+  }));
   app.patch("/api/months/:id", guard((req) => {
     const id = Number(req.params.id);
     if (!storage.getState().months.some(m => m.id === id)) throw Object.assign(new Error("Mês não encontrado."), { status: 404 });
@@ -214,41 +222,34 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   }));
 
   /** Aplica as regras por omissão de cada parcela (fixo ou % do disponível). */
+  /** Aplica o modelo de cada parcela (entra, valor, plataformas e ativos) ao mês. */
   app.post("/api/months/:id/apply-rules", (req, res) => {
-    const state = storage.getState();
-    const monthId = Number(req.params.id);
-    // só aplica parcelas com regra definida, para não apagar alocações existentes
     try {
-      // tudo ou nada: se uma parcela falhar, o mês não fica a meio com regras novas e valores antigos
-      storage.transaction(() => {
-        for (const p of state.parcels.filter((x) => !x.archived && x.defaultValue !== 0)) {
-          storage.setAllocation(monthId, p.id, p.defaultMode, p.defaultValue);
-        }
-      });
+      const { semDetalhe } = storage.applyModel(Number(req.params.id));
+      res.json({ ...publicState(storage.getState()), modelo: { semDetalhe } });
     } catch (e: any) {
       return res.status(e.status ?? 500).json({ message: e.message });
     }
-    res.json(publicState(storage.getState()));
   });
 
+  /** Guarda a divisão do mês como modelo das parcelas. */
   app.post("/api/months/:id/save-as-rules", (req, res) => {
-    const state = storage.getState();
-    const monthId = Number(req.params.id);
-    const allocs = state.allocations.filter((a) => a.monthId === monthId);
-    for (const a of allocs) {
-      storage.updateParcel(a.parcelId, { defaultMode: a.mode, defaultValue: a.value });
+    try {
+      storage.saveAsModel(Number(req.params.id));
+      res.json(publicState(storage.getState()));
+    } catch (e: any) {
+      return res.status(e.status ?? 500).json({ message: e.message });
     }
-    res.json(publicState(storage.getState()));
   });
 
   /* -------------------------------------------------------- alocações */
   app.put("/api/allocations", (req, res) => {
-    const { monthId, parcelId, mode, value } = req.body ?? {};
+    const { monthId, parcelId, mode, value, included } = req.body ?? {};
     const v = Number(value);
     if (!Number.isFinite(v) || v < 0) return res.status(400).json({ message: "Valor inválido." });
     if (mode !== "fixo" && mode !== "percentagem") return res.status(400).json({ message: "Modo inválido." });
     try {
-      res.json(storage.setAllocation(Number(monthId), Number(parcelId), String(mode), v));
+      res.json(storage.setAllocation(Number(monthId), Number(parcelId), String(mode), v, included === undefined ? undefined : included ? 1 : 0));
     } catch (e: any) {
       res.status(e.status ?? 500).json({ message: e.message });
     }

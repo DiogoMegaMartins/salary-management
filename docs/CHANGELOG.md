@@ -2,6 +2,15 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.19.0 | 2026-11-23
+
+Divisão renovada (fase 3 do plano "meses mais simples").
+
+- Parcela fora do mês: interruptor "entra neste mês" por parcela. Uma parcela fora conta 0 no alocado, restante, reconciliação e verificação de dados, mas guarda o valor e o detalhe. Nova coluna `allocations.included` (por defeito 1) e `parcels.default_included`; backups antigos restauram com tudo incluído.
+- Resumo de relance (barra, "Por distribuir", "Tudo distribuído" a verde, "Excede"), botões − e +, € ou % com conversão para o valor equivalente, e "Distribuir o que sobra" (tudo para uma parcela ou proporcional pelas parcelas em € fixo, com pré-visualização; soma exata em cêntimos).
+- Modelo por parcela: as antigas "regras" passam a guardar também se a parcela entra, as plataformas e os ativos (novas tabelas `rule_platforms` e `rule_assets`). "Aplicar modelo" repõe tudo num mês (com confirmação se já houver divisão; sem plataformas no modelo, o detalhe do mês fica, e se o novo valor não o comportar nada muda). Um mês criado de raiz nasce com o modelo aplicado; um mês duplicado continua a copiar o de origem.
+- Detalhe por plataforma e ativo: fechado por defeito ("Detalhar por plataforma"), com "Por detalhar" ou "Detalhe completo".
+
 ## 1.18.0 | 2026-11-23
 
 Mês mais simples e página Divisão (fase 2 do plano "meses mais simples").
