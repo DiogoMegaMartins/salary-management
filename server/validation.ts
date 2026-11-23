@@ -1,12 +1,23 @@
 import { z } from "zod";
 import { MIN_CODE_LENGTH } from "./access";
 import { round2 } from "@shared/evo08";
+import { FEATURES } from "@shared/features";
 
 const cents = round2;
 const num = z.number();
 const bool01 = z.union([z.boolean(), z.literal(0), z.literal(1)]).transform((v) => (v ? 1 : 0));
 const parsesToObject = (s: string) => {
   try { const v = JSON.parse(s); return v !== null && typeof v === "object" && !Array.isArray(v); } catch { return false; }
+};
+
+/** `features`: objeto só com chaves conhecidas e valores booleanos. */
+const isFeaturesJson = (s: string) => {
+  try {
+    const v = JSON.parse(s);
+    if (v === null || typeof v !== "object" || Array.isArray(v)) return false;
+    const keys = new Set<string>(FEATURES.map((f) => f.key));
+    return Object.entries(v).every(([k, x]) => keys.has(k) && typeof x === "boolean");
+  } catch { return false; }
 };
 
 /** Campos de definições que o cliente pode alterar. Desconhecidos (ex.: id) são recusados. */
@@ -26,6 +37,7 @@ export const settingsPatchSchema = z.strictObject({
   runwayMonthsWindow: z.number().int().min(1).max(60),
   surplusSuggestionThreshold: num.min(0).max(1e9).transform(cents),
   pageLayouts: z.string().max(100_000).refine(parsesToObject, "Layout inválido."),
+  features: z.string().max(500).refine(isFeaturesJson, "Funcionalidades inválidas."),
 }).partial();
 
 export const issueMessage = (e: z.ZodError) => {

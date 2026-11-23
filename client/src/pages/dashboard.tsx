@@ -24,6 +24,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAppState, useDerived } from "@/lib/app";
+import { useFeatures } from "@/lib/features";
 import { DashboardSubgoals, formatGoalMoney } from "@/components/dashboard-subgoals";
 import { fmtEur, fmtPct, monthLabelShort } from "@shared/calc";
 import { DrillDownSheet } from "@/components/drill-down-sheet";
@@ -35,6 +36,7 @@ import { GoalPaceLine } from "@/components/insights";
 import { YearOverYearCard, useYoYEmpty } from "@/components/yoy";
 
 export default function Dashboard() {
+  const features = useFeatures();
   const isMobile = useIsMobile();
   const { data, isLoading } = useAppState();
   const d = useDerived(data);
@@ -603,7 +605,7 @@ export default function Dashboard() {
             return (
               <EditableSectionGrid
                 pageKey="painel"
-                sections={sections}
+                sections={sections.filter((sec) => !(sec.id === "metas" || sec.id === "parcelas-periodo") || features.parcelas).filter((sec) => sec.id !== "divisao-por-parcela" || features.divisao)}
                 savedLayout={pageLayout.savedLayout}
                 isSaving={pageLayout.isSaving}
                 onSave={pageLayout.onSave}

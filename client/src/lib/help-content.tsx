@@ -641,6 +641,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.17.0</H3>
+        <UL>
+          <li>Novo separador Definições › Funcionalidades: liga ou desliga Divisão do salário, Movimentos, Parcelas e metas, Plataformas e carteira, IRS Jovem e Reconciliação. O que desligas some do menu, do mês e do Painel; os dados ficam guardados e voltam quando ligas de novo. Quem já usava a app continua com tudo ligado.</li>
+        </UL>
         <H3>1.16.0</H3>
         <UL>
           <li>Separadores com linha verde em Definições, Fecho e planeamento, editor de Mês e parcelas. Em ecrãs pequenos deslocam na horizontal em vez de quebrar em duas linhas, e ficam fixos no topo em Definições e Fecho.</li>

@@ -3,6 +3,8 @@ import { Link, useLocation } from "wouter";
 import { Settings, Eye, EyeOff, LayoutGrid, CalendarCheck, Moon, Sun, LayoutDashboard, CalendarRange, PieChart, Wallet, Target, HelpCircle, Receipt, Ellipsis } from "lucide-react";
 import { useAppState, useTheme } from "@/lib/app";
 import { usePrivacy } from "@/lib/privacy";
+import { useFeatures } from "@/lib/features";
+import type { FeatureKey } from "@shared/features";
 import { layoutEditor, useLayoutEditor } from "@/lib/layout-editor";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -30,13 +32,17 @@ export function Logo({ className }: { className?: string }) {
   );
 }
 
-const NAV = [
+type NavItem = { href: string; label: string; icon: any; feature?: FeatureKey };
+/** Só os itens cuja funcionalidade está ligada. */
+const visible = (list: NavItem[], f: Record<FeatureKey, boolean>) => list.filter((i) => !i.feature || f[i.feature]);
+
+const NAV: NavItem[] = [
   { href: "/", label: "Painel", icon: LayoutDashboard },
   { href: "/meses", label: "Meses", icon: CalendarRange },
   { href: "/despesas", label: "Despesas", icon: Receipt },
   { href: "/fecho", label: "Fecho e planeamento", icon: CalendarCheck },
-  { href: "/parcelas", label: "Parcelas e metas", icon: PieChart },
-  { href: "/carteira", label: "Carteira", icon: Wallet },
+  { href: "/parcelas", label: "Parcelas e metas", icon: PieChart, feature: "parcelas" as FeatureKey },
+  { href: "/carteira", label: "Carteira", icon: Wallet, feature: "plataformas" as FeatureKey },
   { href: "/orcamento", label: "Orçamento", icon: Target },
   { href: "/dados", label: "Definições", icon: Settings },
   { href: "/ajuda", label: "Ajuda e documentação", icon: HelpCircle },
@@ -44,9 +50,10 @@ const NAV = [
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const [location] = useLocation();
+  const features = useFeatures();
   return (
     <nav className="flex flex-col gap-1">
-      {NAV.map((item) => {
+      {visible(NAV, features).map((item) => {
         const active = item.href === "/" ? location === "/" : location.startsWith(item.href);
         const Icon = item.icon;
         return (
@@ -71,11 +78,11 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-const TABS = [
+const TABS: NavItem[] = [
   { href: "/", label: "Painel", icon: LayoutDashboard },
   { href: "/meses", label: "Meses", icon: CalendarRange },
   { href: "/despesas", label: "Despesas", icon: Receipt },
-  { href: "/carteira", label: "Carteira", icon: Wallet },
+  { href: "/carteira", label: "Carteira", icon: Wallet, feature: "plataformas" as FeatureKey },
 ];
 const MORE = NAV.filter((n) => !TABS.some((t) => t.href === n.href));
 const isActive = (href: string, location: string) => (href === "/" ? location === "/" : location.startsWith(href));
@@ -83,6 +90,7 @@ const isActive = (href: string, location: string) => (href === "/" ? location ==
 /** Barra de separadores no fundo do ecrã (telemóvel). Esconde-se com o teclado aberto. */
 function BottomNav() {
   const [location] = useLocation();
+  const features = useFeatures();
   const [moreOpen, setMoreOpen] = useState(false);
   const [typing, setTyping] = useState(false);
   const [alert, setAlert] = useState(() => offlineInfo().count > 0 || offlineInfo().conflict);
@@ -101,13 +109,13 @@ function BottomNav() {
     };
   }, []);
   useEffect(() => setMoreOpen(false), [location]);
-  const moreActive = MORE.some((n) => isActive(n.href, location));
+  const moreActive = visible(MORE, features).some((n) => isActive(n.href, location));
   const item = "relative flex min-h-13 flex-1 flex-col items-center justify-center gap-0.5 px-1 text-[11px] font-medium transition-colors active:scale-95";
   return (
     <>
       {!typing && (
         <nav aria-label="Navegação principal" data-testid="bottom-nav" className="lg:hidden col-start-1 z-30 flex border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm">
-          {TABS.map((t) => {
+          {visible(TABS, features).map((t) => {
             const active = isActive(t.href, location);
             return (
               <Link key={t.href} href={t.href} aria-current={active ? "page" : undefined} data-testid={`tab-${t.label.toLowerCase()}`} className={cn(item, active ? "text-primary" : "text-muted-foreground")}>
@@ -134,7 +142,7 @@ function BottomNav() {
             <SheetDescription>{alert ? "Há alterações guardadas só neste dispositivo. Vê o estado em cada página." : "Outras áreas da aplicação."}</SheetDescription>
           </SheetHeader>
           <div className="mt-3 grid grid-cols-1 gap-1">
-            {MORE.map((n) => (
+            {visible(MORE, features).map((n) => (
               <Link key={n.href} href={n.href} data-testid={`more-${n.href.slice(1)}`} className={cn("flex min-h-12 items-center gap-3 rounded-lg px-3 text-base", isActive(n.href, location) ? "bg-primary/10 font-medium text-primary" : "hover:bg-muted")}>
                 <n.icon className="h-5 w-5 shrink-0" />
                 {n.label}

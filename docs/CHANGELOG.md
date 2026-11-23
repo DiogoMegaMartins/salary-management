@@ -2,6 +2,14 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.17.0 | 2026-11-23
+
+Funcionalidades ligáveis (fase 1 do plano "meses mais simples").
+
+- Definições › Funcionalidades: interruptores para Divisão do salário, Movimentos, Parcelas e metas, Plataformas e carteira, IRS Jovem e Reconciliação. Desligar esconde (menu, barra do telemóvel, Painel, editor do mês) e não apaga dados; abrir a rota de uma funcionalidade desligada leva ao Painel. A Reconciliação precisa dos Movimentos.
+- Sem divisão nem movimentos, o editor do mês mostra só o vencimento, sem barra de separadores.
+- Nova definição `features` (JSON só com o que está desligado). Vazia = tudo ligado, por isso bases e backups antigos ficam como estavam. Migração automática no Node e no Worker.
+
 ## 1.16.0 | 2026-11-21
 
 Separadores com linha verde em toda a aplicação.
