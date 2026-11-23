@@ -459,13 +459,15 @@ export const storage = {
       const m = db.select().from(months).where(eq(months.id, monthId)).get();
       const st = db.select().from(settings).all()[0];
       for (const p of db.select().from(parcels).all().filter((x) => !x.archived && storage.parcelHasModel(x))) {
+        const lines = db.select().from(rulePlatforms).where(eq(rulePlatforms.parcelId, p.id)).all();
         const old = db.select().from(allocations).where(and(eq(allocations.monthId, monthId), eq(allocations.parcelId, p.id))).get();
-        if (old) {
+        // só se o modelo tiver plataformas é que substitui o detalhe do mês; sem elas, o detalhe existente fica
+        // e, se o novo valor não o comportar, a gravação falha e nada muda (tudo ou nada)
+        if (old && lines.length) {
           db.delete(allocationAssets).where(eq(allocationAssets.allocationId, old.id)).run();
           db.delete(allocationPlatforms).where(eq(allocationPlatforms.allocationId, old.id)).run();
         }
         const a = storage.setAllocation(monthId, p.id, p.defaultMode, p.defaultValue, p.defaultIncluded);
-        const lines = db.select().from(rulePlatforms).where(eq(rulePlatforms.parcelId, p.id)).all();
         if (!lines.length) continue;
         const total = m && st ? allocationAmount({ mode: a.mode, value: a.value } as any, availableOf(m, st)) : 0;
         const ok = distribute(total, lines.map((l) => ({ platformId: l.platformId, mode: l.mode as any, value: l.value }))).ok;
