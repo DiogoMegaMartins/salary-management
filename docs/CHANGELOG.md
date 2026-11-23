@@ -2,6 +2,14 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.20.0 | 2026-11-23
+
+Arranque no primeiro uso (fase 4 do plano "meses mais simples").
+
+- Novo diálogo "Bem-vindo": só salário e despesas (sempre incluído), "Também invisto" (Plataformas e carteira), "Tenho metas e poupanças" (Parcelas e metas), "Tenho IRS Jovem", ou "Ligar tudo (modo completo)". Divisão e Movimentos ficam sempre ligados; a Reconciliação só em "Ligar tudo". Não se fecha com Esc nem fora do diálogo, para não passar sem escolher.
+- Nova definição `onboarding_done`: uma base que já tem meses conta como feito ao migrar (quem já usa a app não vê o arranque); uma base nova fica por fazer. "Repetir o arranque" em Definições › Funcionalidades volta a abri-lo, já com o que está ligado.
+- Testes de interface: o arranque dá-se como feito antes de correr (`e2e/global-setup.ts`).
+
 ## 1.19.0 | 2026-11-23
 
 Divisão renovada (fase 3 do plano "meses mais simples").
