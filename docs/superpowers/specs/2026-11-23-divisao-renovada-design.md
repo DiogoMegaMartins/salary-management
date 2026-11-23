@@ -1,6 +1,6 @@
 # Divisão renovada: parcelas do mês, mais fácil de usar, detalhe opcional e modelo
 
-Data: 2026-11-23. Estado: proposto, a aguardar aprovação. Continua `2026-11-23-meses-e-funcionalidades-design.md` (fase 2 já entregue: página Divisão).
+Data: 2026-11-23. Estado: **aprovado e entregue** (fase 3, versão 1.19.0). Continua `2026-11-23-meses-e-funcionalidades-design.md` (fase 2: página Divisão).
 
 ## Renumeração das fases
 Fase 1 (interruptores) e fase 2 (página Divisão) estão feitas. Fica assim: **fase 3 Divisão renovada** (este documento), fase 4 arranque no primeiro uso, fase 5 assistente guiado, fase 6 assistente com IA (opcional).
