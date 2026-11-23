@@ -140,7 +140,7 @@ export function DivisionPanel({ month }: { month: Month }) {
       <p className="text-xs text-muted-foreground">Os valores são guardados ao sair de cada campo ou ao usar − e +. A divisão é planeamento, não cria movimentos.</p>
 
       {/* parcelas */}
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="grid items-start gap-3 lg:grid-cols-2">
         {rows.map((r) => (
           <fieldset
             key={r.p.id}
