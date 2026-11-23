@@ -19,6 +19,7 @@ const DataPage = lazy(() => import("@/pages/data"));
 const HelpPage = lazy(() => import("@/pages/help"));
 import { useFeatures } from "@/lib/features";
 import type { FeatureKey } from "@shared/features";
+import { Onboarding } from "@/components/onboarding";
 import { AccessGate } from "@/components/lock-screen";
 
 /** Ecrã que só existe com a funcionalidade ligada; desligada, volta ao Painel. */
@@ -54,6 +55,7 @@ function App() {
         <FiltersProvider>
           <Toaster />
           <AccessGate>
+            <Onboarding />
             <Router hook={useHashLocation}>
               <Suspense fallback={<div className="p-6 text-sm text-muted-foreground" role="status">A carregar…</div>}>
                 <AppRouter />
