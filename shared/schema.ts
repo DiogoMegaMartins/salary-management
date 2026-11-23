@@ -109,6 +109,10 @@ export const settings = sqliteTable("settings", {
 
   // arranque no primeiro uso já feito (0 = ainda por fazer)
   onboardingDone: integer("onboarding_done").notNull().default(0),
+
+  // assistente com IA para frases livres: desligado por defeito; modelo "haiku" ou "sonnet"
+  aiEnabled: integer("ai_enabled").notNull().default(0),
+  aiModel: text("ai_model").notNull().default("haiku"),
 });
 
 export type Settings = typeof settings.$inferSelect;

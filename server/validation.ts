@@ -39,6 +39,8 @@ export const settingsPatchSchema = z.strictObject({
   pageLayouts: z.string().max(100_000).refine(parsesToObject, "Layout inválido."),
   features: z.string().max(500).refine(isFeaturesJson, "Funcionalidades inválidas."),
   onboardingDone: bool01,
+  aiEnabled: bool01,
+  aiModel: z.enum(["haiku", "sonnet"]),
 }).partial();
 
 export const issueMessage = (e: z.ZodError) => {

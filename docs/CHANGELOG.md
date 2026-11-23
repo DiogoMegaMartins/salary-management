@@ -2,6 +2,15 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.22.0 | 2026-11-23
+
+Assistente com IA para frases livres (fase 6): lógica pronta, **desativada**.
+
+- Novo `POST /api/assistant/parse` e `GET /api/assistant/ai-status`. O servidor envia à Anthropic só a frase (até 300 letras), a data de hoje e os nomes das categorias; a resposta (JSON) é validada com `parseAmount`/`parseDate` (`shared/ai-intent.ts`) e entra no fluxo guiado já preenchido, com o mesmo cartão de confirmação. A IA nunca grava nem recebe totais.
+- Três portas, todas fechadas por defeito: chave `ANTHROPIC_API_KEY` no servidor, opção `settings.ai_enabled` (0) ligada em Definições, e limite de 50 pedidos por dia (`ai_usage`). Sem chave, nada da IA aparece. Modelo `haiku` (Claude Haiku 5.5) por defeito, `sonnet` à escolha (`settings.ai_model`).
+- Erros genéricos (502, 429, 503) que não revelam a chave nem a resposta do serviço; testado com um serviço simulado, incluindo o conteúdo enviado.
+- Documentação em `docs/ASSISTENTE-IA.md`.
+
 ## 1.21.0 | 2026-11-23
 
 Assistente guiado (fase 5 do plano "meses mais simples").

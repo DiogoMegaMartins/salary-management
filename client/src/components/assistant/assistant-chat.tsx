@@ -6,7 +6,10 @@ import { Input } from "@/components/ui/input";
 import { useAppState, useSave } from "@/lib/app";
 import { useFeatures } from "@/lib/features";
 import { localToday } from "@/lib/utils";
-import { flowStep, menuStep, type Ctx, type Row, type Step } from "@/components/assistant/flows";
+import { flowStep, menuStep, stepFromIntent, type Ctx, type Row, type Step } from "@/components/assistant/flows";
+import { aiReady, parseSentence, useAiStatus, AI_STATUS_KEY } from "@/lib/ai";
+import { queryClient } from "@/lib/queryClient";
+import { errMsg } from "@/components/catalogs";
 
 /** Uma entrada da conversa: o passo e, depois de respondido, o que a pessoa respondeu. */
 type Turn = { step: Step; answer?: string };
@@ -25,6 +28,9 @@ export function AssistantChat({ onClose }: { onClose: () => void }) {
   const [busy, setBusy] = useState(false);
   const [text, setText] = useState("");
   const [error, setError] = useState("");
+  const aiStatus = useAiStatus();
+  const [sentence, setSentence] = useState("");
+  const [thinking, setThinking] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const controls = useRef<HTMLDivElement>(null);
   const current = trail[trail.length - 1].step;
@@ -56,6 +62,24 @@ export function AssistantChat({ onClose }: { onClose: () => void }) {
     const result = await step.run();
     setBusy(false);
     advance("Confirmar", result);
+  };
+
+  /** Frase livre (só com a IA configurada e ligada): a IA traduz a frase e o fluxo guiado confirma. */
+  const submitSentence = async () => {
+    const t = sentence.trim();
+    if (!t) return;
+    setThinking(true);
+    setError("");
+    try {
+      const { intent } = await parseSentence(t, localToday());
+      void queryClient.invalidateQueries({ queryKey: AI_STATUS_KEY });
+      setSentence("");
+      advance(t, stepFromIntent(intent, ctx()));
+    } catch (e) {
+      setError(errMsg(e));
+    } finally {
+      setThinking(false);
+    }
   };
 
   const ask = (s: Step) => (s.kind === "done" ? s.message : s.ask);
@@ -91,6 +115,29 @@ export function AssistantChat({ onClose }: { onClose: () => void }) {
               </Button>
             ))}
           </div>
+        )}
+        {current.kind === "choices" && trail.length === 1 && aiReady(aiStatus.data) && (
+          <form onSubmit={(e) => { e.preventDefault(); void submitSentence(); }} className="space-y-1.5 border-t pt-2" data-testid="assistant-ai">
+            <label htmlFor="assistant-sentence" className="block text-xs text-muted-foreground">Ou escreve o que queres fazer</label>
+            <div className="flex gap-2">
+              <Input
+                id="assistant-sentence"
+                value={sentence}
+                onChange={(e) => setSentence(e.target.value)}
+                maxLength={300}
+                placeholder="Ex.: gastei 40 no supermercado ontem"
+                disabled={thinking}
+                aria-describedby="assistant-ai-note"
+                className="h-11 flex-1"
+                data-testid="assistant-sentence"
+              />
+              <Button type="submit" size="icon" className="h-11 w-11" disabled={thinking || !sentence.trim()} aria-label="Enviar frase" data-testid="assistant-sentence-send"><Send className="h-4 w-4" /></Button>
+            </div>
+            <p id="assistant-ai-note" className="text-[11px] text-muted-foreground">
+              A frase é interpretada por IA (Anthropic). Restam {aiStatus.data!.limit - aiStatus.data!.used} pedidos hoje. Nada é gravado sem confirmares.
+            </p>
+            {error && <p role="alert" className="text-xs text-destructive" data-testid="assistant-ai-error">{error}</p>}
+          </form>
         )}
         {current.kind === "text" && (
           <form onSubmit={(e) => { e.preventDefault(); submitText(current); }} className="space-y-1.5">

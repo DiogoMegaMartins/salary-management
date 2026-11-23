@@ -7,6 +7,7 @@ import type { AppState, useSave } from "@/lib/app";
 import { blankMonth } from "@/lib/new-month";
 import { errMsg } from "@/components/catalogs";
 import type { FeatureKey } from "@shared/features";
+import type { Intent } from "@shared/ai-intent";
 
 /* Fluxos do assistente: descrições de passos, sem interface. A interface (assistant-chat) só os desenha. */
 
@@ -36,6 +37,22 @@ export function flowStep(name: "despesa", ctx: Ctx): Step {
   return despesaFlow(ctx);
 }
 
+/**
+ * Entra no fluxo guiado a partir do que a IA percebeu da frase (já validado). Os campos em falta continuam a ser
+ * perguntados e o cartão de confirmação é o mesmo: a IA nunca grava.
+ */
+export function stepFromIntent(intent: Intent, ctx: Ctx): Step {
+  const f = ctx.features;
+  const desligada = (on: boolean): Step | null => (on ? null : { kind: "done", message: "Essa tarefa está desligada em Definições › Funcionalidades.", actions: [home] });
+  switch (intent.task) {
+    case "mes": return mesFlow(ctx, intent.amount);
+    case "despesa": return desligada(f.movimentos) ?? despesaFlow(ctx, { amount: intent.amount, category: intent.category, date: intent.date });
+    case "sobra": return desligada(f.divisao) ?? sobraFlow(ctx);
+    case "resumo": return desligada(f.divisao || f.movimentos) ?? resumoFlow(ctx);
+    default: return { kind: "done", message: "Não percebi o que queres fazer. Escolhe uma das tarefas, ou escreve de outra maneira.", actions: [home] };
+  }
+}
+
 /** Início: só mostra as tarefas cujas funcionalidades estão ligadas. */
 export function menuStep(ctx: Ctx): Step {
   const f = ctx.features;
@@ -55,20 +72,11 @@ export function menuStep(ctx: Ctx): Step {
 
 /* ------------------------------------------------------------ registar o mês */
 
-function mesFlow(ctx: Ctx): Step {
+function mesFlow(ctx: Ctx, preAmount?: number): Step {
   const { state, save, today } = ctx;
   const t = targetMonth(state.months, today);
   const name = monthName(t);
-  return {
-    kind: "text",
-    ask: `Qual é o vencimento base (bruto) de ${name}? A app calcula o líquido.`,
-    placeholder: "Ex.: 1450 ou 1 450,50",
-    inputMode: "decimal",
-    parse: (text) => {
-      const v = parseAmount(text);
-      return v == null ? { ok: false, error: "Não percebi o valor. Escreve só o número, por exemplo 1450 ou 1 450,50." } : { ok: true, value: v, label: fmtEur(v) };
-    },
-    next: (base: number) => {
+  const confirmBase = (base: number): Step => {
       const month = t.existing ? ({ ...t.existing, base } as Month) : blankMonth(state.settings, t.year, t.month, base);
       const c = computeMonth(month, [], [], state.settings);
       return {
@@ -103,26 +111,29 @@ function mesFlow(ctx: Ctx): Step {
           }
         },
       };
+  };
+  if (preAmount != null) return confirmBase(preAmount);
+  return {
+    kind: "text",
+    ask: `Qual é o vencimento base (bruto) de ${name}? A app calcula o líquido.`,
+    placeholder: "Ex.: 1450 ou 1 450,50",
+    inputMode: "decimal",
+    parse: (text) => {
+      const v = parseAmount(text);
+      return v == null ? { ok: false, error: "Não percebi o valor. Escreve só o número, por exemplo 1450 ou 1 450,50." } : { ok: true, value: v, label: fmtEur(v) };
     },
+    next: confirmBase,
   };
 }
 
 /* ---------------------------------------------------------- registar despesa */
 
-function despesaFlow(ctx: Ctx): Step {
+/** Despesa; com `pre` (vindo da IA, já validado) salta as perguntas já respondidas. */
+function despesaFlow(ctx: Ctx, pre?: { amount?: number; category?: string; date?: string }): Step {
   const { state, save, today } = ctx;
-  return {
-    kind: "text",
-    ask: "Qual foi o valor?",
-    placeholder: "Ex.: 40 ou 12,99",
-    inputMode: "decimal",
-    parse: (text) => {
-      const v = parseAmount(text);
-      return v == null ? { ok: false, error: "Não percebi o valor. Escreve só o número, por exemplo 40 ou 12,99." } : { ok: true, value: v, label: fmtEur(v) };
-    },
-    next: (value: number) => {
+  const afterAmount = (value: number): Step => {
       const cats = (state.categories ?? []).filter((c) => c.active).sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name)).slice(0, 6);
-      const afterCategory = (category: string, isNew: boolean): Step => ({
+      const afterCategory = (category: string, isNew: boolean): Step => (pre?.date ? confirmar(category, isNew, pre.date) : {
         kind: "choices",
         ask: "Quando foi?",
         choices: [{ label: "Hoje", value: "hoje" }, { label: "Ontem", value: "ontem" }, { label: "Outra data…", value: "outra" }],
@@ -164,6 +175,10 @@ function despesaFlow(ctx: Ctx): Step {
           },
         };
       };
+      if (pre?.category) {
+        const same = (state.categories ?? []).find((c) => c.name.trim().toLowerCase() === pre.category!.toLowerCase());
+        return afterCategory(same ? same.name : pre.category, !same);
+      }
       return {
         kind: "choices",
         ask: "Em que categoria?",
@@ -185,7 +200,18 @@ function despesaFlow(ctx: Ctx): Step {
               }
             : afterCategory(v.slice(2), false),
       };
+  };
+  if (pre?.amount != null) return afterAmount(pre.amount);
+  return {
+    kind: "text",
+    ask: "Qual foi o valor?",
+    placeholder: "Ex.: 40 ou 12,99",
+    inputMode: "decimal",
+    parse: (text) => {
+      const v = parseAmount(text);
+      return v == null ? { ok: false, error: "Não percebi o valor. Escreve só o número, por exemplo 40 ou 12,99." } : { ok: true, value: v, label: fmtEur(v) };
     },
+    next: afterAmount,
   };
 }
 

@@ -130,6 +130,19 @@ try {
   /* coluna já existe */
 }
 
+/* assistente com IA: opção desligada por defeito e contagem diária de pedidos */
+for (const stmt of [
+  "ALTER TABLE settings ADD COLUMN ai_enabled INTEGER NOT NULL DEFAULT 0",
+  "ALTER TABLE settings ADD COLUMN ai_model TEXT NOT NULL DEFAULT 'haiku'",
+]) {
+  try {
+    sqlite.exec(stmt);
+  } catch {
+    /* coluna já existe */
+  }
+}
+sqlite.exec("CREATE TABLE IF NOT EXISTS ai_usage (day TEXT PRIMARY KEY, count INTEGER NOT NULL DEFAULT 0)");
+
 /* ---- EVO-02: catálogos (tabelas novas, aditivas; nada existente é alterado ou apagado) ---- */
 sqlite.exec(`
 CREATE TABLE IF NOT EXISTS platforms (
