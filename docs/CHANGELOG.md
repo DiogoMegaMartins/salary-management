@@ -2,6 +2,17 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.26.0 | 2026-11-25
+
+Redesenho "Calma", fase 3: novo Início.
+
+- O Painel passa a chamar-se **Início** e abre com o resumo do mês (`client/src/components/inicio-summary.tsx`): título do mês e dias que faltam, **"Ainda podes gastar"** (gastos mensais planeados − despesas registadas), frase de estado (dentro do previsto, atenção a partir de 85% gastos com mais de 5 dias por andar, excedido), barra de progresso e para onde vai o dinheiro. Seletor de mês (por defeito o último mês aberto). Sem gastos planeados, em vez de um número aparece "Define quanto queres gastar este mês" com ligação a Dividir. Regras em `shared/inicio.ts`.
+- Contam as despesas sem parcela e as ligadas a parcelas de gastos; as ligadas a poupança ou investimento ficam de fora.
+- Modo Básico: só o resumo, com as 3 maiores categorias. Modo Detalhado: o resumo com todas as categorias e o "Por distribuir", seguido dos filtros, indicadores e gráficos de sempre.
+- Registar despesa pede a parcela, já preenchida com a parcela de gastos (a não arquivada de menor id); pode mudar-se ou escolher "Sem parcela".
+- A primeira cor dos gráficos passa a ser o destaque da paleta escolhida.
+- O atalho de teclado "p" e os testes passam a falar em "Início".
+
 ## 1.25.0 | 2026-11-25
 
 Redesenho "Calma", fase 2: menu novo e botão Registar.

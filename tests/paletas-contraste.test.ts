@@ -60,3 +60,13 @@ for (const p of PALETTES) {
     });
   }
 }
+
+// Gráficos: a primeira cor segue o destaque da paleta, para o gráfico combinar com o resto.
+for (const p of PALETTES) {
+  for (const modo of ["claro", "escuro"] as const) {
+    test(`paleta ${p} (${modo}): a cor 1 dos gráficos é o destaque`, () => {
+      const b = bloco(modo === "claro" ? `:root[data-palette="${p}"]` : `:root[data-palette="${p}"].dark`);
+      assert.deepEqual(hsl(b, "chart-1"), hsl(b, "primary"));
+    });
+  }
+}
