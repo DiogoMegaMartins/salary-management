@@ -2,6 +2,14 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.23.0 | 2026-11-25
+
+Fecho do mês e transporte do restante.
+
+- Fecho mensal: com restante positivo, "Transportar para o mês seguinte" é o destino por defeito se o mês seguinte existir e estiver aberto (senão fica "Manter" e "Transportar" aparece desativado, a pedir que se crie o mês seguinte). Sem restante (0), ou com o mês em défice, não há destino a escolher: o botão "Fechar mês" fecha-o diretamente (a API não mudou). Regras em `shared/closing.ts`.
+- Divisão: o transporte recebido (`carryIn`) passa a contar no "Disponível" e no "Por distribuir" (com uma nota "Inclui X transportados do mês anterior"); as parcelas em % continuam a ter o rendimento como base. O resumo de leitura do mês e a distribuição do que sobra usam o mesmo total.
+- Assistente: nova tarefa "Fechar o mês" (mês aberto mais antigo ou à escolha; pergunta o destino só se sobrar dinheiro, e oferece transportar quando possível); o resumo do assistente mostra o transporte recebido.
+
 ## 1.22.0 | 2026-11-23
 
 Assistente com IA para frases livres (fase 6): lógica pronta, **desativada**.

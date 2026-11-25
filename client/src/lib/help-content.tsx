@@ -433,10 +433,10 @@ export const HELP_SECTIONS: HelpSection[] = [
         <H3>Fecho mensal</H3>
         <OL>
           <li>Reveja rendimentos, despesas, distribuições e pendências.</li>
-          <li>Decida o destino do restante: transportar para o mês seguinte, reforçar uma parcela/meta ou manter como não atribuído.</li>
+          <li>Se sobrar dinheiro, decide o destino do restante: transportar para o mês seguinte (já vem escolhido, desde que o mês seguinte exista e esteja aberto), reforçar uma parcela/meta ou manter como não atribuído. Sem restante, ou com o mês em défice, fecha-se sem escolher nada.</li>
           <li>Feche o mês. Um mês fechado recusa alterações financeiras; reabra-o indicando o motivo.</li>
         </OL>
-        <P>O transporte aparece no mês seguinte como "Transporte" e nunca conta como rendimento.</P>
+        <P>O transporte aparece no mês seguinte como "Transporte" e nunca conta como rendimento, mas entra no que há por distribuir: a Divisão mostra-o e inclui-o no disponível e no "Por distribuir". Também podes fechar o mês com o assistente ("Fechar o mês").</P>
         <H3>Recorrências e reservas</H3>
         <UL>
           <li>As recorrências criam ocorrências pendentes: confirmar cria a despesa uma única vez; ignorar retira-a.</li>
@@ -664,6 +664,12 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.23.0</H3>
+        <UL>
+          <li>Fecho do mês: se sobrar dinheiro, &quot;transportar para o mês seguinte&quot; já vem escolhido (se o mês seguinte existir e estiver aberto). Sem restante, ou em défice, fecha-se o mês sem escolher destino.</li>
+          <li>Divisão: o transporte recebido do mês anterior conta no disponível e no &quot;Por distribuir&quot;, com uma nota a dizer quanto é.</li>
+          <li>Assistente: nova tarefa &quot;Fechar o mês&quot;.</li>
+        </UL>
         <H3>1.22.0</H3>
         <UL>
           <li>Assistente com IA para frases livres (&quot;gastei 40 no supermercado ontem&quot;): pronto mas desligado. Só aparece se o servidor tiver uma chave de API e ligares a opção em Definições › Funcionalidades. A IA só interpreta a frase (nunca vê os teus valores nem grava); tens sempre de confirmar. Limite de 50 pedidos por dia.</li>

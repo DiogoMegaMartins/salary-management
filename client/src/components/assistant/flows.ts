@@ -1,6 +1,9 @@
 import { computeMonth, MONTH_NAMES, allocationAmount, availableOf, fmtEur } from "@shared/calc";
 import { editableMonthPatch } from "@shared/month-patch";
 import { divisionStatus, planLeftover, type LeftoverPart } from "@shared/division";
+import { closingPlan, type ClosingDest } from "@shared/closing";
+import { monthRemainder, nextMonthKey } from "@shared/evo08";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { latestOpenMonth, monthOfDate, parseAmount, parseDate, shiftDate, targetMonth } from "@shared/assistant";
 import type { Month } from "@shared/schema";
 import type { AppState, useSave } from "@/lib/app";
@@ -60,13 +63,14 @@ export function menuStep(ctx: Ctx): Step {
     { label: "Registar o mês", value: "mes" },
     ...(f.movimentos ? [{ label: "Registar uma despesa", value: "despesa" }] : []),
     ...(f.divisao ? [{ label: "Distribuir o que sobra", value: "sobra" }] : []),
+    { label: "Fechar o mês", value: "fechar" },
     ...(f.divisao || f.movimentos ? [{ label: "Como estou este mês?", value: "resumo" }] : []),
   ];
   return {
     kind: "choices",
     ask: "Olá! O que queres fazer?",
     choices,
-    next: (v) => ({ mes: mesFlow, despesa: despesaFlow, sobra: sobraFlow, resumo: resumoFlow } as Record<string, (c: Ctx) => Step>)[v](ctx),
+    next: (v) => ({ mes: mesFlow, despesa: despesaFlow, sobra: sobraFlow, fechar: fecharFlow, resumo: resumoFlow } as Record<string, (c: Ctx) => Step>)[v](ctx),
   };
 }
 
@@ -230,7 +234,8 @@ function divisionOf(ctx: Ctx) {
     return { p, included, mode, amount };
   });
   const allocated = rows.reduce((s, r) => s + r.amount, 0);
-  return { month, available, rows, allocated, ...divisionStatus(available, allocated) };
+  const carry = month.carryIn ?? 0; // transporte do mês anterior: também há que o distribuir
+  return { month, available, carry, total: available + carry, rows, allocated, ...divisionStatus(available + carry, allocated) };
 }
 
 function sobraFlow(ctx: Ctx): Step {
@@ -286,10 +291,81 @@ function resumoFlow(ctx: Ctx): Step {
     message: `${monthName(d.month)}:`,
     rows: [
       { label: "Disponível", value: fmtEur(d.available) },
+      ...(d.carry > 0 ? [{ label: "Transporte recebido", value: fmtEur(d.carry) }] : []),
       { label: "Alocado", value: fmtEur(d.allocated) },
       { label: d.status === "excede" ? "Excede em" : "Por distribuir", value: fmtEur(Math.abs(d.remaining)) },
       { label: "Despesas registadas", value: fmtEur(spent) },
     ],
     actions: [...(ctx.features.divisao || ctx.features.movimentos ? [{ label: "Abrir a Divisão", to: `/divisao/${d.month.id}` }] : []), home],
+  };
+}
+
+/* ------------------------------------------------------------- fechar o mês */
+
+/** Fechar um mês aberto. Sem restante (ou em défice) não há destino a escolher; com restante, transporta-se por defeito. */
+function fecharFlow(ctx: Ctx): Step {
+  const { state } = ctx;
+  const open = state.months.filter((m) => m.status !== "fechado").sort((a, b) => a.year - b.year || a.month - b.month);
+  if (!open.length) return { kind: "done", message: "Não há nenhum mês aberto para fechar.", actions: [home] };
+  const forMonth = (month: Month): Step => {
+    const available = availableOf(month, state.settings);
+    const allocs = state.allocations.filter((a) => a.monthId === month.id);
+    const allocated = allocs.reduce((s, a) => s + allocationAmount(a as any, available), 0);
+    const carry = month.carryIn ?? 0;
+    const remainder = monthRemainder(available, carry, allocated, state.transactions.filter((t) => t.monthId === month.id) as any);
+    const nk = nextMonthKey(month.year, month.month);
+    const next = state.months.find((m) => m.year === nk.year && m.month === nk.month);
+    const plan = closingPlan(remainder, !!next && next.status !== "fechado");
+    const name = monthName(month);
+    const rows: Row[] = [
+      { label: "Mês", value: name },
+      { label: "Disponível", value: fmtEur(available) },
+      ...(carry > 0 ? [{ label: "Transporte recebido", value: fmtEur(carry) }] : []),
+      { label: "Restante", value: fmtEur(remainder) },
+    ];
+    const confirmar = (dest: ClosingDest, parcelId: number | null, what: string): Step => ({
+      kind: "confirm",
+      ask: "Vou fechar o mês:",
+      rows: [...rows, { label: "Destino do restante", value: what }],
+      run: async () => {
+        try {
+          await apiRequest("POST", `/api/months/${month.id}/close`, { destination: dest, targetParcelId: parcelId, note: "" });
+          await queryClient.invalidateQueries({ predicate: (q) => String(q.queryKey[0]).startsWith("/api/") });
+          return { kind: "done", message: `${name} fechado.`, actions: [home] };
+        } catch (e) {
+          return fail(e);
+        }
+      },
+    });
+    if (!plan.needsDestination)
+      return confirmar("manter", null, plan.kind === "deficit" ? `Mês em défice de ${fmtEur(-remainder)}: fecha sem transportar` : "Sem restante: não há nada a decidir");
+    const choices = [
+      ...(plan.canCarry ? [{ label: `Transportar para ${monthName(next!)}`, value: "transportar" }] : []),
+      { label: "Reforçar uma parcela", value: "reforcar" },
+      { label: "Manter como não atribuído", value: "manter" },
+    ];
+    return {
+      kind: "choices",
+      ask: `${name}: restam ${fmtEur(remainder)}. O que fazemos ao restante?${plan.canCarry ? "" : " (Para o transportar, cria primeiro o mês seguinte.)"}`,
+      choices,
+      next: (v) => {
+        if (v === "transportar") return confirmar("transportar", null, `Transportar para ${monthName(next!)}`);
+        if (v === "manter") return confirmar("manter", null, "Manter como não atribuído");
+        const parcels = state.parcels.filter((p) => !p.archived).sort((a, b) => a.sortOrder - b.sortOrder);
+        return {
+          kind: "choices",
+          ask: "Que parcela queres reforçar?",
+          choices: parcels.map((p) => ({ label: p.name, value: String(p.id) })),
+          next: (id) => confirmar("reforcar", Number(id), `Reforçar ${parcels.find((p) => String(p.id) === id)?.name ?? ""}`),
+        };
+      },
+    };
+  };
+  if (open.length === 1) return forMonth(open[0]);
+  return {
+    kind: "choices",
+    ask: "Que mês queres fechar?",
+    choices: open.slice(0, 5).map((m) => ({ label: monthName(m), value: String(m.id) })),
+    next: (id) => forMonth(open.find((m) => String(m.id) === id)!),
   };
 }
