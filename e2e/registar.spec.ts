@@ -1,6 +1,12 @@
 import { expect, test, type Page } from "@playwright/test";
 import { cabecalhosApi, clicar, entrar, sufixo } from "./helpers";
 
+const definirModo = (page: Page, uiMode: "basico" | "detalhado") =>
+  page.request.patch("/api/settings", { data: { uiMode }, headers: cabecalhosApi() });
+
+test.beforeEach(async ({ page }) => { await definirModo(page, "basico"); });
+test.afterEach(async ({ page }) => { await definirModo(page, "basico"); });
+
 const transacoes = async (page: Page, nota: string) => {
   const r = await page.request.get("/api/state", { headers: cabecalhosApi() });
   return ((await r.json()).transactions as any[]).filter((t) => t.note === nota);
@@ -86,4 +92,20 @@ test("registar: o botão do assistente fica por cima da faixa do botão Registar
   await entrar(page);
   const z = async (id: string) => Number(await page.getByTestId(id).evaluate((el) => getComputedStyle(el).zIndex));
   expect(await z("assistant-fab")).toBeGreaterThan(await z("register-bar"));
+});
+
+test("registar: o botão só aparece no modo Básico, e o modo escolhe-se em Definições › Funcionalidades", async ({ page }) => {
+  await entrar(page);
+  await expect(page.getByTestId("register-button")).toBeVisible();
+  await page.goto("/#/dados");
+  await page.getByTestId("settings-tab-funcionalidades").click();
+  await expect(page.getByRole("radiogroup", { name: "Modo de utilização" })).toBeVisible();
+  await expect(page.getByTestId("ui-mode-basico").getByRole("radio")).toBeChecked();
+  await page.getByTestId("ui-mode-detalhado").click();
+  await expect(page.getByTestId("register-button")).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByTestId("register-button")).toHaveCount(0);
+  await page.getByTestId("settings-tab-funcionalidades").click();
+  await page.getByTestId("ui-mode-basico").click();
+  await expect(page.getByTestId("register-button")).toBeVisible();
 });

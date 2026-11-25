@@ -10,13 +10,14 @@ import { useAppState, useSave } from "@/lib/app";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { defaultRegisterDate, monthOfDate, parseAmount } from "@shared/assistant";
 import { fmtEur } from "@shared/calc";
+import { parseUiMode } from "@shared/ui-mode";
 
 const NONE = "__none__";
 const hoje = () => new Date().toLocaleDateString("sv-SE");
 
 /**
  * Botão sempre à mão, fixo no fundo da área de conteúdo, que abre um diálogo rápido para registar uma despesa.
- * Só existe depois do arranque e com pelo menos um mês criado. No telemóvel esconde-se enquanto se escreve noutro campo.
+ * Só existe no modo Básico, depois do arranque e com pelo menos um mês criado. No telemóvel esconde-se enquanto se escreve noutro campo.
  */
 export function RegisterBar() {
   const { data } = useAppState();
@@ -41,7 +42,7 @@ export function RegisterBar() {
     return () => { document.removeEventListener("focusin", onIn); document.removeEventListener("focusout", onOut); };
   }, []);
 
-  if (!data || data.settings.onboardingDone === 0 || data.months.length === 0) return null;
+  if (!data || data.settings.onboardingDone === 0 || data.months.length === 0 || parseUiMode(data.settings.uiMode) !== "basico") return null;
   const categories = data.categories.filter((c) => c.active).map((c) => c.name);
 
   const abrir = () => {

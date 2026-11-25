@@ -92,7 +92,7 @@ export type FullState = {
 function seedIfEmpty() {
   const existing = db.select().from(settings).all();
   if (existing.length === 0) {
-    db.insert(settings).values({}).run();
+    db.insert(settings).values({ uiMode: "basico" }).run();
   }
   if (db.select().from(months).all().length > 0) return;
   if (db.select().from(parcels).all().length > 0) return;
@@ -126,7 +126,7 @@ if (!sqlite.prepare("SELECT 1 FROM schema_migrations WHERE id = ?").get(MIG_ID))
 
 export const storage = {
   getState(): FullState {
-    const s = db.select().from(settings).all()[0] ?? db.insert(settings).values({}).returning().get();
+    const s = db.select().from(settings).all()[0] ?? db.insert(settings).values({ uiMode: "basico" }).returning().get();
     return {
       settings: s,
       parcels: db.select().from(parcels).all(),

@@ -30,6 +30,7 @@
 - Botão "por baixo do conteúdo": `position: sticky; bottom: 0` dentro da área de conteúdo; no telemóvel largura total, no computador pílula ao centro.
 - O assistente flutuante sobe no telemóvel para não tapar o botão; no computador fica no canto.
 - Registar abre um diálogo (valor, categoria, data, nota) e não o assistente, porque o assistente é opcional.
+- O botão Registar só aparece no modo Básico (pedido do utilizador). Como o modo ainda não existia, esta fase cria a base: `settings.ui_mode` (`basico`/`detalhado`), escolha em Definições › Funcionalidades, Básico só em instalações novas. A fase 3 acrescenta o que o modo mostra no Início.
 - Na barra lateral, "Mais" é um grupo sempre visível com os restantes itens (descoberta), não um menu escondido.
 
 ---

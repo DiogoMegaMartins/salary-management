@@ -130,6 +130,14 @@ try {
   /* coluna já existe */
 }
 
+/* modo de utilização: instalações novas (arranque por fazer) começam no Básico; quem já usa a app fica no Detalhado */
+try {
+  sqlite.exec("ALTER TABLE settings ADD COLUMN ui_mode TEXT NOT NULL DEFAULT 'detalhado'");
+  sqlite.exec("UPDATE settings SET ui_mode = 'basico' WHERE onboarding_done = 0");
+} catch {
+  /* coluna já existe */
+}
+
 /* assistente com IA: opção desligada por defeito e contagem diária de pedidos */
 for (const stmt of [
   "ALTER TABLE settings ADD COLUMN ai_enabled INTEGER NOT NULL DEFAULT 0",

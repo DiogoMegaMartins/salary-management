@@ -666,7 +666,7 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
       <>
         <H3>1.25.0</H3>
         <UL>
-          <li>Menu mais simples: Início, Dividir e Meses à vista, e o resto em &quot;Mais&quot;. Há agora um botão &quot;Registar despesa&quot; sempre à mão, no fundo de cada página.</li>
+          <li>Menu mais simples: Início, Dividir e Meses à vista, e o resto em &quot;Mais&quot;. Há agora um botão &quot;Registar despesa&quot; sempre à mão, no fundo de cada página, no modo Básico. O modo (Básico ou Detalhado) escolhe-se em Definições › Funcionalidades; quem já usa a app fica no Detalhado.</li>
         </UL>
         <H3>1.24.0</H3>
         <UL>
