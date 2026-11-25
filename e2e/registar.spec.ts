@@ -5,7 +5,7 @@ const definirModo = (page: Page, uiMode: "basico" | "detalhado") =>
   page.request.patch("/api/settings", { data: { uiMode }, headers: cabecalhosApi() });
 
 test.beforeEach(async ({ page }) => { await definirModo(page, "basico"); });
-test.afterEach(async ({ page }) => { await definirModo(page, "basico"); });
+test.afterEach(async ({ page }) => { await definirModo(page, "detalhado"); });
 
 const transacoes = async (page: Page, nota: string) => {
   const r = await page.request.get("/api/state", { headers: cabecalhosApi() });

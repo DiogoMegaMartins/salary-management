@@ -3,7 +3,7 @@ import { cabecalhosApi, clicar, entrar } from "./helpers";
 
 const modo = (page: Page, uiMode: "basico" | "detalhado") => page.request.patch("/api/settings", { data: { uiMode }, headers: cabecalhosApi() });
 const eur = (t: string | null) => Number((t ?? "").replace(/[^\d,\-−]/g, "").replace("−", "-").replace(",", "."));
-test.afterEach(async ({ page }) => { await modo(page, "basico"); });
+test.afterEach(async ({ page }) => { await modo(page, "detalhado"); });
 
 const abrirInicio = async (page: Page) => {
   await page.goto("/#/");
