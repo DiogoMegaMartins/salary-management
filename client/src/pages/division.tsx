@@ -73,7 +73,7 @@ export default function DivisionPage() {
     >
       <Tabs value={tab} onValueChange={setTab} className="space-y-4" data-testid="division-tabs">
         {both && (
-          <TabsList className="sticky top-0 z-10 -mx-4 w-auto bg-background px-4 md:-mx-6 md:px-6">
+          <TabsList className="sticky-tabs">
             <TabsTrigger value="divisao" data-testid="division-tab-divisao">Divisão</TabsTrigger>
             <TabsTrigger value="movimentos" data-testid="division-tab-movimentos">
               Movimentos

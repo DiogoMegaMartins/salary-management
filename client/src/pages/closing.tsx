@@ -26,7 +26,7 @@ export default function ClosingPage() {
   return (
     <AppShell title="Fecho e planeamento" subtitle="Fecho mensal, recorrências, reservas, simulador e composição dos totais">
       <Tabs defaultValue="fecho" className="space-y-4" data-testid="page-closing">
-        <TabsList className="sticky top-0 z-10 -mx-4 w-auto bg-background px-4 md:-mx-6 md:px-6">
+        <TabsList className="sticky-tabs">
           <TabsTrigger value="fecho" data-testid="tab-fecho">Fecho mensal</TabsTrigger>
           <TabsTrigger value="recorrencias" data-testid="tab-recorrencias">Recorrências e reservas</TabsTrigger>
           <TabsTrigger value="simulador" data-testid="tab-simulador">Simulador de metas</TabsTrigger>

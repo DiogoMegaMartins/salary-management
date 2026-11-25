@@ -83,7 +83,7 @@ export default function DataPage() {
   return (
     <AppShell title="Definições" subtitle="Cálculo, catálogos, backups, segurança e histórico">
       <Tabs value={tab} onValueChange={setTab} className="space-y-4" data-testid="settings-tabs">
-        <TabsList className="sticky top-0 z-10 -mx-4 w-auto bg-background px-4 md:-mx-6 md:px-6" data-testid="settings-tablist">
+        <TabsList className="sticky-tabs" data-testid="settings-tablist">
           <TabsTrigger value="calculo" data-testid="settings-tab-calculo">Cálculo</TabsTrigger>
           <TabsTrigger value="funcionalidades" data-testid="settings-tab-funcionalidades">Funcionalidades</TabsTrigger>
           <TabsTrigger value="catalogos" data-testid="settings-tab-catalogos">Catálogos</TabsTrigger>

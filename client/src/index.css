@@ -858,50 +858,6 @@
   .month-editor > div:last-of-type > button:last-child {
     flex: 1;
   }
-  .month-tabs {
-    position: sticky;
-    top: -1rem;
-    z-index: 10;
-    height: auto;
-    background: hsl(var(--background));
-  }
-  .division-summary {
-    position: sticky;
-    top: 42px;
-    z-index: 9;
-  }
-  .division-summary p {
-    font-size: 12px;
-    overflow-wrap: anywhere;
-  }
-  .allocation-card {
-    border: 1px solid hsl(var(--border));
-    border-radius: 0.75rem;
-    padding: 1rem;
-    background: hsl(var(--card));
-  }
-  .allocation-row {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 0.75rem;
-  }
-  .allocation-name {
-    grid-column: 1 / -1;
-    font-weight: 600;
-  }
-  .allocation-result {
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
-  .allocation-result::before {
-    content: 'Valor calculado';
-    font-weight: 400;
-    color: hsl(var(--muted-foreground));
-  }
-  .allocation-card > .flex {
-    padding-left: 0;
-  }
   .platform-panel,
   .assets-panel {
     margin-left: 0;
@@ -994,4 +950,52 @@ table td.tnum, table td[class*="text-right"] { white-space: nowrap; min-width: 5
     position: sticky; left: 0; z-index: 1; min-width: 6.5rem;
     padding-left: 0 !important; background: hsl(var(--card)); box-shadow: 1px 0 0 hsl(var(--border));
   }
+}
+
+
+/* Barra de separadores colada ao topo da zona que desloca: cobre também o espaço (padding) por cima, para o
+   conteúdo não aparecer por cima nem ao lado dela quando se desce na página. */
+.sticky-tabs {
+  position: sticky;
+  top: -1.25rem;
+  z-index: 10;
+  margin: -1.25rem -1rem 0;
+  padding: 1.25rem 1rem 0;
+  width: calc(100% + 2rem);
+  max-width: none; /* anula o [role=tablist] { max-width: 100% } */
+  background: hsl(var(--background));
+}
+@media (min-width: 768px) {
+  .sticky-tabs {
+    top: -1.5rem;
+    margin: -1.5rem -1.5rem 0;
+    padding: 1.5rem 1.5rem 0;
+    width: calc(100% + 3rem);
+  }
+}
+
+/* O Tailwind 4 deixa os botões com o cursor de seta: tudo o que se carrega mostra a mãozinha. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+[role="tab"]:not([aria-disabled="true"]),
+[role="switch"]:not(:disabled),
+[role="checkbox"]:not(:disabled),
+[role="radio"]:not(:disabled),
+[role="option"]:not([aria-disabled="true"]):not([data-disabled]),
+[role="menuitem"]:not([aria-disabled="true"]):not([data-disabled]),
+[role="menuitemcheckbox"]:not([data-disabled]),
+summary,
+a[href],
+label[for],
+select:not(:disabled),
+input[type="checkbox"]:not(:disabled),
+input[type="radio"]:not(:disabled),
+input[type="file"]:not(:disabled),
+input[type="submit"]:not(:disabled) {
+  cursor: pointer;
+}
+button:disabled,
+[aria-disabled="true"],
+[data-disabled] {
+  cursor: not-allowed;
 }
