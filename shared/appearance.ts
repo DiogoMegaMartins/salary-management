@@ -31,3 +31,20 @@ export function parseColorMode(v: unknown): ColorMode {
 export function resolveDark(mode: ColorMode, systemPrefersDark: boolean): boolean {
   return mode === "auto" ? systemPrefersDark : mode === "escuro";
 }
+
+export type AppearanceCache = { palette: Palette; mode: ColorMode };
+export const APPEARANCE_KEY = "sm.appearance";
+export const LEGACY_THEME_KEY = "sm.theme";
+
+/** Lê a cache local (JSON) e, se não existir, o tema antigo ("light"/"dark"). Nunca falha: lixo cai nos defeitos. */
+export function readAppearanceCache(raw: string | null, legacyTheme: string | null): AppearanceCache {
+  if (raw) {
+    try {
+      const v = JSON.parse(raw);
+      if (v && typeof v === "object") return { palette: parsePalette(v.palette), mode: parseColorMode(v.mode) };
+    } catch { /* cache estragada: usa os defeitos */ }
+    return { palette: DEFAULT_PALETTE, mode: DEFAULT_COLOR_MODE };
+  }
+  const mode: ColorMode = legacyTheme === "dark" ? "escuro" : legacyTheme === "light" ? "claro" : DEFAULT_COLOR_MODE;
+  return { palette: DEFAULT_PALETTE, mode };
+}

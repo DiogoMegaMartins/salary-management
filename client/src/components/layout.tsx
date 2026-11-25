@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Settings, Eye, EyeOff, LayoutGrid, CalendarCheck, Moon, Sun, LayoutDashboard, CalendarRange, PieChart, Wallet, Target, HelpCircle, Receipt, Ellipsis, Layers } from "lucide-react";
-import { useAppState, useTheme } from "@/lib/app";
+import { useAppState } from "@/lib/app";
+import { useTheme } from "@/lib/appearance";
 import { usePrivacy } from "@/lib/privacy";
 import { useFeatures } from "@/lib/features";
 import type { FeatureKey } from "@shared/features";

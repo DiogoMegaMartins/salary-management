@@ -26,3 +26,14 @@ test("aparência: todas as paletas e modos têm etiqueta", () => {
   assert.equal(COLOR_MODES.length, 3);
   for (const p of PALETTES) assert.ok(PALETTE_LABELS[p].nome && PALETTE_LABELS[p].descricao, p);
 });
+
+test("aparência: cache local lê o guardado, o legado e ignora lixo", async () => {
+  const { readAppearanceCache } = await import("../shared/appearance");
+  assert.deepEqual(readAppearanceCache('{"palette":"mare","mode":"escuro"}', null), { palette: "mare", mode: "escuro" });
+  assert.deepEqual(readAppearanceCache('{"palette":"roxo","mode":"claro"}', null), { palette: "ceu", mode: "claro" });
+  assert.deepEqual(readAppearanceCache("{", null), { palette: "ceu", mode: "auto" });
+  assert.deepEqual(readAppearanceCache(null, null), { palette: "ceu", mode: "auto" });
+  assert.deepEqual(readAppearanceCache(null, "dark"), { palette: "ceu", mode: "escuro" });
+  assert.deepEqual(readAppearanceCache(null, "light"), { palette: "ceu", mode: "claro" });
+  assert.deepEqual(readAppearanceCache('{"palette":"salvia","mode":"auto"}', "dark"), { palette: "salvia", mode: "auto" });
+});
