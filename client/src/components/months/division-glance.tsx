@@ -28,7 +28,7 @@ export function DivisionGlance({ month, onOpen }: { month: Month; onOpen: () => 
       {started ? (
         <div className="grid grid-cols-3 gap-2">
           <Summary label="Alocado" value={fmtEur(allocated)} />
-          <Summary label="Restante" value={fmtEur(available - allocated)} strong />
+          <Summary label="Restante" value={fmtEur(available + (month.carryIn ?? 0) - allocated)} strong />
           <Summary label="Movimentos" value={String(movements)} />
         </div>
       ) : (

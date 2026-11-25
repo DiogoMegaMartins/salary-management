@@ -15,7 +15,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { errMsg } from "@/components/catalogs";
 import { goalCtx } from "@/components/goal-panel";
 import { fmtEur, goalBreakdown, monthKeyOf } from "@shared/calc";
-import { composeTotal, executionOfMonth, simulateGoal, suggestedContribution, ymOf } from "@shared/evo08";
+import { composeTotal, executionOfMonth, nextMonthKey, simulateGoal, suggestedContribution, ymOf } from "@shared/evo08";
+import { closingPlan } from "@shared/closing";
 
 const num = (s: string) => { const t = s.trim().replace(",", "."); return /^-?\d+(\.\d+)?$/.test(t) ? Number(t) : null; };
 const NONE = "__none__";
@@ -49,7 +50,7 @@ function MonthClosing() {
   const { ask, dialog } = useConfirm();
   const sorted = useMemo(() => [...(data?.months ?? [])].sort((a, b) => b.year * 12 + b.month - (a.year * 12 + a.month)), [data?.months]);
   const [sel, setSel] = useState("");
-  const [dest, setDest] = useState("manter");
+  const [destChoice, setDestChoice] = useState<string | null>(null); // null = o destino por defeito
   const [target, setTarget] = useState(NONE);
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
@@ -72,6 +73,11 @@ function MonthClosing() {
   const exec = executionOfMonth(computed.available, data.allocations.filter((a) => a.monthId === month.id) as any, txs as any, spending);
   const s = summary.data;
   const closed = month.status === "fechado";
+  const nk = nextMonthKey(month.year, month.month);
+  const nextMonth = data.months.find((m) => m.year === nk.year && m.month === nk.month);
+  const plan = s ? closingPlan(s.remainder, !!nextMonth && nextMonth.status !== "fechado") : null;
+  // sem restante positivo não há nada a escolher; com restante, transporta-se por defeito (se for possível)
+  const dest = plan?.needsDestination ? destChoice ?? plan.defaultDest : "manter";
   const pendingHere = (pend.data ?? []).filter((p) => p.monthId === month.id);
   const blocking = (verify.data?.issues ?? []).filter((i: any) => i.severity === "erro").length;
   const run = async (fn: () => Promise<any>, ok: string) => {
@@ -82,7 +88,8 @@ function MonthClosing() {
   const close = async () => {
     const rem = s?.remainder ?? 0;
     const label = dest === "transportar" ? "transportar para o mês seguinte" : dest === "reforcar" ? "reforçar a parcela escolhida" : "manter como não atribuído";
-    if (!(await ask(`Fechar ${month.label} ${month.year}? Restante ${fmtEur(rem)}: ${label}. Um mês fechado não aceita alterações até ser reaberto.`))) return;
+    const quanto = plan?.needsDestination ? `Restante ${fmtEur(rem)}: ${label}.` : plan?.kind === "deficit" ? `Mês em défice de ${fmtEur(-rem)}: fecha sem transportar.` : "Sem restante por distribuir.";
+    if (!(await ask(`Fechar ${month.label} ${month.year}? ${quanto} Um mês fechado não aceita alterações até ser reaberto.`))) return;
     await run(() => apiRequest("POST", `/api/months/${month.id}/close`, { destination: dest, targetParcelId: target === NONE ? null : Number(target), note }), "Mês fechado");
   };
   const reopen = async () => {
@@ -100,7 +107,7 @@ function MonthClosing() {
       <div className="flex flex-wrap items-end gap-3">
         <div className="space-y-1">
           <Label className="text-xs text-muted-foreground">Mês</Label>
-          <Select value={String(month.id)} onValueChange={setSel}>
+          <Select value={String(month.id)} onValueChange={(v) => { setSel(v); setDestChoice(null); setTarget(NONE); }}>
             <SelectTrigger className="h-9 w-52 text-sm" data-testid="select-closing-month"><SelectValue /></SelectTrigger>
             <SelectContent>{sorted.map((m) => <SelectItem key={m.id} value={String(m.id)}>{m.label} {m.year}{m.status === "fechado" ? " (fechado)" : ""}</SelectItem>)}</SelectContent>
           </Select>
@@ -137,17 +144,25 @@ function MonthClosing() {
         {row("Restante do mês", s?.remainder ?? 0, true)}
         {!closed ? (
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1">
-              <Label className="text-xs text-muted-foreground">Destino do restante</Label>
-              <Select value={dest} onValueChange={setDest}>
-                <SelectTrigger className="h-9 text-sm" data-testid="select-closing-dest"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="manter">Manter como não atribuído</SelectItem>
-                  <SelectItem value="transportar">Transportar para o mês seguinte</SelectItem>
-                  <SelectItem value="reforcar">Reforçar parcela/meta</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {plan?.needsDestination ? (
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Destino do restante</Label>
+                <Select value={dest} onValueChange={setDestChoice}>
+                  <SelectTrigger className="h-9 text-sm" data-testid="select-closing-dest"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="transportar" disabled={!plan.canCarry}>Transportar para o mês seguinte{plan.canCarry ? "" : " (cria o mês seguinte primeiro)"}</SelectItem>
+                    <SelectItem value="reforcar">Reforçar parcela/meta</SelectItem>
+                    <SelectItem value="manter">Manter como não atribuído</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            ) : (
+              <p className="self-end text-sm text-muted-foreground" role="status" data-testid="closing-no-destination">
+                {plan?.kind === "deficit"
+                  ? `O mês está em défice de ${fmtEur(-(s?.remainder ?? 0))}: fecha-se sem transportar.`
+                  : plan ? "Sem restante por distribuir: podes fechar o mês sem escolher destino." : "A calcular o restante…"}
+              </p>
+            )}
             {dest === "reforcar" && (
               <div className="space-y-1">
                 <Label className="text-xs text-muted-foreground">Parcela/meta</Label>
@@ -161,7 +176,7 @@ function MonthClosing() {
               <Label className="text-xs text-muted-foreground">Nota (opcional)</Label>
               <Input value={note} onChange={(e) => setNote(e.target.value)} className="h-9 text-sm" aria-label="Nota do fecho" />
             </div>
-            <div className="sm:col-span-2"><Button disabled={busy || (dest === "reforcar" && target === NONE)} onClick={close} data-testid="button-close-month">{busy ? "A fechar…" : "Fechar mês"}</Button></div>
+            <div className="sm:col-span-2"><Button disabled={busy || !plan || (dest === "reforcar" && target === NONE)} onClick={close} data-testid="button-close-month">{busy ? "A fechar…" : "Fechar mês"}</Button></div>
           </div>
         ) : (
           <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto]">

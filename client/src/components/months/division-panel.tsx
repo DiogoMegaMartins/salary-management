@@ -30,7 +30,9 @@ export function DivisionPanel({ month }: { month: Month }) {
     [data?.parcels],
   );
   const allocations = (data?.allocations ?? []).filter((a) => a.monthId === month.id);
-  const available = availableOf(month, data!.settings);
+  const available = availableOf(month, data!.settings); // rendimento: é a base das parcelas em %
+  const carry = month.carryIn ?? 0; // transporte do mês anterior: dinheiro por distribuir que não é rendimento
+  const total = available + carry;
   const rows = parcels.map((p) => {
     const a = allocations.find((x) => x.parcelId === p.id);
     const included = (a?.included ?? 1) !== 0;
@@ -40,7 +42,7 @@ export function DivisionPanel({ month }: { month: Month }) {
     return { p, a, included, mode, value, amount };
   });
   const allocated = rows.reduce((acc, r) => acc + r.amount, 0);
-  const { status, remaining } = divisionStatus(available, allocated);
+  const { status, remaining } = divisionStatus(total, allocated);
   const isClosedMonth = month.status === "fechado";
 
   const write = (r: (typeof rows)[number], patch: { mode?: string; value?: number; included?: boolean }) =>
@@ -97,7 +99,8 @@ export function DivisionPanel({ month }: { month: Month }) {
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <div>
             <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Disponível este mês</p>
-            <p className="tnum text-2xl font-semibold" data-testid="division-available">{fmtEur(available)}</p>
+            <p className="tnum text-2xl font-semibold" data-testid="division-available">{fmtEur(total)}</p>
+            {carry > 0 && <p className="text-xs text-muted-foreground" data-testid="division-carry">Inclui {fmtEur(carry)} transportados do mês anterior (não são rendimento).</p>}
           </div>
           <div className="text-right" role="status" aria-live="polite" data-testid="division-status">
             {status === "completo" && <p className="text-sm font-medium text-primary">✔ Tudo distribuído</p>}
@@ -107,8 +110,8 @@ export function DivisionPanel({ month }: { month: Month }) {
           </div>
         </div>
         <div className="flex h-4 overflow-hidden rounded-full bg-muted" role="img" aria-label={`Divisão: ${counted.map((r) => `${r.p.name} ${fmtEur(r.amount)}`).join(", ") || "sem valores"}`} data-testid="division-bar">
-          {available > 0 && counted.map((r) => (
-            <span key={r.p.id} style={{ width: `${Math.min(100, (r.amount / available) * 100)}%`, background: r.p.color }} />
+          {total > 0 && counted.map((r) => (
+            <span key={r.p.id} style={{ width: `${Math.min(100, (r.amount / total) * 100)}%`, background: r.p.color }} />
           ))}
         </div>
         <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
@@ -196,11 +199,11 @@ export function DivisionPanel({ month }: { month: Month }) {
                   <Button type="button" variant="outline" size="icon" className="h-9 w-9 pointer-coarse:h-11 pointer-coarse:w-11" aria-label={`Aumentar ${r.p.name}`} data-testid={`alloc-plus-${r.p.id}`} onClick={() => nudge(r, 1)}><Plus className="h-4 w-4" /></Button>
                 </div>
                 <div className="flex items-baseline justify-between text-sm">
-                  <span className="text-xs text-muted-foreground">{r.mode === "fixo" ? `${shareOf(r.amount, available)}% do disponível` : "Valor calculado"}</span>
+                  <span className="text-xs text-muted-foreground">{r.mode === "fixo" ? `${shareOf(r.amount, total)}% do disponível` : "Valor calculado"}</span>
                   <span className="allocation-result tnum font-medium" data-testid={`text-alloc-${r.p.id}`}>{fmtEur(r.amount)}</span>
                 </div>
                 <div className="h-1.5 overflow-hidden rounded-full bg-muted" aria-hidden>
-                  <div className="h-full" style={{ width: `${available > 0 ? Math.min(100, (r.amount / available) * 100) : 0}%`, background: r.p.color }} />
+                  <div className="h-full" style={{ width: `${total > 0 ? Math.min(100, (r.amount / total) * 100) : 0}%`, background: r.p.color }} />
                 </div>
                 {features.plataformas && (
                   <PlatformDistribution monthId={month.id} parcelId={r.p.id} allocationId={r.a?.id ?? null} total={r.amount} />
