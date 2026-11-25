@@ -664,6 +664,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.23.2</H3>
+        <UL>
+          <li>Mãozinha ao passar o rato por botões, separadores e interruptores. As barras de separadores já não se sobrepõem ao conteúdo ao descer e, no telemóvel, deslocam só na horizontal. A Divisão deixou de ter o resumo a tapar as parcelas no telemóvel.</li>
+        </UL>
         <H3>1.23.1</H3>
         <UL>
           <li>Assistente com IA: também percebe &quot;fechar o mês&quot; (continua desligado até haver chave e ligares a opção).</li>

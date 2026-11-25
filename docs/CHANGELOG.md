@@ -2,6 +2,15 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.23.2 | 2026-11-25
+
+Cursor, barras de separadores e Divisão no telemóvel.
+
+- Cursor: o Tailwind 4 deixa os botões com a seta; passa a haver a mãozinha em tudo o que se carrega (botões, separadores, interruptores, caixas de seleção, opções de menus e ligações) e "não permitido" no que está desativado. Regra global em `client/src/index.css`.
+- Barras de separadores coladas ao topo (Definições, Fecho e planeamento, Divisão): a barra cobre agora também o espaço por cima e ao lado (`.sticky-tabs`; o `[role=tablist] { max-width: 100% }` antigo cortava-a), por isso o conteúdo já não aparece por cima ou ao lado dela quando se desce na página.
+- Barras de separadores no telemóvel: deslocam só na horizontal (`touch-action: pan-x`, sem deslocação vertical nem encadeamento à volta, e sem o desvio de 1 px do `-mb-px`); escolher um separador só desloca a própria barra (antes `scrollIntoView` também mexia na página). A linha por baixo passou a ser uma sombra interior.
+- Divisão: apagadas as regras de CSS do antigo separador "Divisão" do editor do mês (`.division-summary` colava o resumo por cima das parcelas no telemóvel; `.allocation-*` mudavam o aspeto das parcelas e acrescentavam um segundo "Valor calculado").
+
 ## 1.23.1 | 2026-11-25
 
 - Assistente com IA: a IA também entende "fechar o mês" (nova tarefa `fechar` no pedido e na validação da resposta). Entra no fluxo guiado de fecho, que pergunta o mês e, só se sobrar dinheiro, o destino; só fecha depois de confirmares.
