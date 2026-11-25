@@ -2,6 +2,16 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.24.0 | 2026-11-25
+
+Redesenho "Calma", fase 1: cores e temas.
+
+- Cinco cores para a app (Céu por defeito, Sálvia, Pêssego, Lavanda e Maré), cada uma em claro e escuro, definidas em `client/src/index.css` (`:root[data-palette]` e `:root[data-palette].dark`). Um teste (`tests/paletas-contraste.test.ts`) garante contraste WCAG suficiente em todas.
+- Definições › Aparência: escolha da cor e do modo (automático, claro, escuro). Fica guardada na conta (`settings.palette`, `settings.color_mode`) e numa cache local; um script externo (`client/public/appearance-boot.js`) aplica-a antes do primeiro desenho, por isso a app não pisca ao abrir. Quem já tinha escolhido claro ou escuro mantém essa escolha; no modo automático a app acompanha o sistema em tempo real.
+- Letra Figtree, alojada na própria app (sem pedidos a terceiros).
+- O botão de tema do cabeçalho continua a alternar claro e escuro (passou a fixar o modo).
+- Regras partilhadas em `shared/appearance.ts`.
+
 ## 1.23.2 | 2026-11-25
 
 Cursor, barras de separadores e Divisão no telemóvel.

@@ -1,6 +1,6 @@
 # Redesenho "Calma": novo aspeto e navegação
 
-Estado: proposto (a aguardar aprovação)
+Estado: aprovado. Fase 1 (cores e temas) entregue na 1.24.0; fases 2 a 6 por fazer
 
 ## Intenção
 Quem chega à app pela primeira vez vê demasiada informação e não encontra o caminho para tarefas simples, como dividir o salário. O objetivo é uma app mais leve, descontraída, intuitiva, acessível e atual, para todo o tipo de pessoas. O aspeto e a organização mudam de forma radical. Os dados e as regras de negócio não mudam.

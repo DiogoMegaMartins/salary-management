@@ -664,6 +664,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.24.0</H3>
+        <UL>
+          <li>Nova secção Definições › Aparência: escolhe a cor da app (Céu, Sálvia, Pêssego, Lavanda ou Maré) e o modo claro, escuro ou automático. A escolha fica guardada na tua conta. A app tem agora uma letra nova, mais redonda.</li>
+        </UL>
         <H3>1.23.2</H3>
         <UL>
           <li>Mãozinha ao passar o rato por botões, separadores e interruptores. As barras de separadores já não se sobrepõem ao conteúdo ao descer e, no telemóvel, deslocam só na horizontal. A Divisão deixou de ter o resumo a tapar as parcelas no telemóvel.</li>
