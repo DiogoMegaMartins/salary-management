@@ -29,6 +29,7 @@ import { CatalogsSection } from "@/components/catalogs";
 import { VerifyData, ChangeHistory, CsvImport } from "@/components/data-tools";
 import { FeaturesSettings } from "@/components/features-settings";
 import { AppearanceSettings } from "@/components/appearance-settings";
+import { UiModeSettings } from "@/components/ui-mode-settings";
 import { AiSettings } from "@/components/ai-settings";
 import { OfflineSettings } from "@/components/offline-status";
 import { daysSince } from "@/lib/utils";
@@ -254,7 +255,7 @@ export default function DataPage() {
         </SectionCard>
 
         </div></TabsContent>
-        <TabsContent value="funcionalidades" className="mt-0"><FeaturesSettings settings={s} /><AiSettings settings={s} /></TabsContent>
+        <TabsContent value="funcionalidades" className="mt-0"><UiModeSettings settings={s} /><FeaturesSettings settings={s} /><AiSettings settings={s} /></TabsContent>
         <TabsContent value="aparencia" className="mt-0"><AppearanceSettings /></TabsContent>
         <TabsContent value="catalogos" className="mt-0"><div className="space-y-4">
         <SectionCard

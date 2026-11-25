@@ -2,6 +2,15 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.25.0 | 2026-11-25
+
+Redesenho "Calma", fase 2: menu novo e botão Registar.
+
+- Menu: três destinos à vista (Início, Dividir, Meses) e o resto agrupado em "Mais" (Despesas, Fecho e planeamento, Parcelas e metas, Carteira, Orçamento, Definições, Ajuda). Na barra lateral o grupo "Mais" está sempre visível; no telemóvel a barra de baixo tem Início, Dividir, Meses e Mais (a Despesas passou para o painel Mais). "Dividir" esconde-se se Divisão e Movimentos estiverem ambas desligadas. As rotas e os títulos das páginas não mudam (mudam nas fases 3 e 4). Modelo em `client/src/lib/nav.ts`.
+- Botão "Registar despesa" fixo no fundo do conteúdo (`client/src/components/register-expense.tsx`): abre um diálogo com valor, categoria, data e nota. Propõe hoje, ou o último dia do último mês aberto se o mês de hoje não existir (`defaultRegisterDate` em `shared/assistant.ts`); recusa valor inválido, data sem mês e mês fechado, com mensagem clara; protege contra duplo clique. Só aparece depois do arranque e com pelo menos um mês. No telemóvel esconde-se enquanto se escreve noutro campo.
+- Modo de utilização (`settings.ui_mode`, `shared/ui-mode.ts`): **Básico** ou **Detalhado**, em Definições › Funcionalidades. O botão "Registar despesa" só aparece no Básico. Instalações novas começam no Básico; bases que já existem (e backups antigos) ficam no Detalhado, por isso quem já usa a app não vê nada mudar. O que mais o modo esconde ou mostra vem na fase 3.
+- O botão flutuante do assistente sobe no telemóvel para não ficar por baixo do botão Registar.
+
 ## 1.24.0 | 2026-11-25
 
 Redesenho "Calma", fase 1: cores e temas.

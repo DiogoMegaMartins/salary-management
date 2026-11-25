@@ -117,6 +117,9 @@ export const settings = sqliteTable("settings", {
   // aparência: cor da app ("ceu", "salvia", "pessego", "lavanda", "mare") e modo ("auto", "claro", "escuro")
   palette: text("palette").notNull().default("ceu"),
   colorMode: text("color_mode").notNull().default("auto"),
+
+  // modo de utilização: "basico" (o essencial) ou "detalhado" (tudo); quem já usa a app fica no detalhado
+  uiMode: text("ui_mode").notNull().default("detalhado"),
 });
 
 export type Settings = typeof settings.$inferSelect;
