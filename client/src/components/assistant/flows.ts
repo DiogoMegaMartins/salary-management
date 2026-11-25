@@ -51,6 +51,7 @@ export function stepFromIntent(intent: Intent, ctx: Ctx): Step {
     case "mes": return mesFlow(ctx, intent.amount);
     case "despesa": return desligada(f.movimentos) ?? despesaFlow(ctx, { amount: intent.amount, category: intent.category, date: intent.date });
     case "sobra": return desligada(f.divisao) ?? sobraFlow(ctx);
+    case "fechar": return fecharFlow(ctx);
     case "resumo": return desligada(f.divisao || f.movimentos) ?? resumoFlow(ctx);
     default: return { kind: "done", message: "Não percebi o que queres fazer. Escolhe uma das tarefas, ou escreve de outra maneira.", actions: [home] };
   }

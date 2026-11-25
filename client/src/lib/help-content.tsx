@@ -664,6 +664,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.23.1</H3>
+        <UL>
+          <li>Assistente com IA: também percebe &quot;fechar o mês&quot; (continua desligado até haver chave e ligares a opção).</li>
+        </UL>
         <H3>1.23.0</H3>
         <UL>
           <li>Fecho do mês: se sobrar dinheiro, &quot;transportar para o mês seguinte&quot; já vem escolhido (se o mês seguinte existir e estiver aberto). Sem restante, ou em défice, fecha-se o mês sem escolher destino.</li>

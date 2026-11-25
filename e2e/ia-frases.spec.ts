@@ -83,3 +83,18 @@ test.describe("Assistente com IA (frases livres)", () => {
     await expect(page.getByTestId("ai-usage")).toContainText("3 de 50");
   });
 });
+
+test.describe("Assistente com IA: fechar o mês", () => {
+  test("'fecha o mês' leva ao fluxo de fecho (pergunta o mês) e não grava sem confirmar", async ({ page, request }) => {
+    const fechados = async () => ((await (await request.get("/api/state", { headers: { "x-codigo-acesso": "codigo-de-teste-1234", "x-sm-client": "1" } })).json()).months as any[]).filter((m) => m.status === "fechado").length;
+    const antes = await fechados();
+    await iaDisponivel(page, { task: "fechar" });
+    await entrar(page);
+    await page.getByTestId("assistant-fab").click();
+    await page.getByTestId("assistant-sentence").fill("quero fechar o mês");
+    await page.getByTestId("assistant-sentence-send").click();
+    await expect(page.getByTestId("assistant-chat")).toContainText("Que mês queres fechar?");
+    await page.getByTestId("assistant-back").click();
+    expect(await fechados()).toBe(antes); // nada foi fechado
+  });
+});
