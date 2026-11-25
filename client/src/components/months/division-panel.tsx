@@ -93,7 +93,7 @@ export function DivisionPanel({ month }: { month: Month }) {
       {/* visão de relance */}
       <section
         aria-label="Resumo da divisão"
-        className={`division-summary space-y-3 rounded-xl border p-4 ${status === "completo" ? "border-primary/40 bg-primary/5" : status === "excede" ? "border-destructive/40 bg-destructive/5" : "border-border bg-background"}`}
+        className={`space-y-3 rounded-xl border p-4 ${status === "completo" ? "border-primary/40 bg-primary/5" : status === "excede" ? "border-destructive/40 bg-destructive/5" : "border-border bg-background"}`}
         data-testid="division-summary"
       >
         <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -148,7 +148,7 @@ export function DivisionPanel({ month }: { month: Month }) {
           <fieldset
             key={r.p.id}
             disabled={isClosedMonth}
-            className={`allocation-card min-w-0 space-y-3 rounded-xl border p-3 ${r.included ? "border-border bg-card" : "border-dashed border-border bg-transparent"}`}
+            className={`min-w-0 space-y-3 rounded-xl border p-3 ${r.included ? "border-border bg-card" : "border-dashed border-border bg-transparent"}`}
             data-testid={`allocation-card-${r.p.id}`}
           >
             <div className="flex items-center gap-2">
@@ -165,7 +165,7 @@ export function DivisionPanel({ month }: { month: Month }) {
             </div>
             {r.included && (
               <>
-                <div className="allocation-row flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <div className="flex overflow-hidden rounded-md border text-xs" role="radiogroup" aria-label={`Modo de ${r.p.name}`}>
                     {(["fixo", "percentagem"] as const).map((m) => (
                       <button
@@ -200,7 +200,7 @@ export function DivisionPanel({ month }: { month: Month }) {
                 </div>
                 <div className="flex items-baseline justify-between text-sm">
                   <span className="text-xs text-muted-foreground">{r.mode === "fixo" ? `${shareOf(r.amount, total)}% do disponível` : "Valor calculado"}</span>
-                  <span className="allocation-result tnum font-medium" data-testid={`text-alloc-${r.p.id}`}>{fmtEur(r.amount)}</span>
+                  <span className="tnum font-medium" data-testid={`text-alloc-${r.p.id}`}>{fmtEur(r.amount)}</span>
                 </div>
                 <div className="h-1.5 overflow-hidden rounded-full bg-muted" aria-hidden>
                   <div className="h-full" style={{ width: `${total > 0 ? Math.min(100, (r.amount / total) * 100) : 0}%`, background: r.p.color }} />
