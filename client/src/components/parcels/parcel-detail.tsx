@@ -170,7 +170,7 @@ export function ParcelDetail({
               <p className="text-xs text-muted-foreground">Valor de mercado em {fmtDate(f.ret.latest.date)}</p>
               <div className="mt-0.5 flex flex-wrap items-baseline justify-between gap-x-3">
                 <span className="tnum text-lg font-semibold">{money(f.ret.latest.value)}</span>
-                <span className={cn("tnum text-sm font-medium", f.ret.gain! > 0.004 ? "text-emerald-700 dark:text-emerald-400" : f.ret.gain! < -0.004 ? "text-destructive" : "text-muted-foreground")}>
+                <span className={cn("tnum text-sm font-medium", f.ret.gain! > 0.004 ? "text-success" : f.ret.gain! < -0.004 ? "text-destructive" : "text-muted-foreground")}>
                   {f.ret.gain! > 0.004 ? "Ganho " : f.ret.gain! < -0.004 ? "Perda " : "Sem ganho nem perda "}
                   {Math.abs(f.ret.gain!) > 0.004 ? `${f.ret.gain! > 0 ? "+" : "−"}${money(Math.abs(f.ret.gain!))}` : ""}
                 </span>
@@ -396,7 +396,7 @@ function RateLine({ state, from, to, rate, testid }: { state: AppState; from: st
           <button type="button" className="text-primary underline-offset-2 hover:underline" onClick={() => setEditing(true)}>atualizar</button>
         </p>
       ) : (
-        <p className="text-amber-700 dark:text-amber-400">
+        <p className="text-warning">
           Sem taxa {from}→{to}: não entra no total.{" "}
           <button type="button" className="font-medium underline underline-offset-2" onClick={() => setEditing(true)} data-testid={`${testid}-set`}>Definir taxa</button>
         </p>
@@ -461,7 +461,7 @@ function History({ state, parcelId, cur, subName, ask }: { state: AppState; parc
       title: e.kind === "inicial" ? "Saldo inicial" : e.amount >= 0 ? "Entrada" : "Saída",
       where: subName(e.subgoalId),
       amount: `${e.kind === "ajuste" && e.amount > 0 ? "+" : e.amount < 0 ? "−" : ""}${formatGoalMoney(Math.abs(e.amount), e.currency || cur)}`,
-      tone: e.kind === "ajuste" ? (e.amount >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-destructive") : undefined,
+      tone: e.kind === "ajuste" ? (e.amount >= 0 ? "text-success" : "text-destructive") : undefined,
       note: e.note,
       entryId: e.id,
     })),

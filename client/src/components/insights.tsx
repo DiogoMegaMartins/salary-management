@@ -13,7 +13,7 @@ export const pctSigned = (x: number | null) => {
   return `${v > 0 ? "+" : ""}${(v === 0 ? 0 : v).toFixed(1).replace(".", ",")}%`;
 };
 
-const GOOD = "text-emerald-700 dark:text-emerald-400";
+const GOOD = "text-success";
 const BAD = "text-destructive";
 
 /* ------------------------------------------------------------------ ritmo das metas */

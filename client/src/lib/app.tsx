@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient, setAccessCode } from "./queryClient";
 import type { Allocation, Category, Month, Parcel, Settings, Transaction, Platform, ParcelPlatform, ParcelType, TxType, AllocationPlatform, AllocationAsset, Subgoal, GoalEntry, ContributionLink, FxRate, Valuation } from "@shared/schema";
@@ -196,37 +196,6 @@ export function useSave() {
     deleteCategory,
   };
 }
-
-/* ------------------------------------------------------------------ tema */
-
-type ThemeCtx = { theme: "light" | "dark"; toggle: () => void };
-const ThemeContext = createContext<ThemeCtx>({ theme: "dark", toggle: () => {} });
-
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // a escolha do utilizador (localStorage) tem prioridade sobre o tema do sistema
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
-    try {
-      const saved = localStorage.getItem("sm.theme");
-      if (saved === "light" || saved === "dark") return saved;
-    } catch { /* sem armazenamento: segue o sistema */ }
-    return typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-  });
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-  }, [theme]);
-  const toggle = () =>
-    setTheme((t) => {
-      const next = t === "dark" ? "light" : "dark";
-      try { localStorage.setItem("sm.theme", next); } catch { /* sem armazenamento */ }
-      return next;
-    });
-  return (
-    <ThemeContext.Provider value={{ theme, toggle }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-}
-export const useTheme = () => useContext(ThemeContext);
 
 /* --------------------------------------------------------------- filtros */
 

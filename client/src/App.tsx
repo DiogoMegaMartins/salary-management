@@ -4,7 +4,8 @@ import { useHashLocation } from "wouter/use-hash-location";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { FiltersProvider, ThemeProvider } from "@/lib/app";
+import { FiltersProvider } from "@/lib/app";
+import { AppearanceProvider, AppearanceSync } from "@/lib/appearance";
 import NotFound from "@/pages/not-found";
 // cada ecrã é um ficheiro à parte, descarregado só quando se abre (o SW pré-guarda-os todos para uso offline)
 const Dashboard = lazy(() => import("@/pages/dashboard"));
@@ -52,10 +53,11 @@ function AppRouter() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
+      <AppearanceProvider>
         <FiltersProvider>
           <Toaster />
           <AccessGate>
+            <AppearanceSync />
             <Onboarding />
             <Router hook={useHashLocation}>
               <Suspense fallback={<div className="p-6 text-sm text-muted-foreground" role="status">A carregar…</div>}>
@@ -65,7 +67,7 @@ function App() {
             </Router>
           </AccessGate>
         </FiltersProvider>
-      </ThemeProvider>
+      </AppearanceProvider>
     </QueryClientProvider>
   );
 }

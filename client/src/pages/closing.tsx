@@ -384,7 +384,7 @@ function Composition() {
                   </div>
                 ))}
                 <div className="flex justify-between border-t border-border pt-1 font-semibold"><span>Acumulado</span><span className="tnum">{fmtEur(c.accumulated)}</span></div>
-                {b.incomplete && <p className="text-xs text-amber-700 dark:text-amber-400">Falta taxa de conversão ({b.missing.join(", ")}): total incompleto.</p>}
+                {b.incomplete && <p className="text-xs text-warning">Falta taxa de conversão ({b.missing.join(", ")}): total incompleto.</p>}
                 {c.check !== 0 && <p className="text-xs text-destructive" data-testid="composition-mismatch">Diferença de composição: {fmtEur(c.check)}.</p>}
               </div>
             )}

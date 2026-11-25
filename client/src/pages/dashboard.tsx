@@ -109,7 +109,7 @@ export default function Dashboard() {
             if (offPace.length === 0) return null;
             return (
               <div className="flex flex-wrap items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm" data-testid="goals-off-pace">
-                <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                <AlertTriangle className="h-4 w-4 text-warning" />
                 <span className="font-medium">
                   {offPace.length} {offPace.length === 1 ? "meta fora do ritmo" : "metas fora do ritmo"}:
                 </span>

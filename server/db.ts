@@ -141,6 +141,17 @@ for (const stmt of [
     /* coluna já existe */
   }
 }
+/* aparência: cor da app e modo claro/escuro (Céu e automático por defeito) */
+for (const stmt of [
+  "ALTER TABLE settings ADD COLUMN palette TEXT NOT NULL DEFAULT 'ceu'",
+  "ALTER TABLE settings ADD COLUMN color_mode TEXT NOT NULL DEFAULT 'auto'",
+]) {
+  try {
+    sqlite.exec(stmt);
+  } catch {
+    /* coluna já existe */
+  }
+}
 sqlite.exec("CREATE TABLE IF NOT EXISTS ai_usage (day TEXT PRIMARY KEY, count INTEGER NOT NULL DEFAULT 0)");
 
 /* ---- EVO-02: catálogos (tabelas novas, aditivas; nada existente é alterado ou apagado) ---- */

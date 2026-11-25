@@ -270,7 +270,7 @@ export default function BudgetPage() {
                     <td
                       className={cn(
                         "tnum py-2 pr-3",
-                        row.desvioEUR > 0 ? "text-destructive" : "text-primary",
+                        row.desvioEUR > 0 ? "text-destructive" : "text-success",
                       )}
                     >
                       {row.budget > 0 ? fmtEur(row.desvioEUR) : "—"}
@@ -421,7 +421,7 @@ function Stat({
       <p
         className={cn(
           "tnum mt-1 text-base font-semibold",
-          tone === "positive" && "text-primary",
+          tone === "positive" && "text-success",
           tone === "negative" && "text-destructive",
         )}
       >
