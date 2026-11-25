@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 
 /** Atalhos de navegação: `g` e depois uma letra (como no GitHub). */
 export const GO_SHORTCUTS: { key: string; href: string; label: string }[] = [
-  { key: "p", href: "/", label: "Painel" },
+  { key: "p", href: "/", label: "Início" },
   { key: "m", href: "/meses", label: "Meses" },
   { key: "d", href: "/despesas", label: "Despesas" },
   { key: "f", href: "/fecho", label: "Fecho e planeamento" },

@@ -14,7 +14,7 @@ test.describe("Terminar sessão", () => {
     await abrir();
     await page.getByTestId("button-confirm-cancel").click();
     if (info.project.name === "telemovel") await page.getByTestId("sheet-mais").getByRole("button", { name: /fechar|close/i }).click();
-    await expect(page.getByRole("heading", { level: 1, name: "Painel" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Início" })).toBeVisible();
 
     await abrir();
     await page.getByTestId("button-confirm-ok").click();

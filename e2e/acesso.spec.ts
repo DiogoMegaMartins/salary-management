@@ -19,7 +19,7 @@ test.describe("Código de acesso", () => {
     await page.getByPlaceholder("Código de acesso").fill("codigo-errado-0000");
     await page.getByRole("button", { name: "Entrar" }).click();
     await expect(page.getByText("Código incorreto")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 1, name: "Painel" })).toHaveCount(0);
+    await expect(page.getByRole("heading", { level: 1, name: "Início" })).toHaveCount(0);
   });
 
   test("com o código certo abre o Painel", async ({ page }) => {

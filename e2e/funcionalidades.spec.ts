@@ -55,7 +55,7 @@ test.describe("Menu, rotas e Painel", () => {
     await entrar(page);
     await expect(page.getByTestId("link-parcelas-e-metas")).toHaveCount(0);
     await page.goto("/#/parcelas");
-    await expect(page.getByRole("heading", { level: 1, name: "Painel" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Início" })).toBeVisible();
     await expect(page.getByText("Parcelas no período", { exact: true })).toHaveCount(0);
   });
 
@@ -64,7 +64,7 @@ test.describe("Menu, rotas e Painel", () => {
     await entrar(page);
     await expect(page.getByTestId("link-carteira")).toHaveCount(0);
     await page.goto("/#/carteira");
-    await expect(page.getByRole("heading", { level: 1, name: "Painel" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Início" })).toBeVisible();
   });
 
   test("com divisão desligada: o Painel perde a divisão por parcela", async ({ page, request }) => {
