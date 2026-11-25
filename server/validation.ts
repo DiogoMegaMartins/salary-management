@@ -2,6 +2,7 @@ import { z } from "zod";
 import { MIN_CODE_LENGTH } from "./access";
 import { round2 } from "@shared/evo08";
 import { FEATURES } from "@shared/features";
+import { PALETTES, COLOR_MODES } from "@shared/appearance";
 
 const cents = round2;
 const num = z.number();
@@ -41,6 +42,8 @@ export const settingsPatchSchema = z.strictObject({
   onboardingDone: bool01,
   aiEnabled: bool01,
   aiModel: z.enum(["haiku", "sonnet"]),
+  palette: z.enum(PALETTES),
+  colorMode: z.enum(COLOR_MODES),
 }).partial();
 
 export const issueMessage = (e: z.ZodError) => {

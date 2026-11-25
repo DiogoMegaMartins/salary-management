@@ -113,6 +113,10 @@ export const settings = sqliteTable("settings", {
   // assistente com IA para frases livres: desligado por defeito; modelo "haiku" ou "sonnet"
   aiEnabled: integer("ai_enabled").notNull().default(0),
   aiModel: text("ai_model").notNull().default("haiku"),
+
+  // aparência: cor da app ("ceu", "salvia", "pessego", "lavanda", "mare") e modo ("auto", "claro", "escuro")
+  palette: text("palette").notNull().default("ceu"),
+  colorMode: text("color_mode").notNull().default("auto"),
 });
 
 export type Settings = typeof settings.$inferSelect;
