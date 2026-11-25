@@ -91,8 +91,8 @@ export function PlatformDistribution({
           <span className="text-xs text-muted-foreground" data-testid={`detail-status-${parcelId}`}>
             {saved.map((l) => nameOf(l.platformId)).join(" · ")}
             {savedResult.remainingCents > 0
-              ? <> · <span className="font-medium text-amber-700 dark:text-amber-400">Por detalhar {fmtEur(savedResult.remainingCents / 100)}</span></>
-              : <> · <span className="font-medium text-primary">✔ Detalhe completo</span></>}
+              ? <> · <span className="font-medium text-warning">Por detalhar {fmtEur(savedResult.remainingCents / 100)}</span></>
+              : <> · <span className="font-medium text-success">✔ Detalhe completo</span></>}
           </span>
         )}
         {saved.length > 0 && !savedResult.ok && (

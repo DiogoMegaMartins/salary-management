@@ -14,7 +14,7 @@ import { useSave, type Derived } from "@/lib/app";
 import { cn, localToday } from "@/lib/utils";
 import { fmtEur, fmtPct, parcelReturn } from "@shared/calc";
 
-const GOOD = "text-emerald-700 dark:text-emerald-400";
+const GOOD = "text-success";
 const BAD = "text-destructive";
 
 /** Ganho ou perda em euros: sem "+" quando é zero (não houve ganho nem perda). */

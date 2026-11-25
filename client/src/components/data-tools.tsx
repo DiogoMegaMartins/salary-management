@@ -33,7 +33,7 @@ export function AppInfo({ updatedAt }: { updatedAt?: string }) {
       {s && (
         <>
           {sep}
-          <Link href="/dados" data-testid="backup-status" className={cn("underline-offset-2 hover:underline", overdue && "font-medium text-amber-700 dark:text-amber-400")}>
+          <Link href="/dados" data-testid="backup-status" className={cn("underline-offset-2 hover:underline", overdue && "font-medium text-warning")}>
             {since === null ? "Ainda sem backup guardado" : since === 0 ? "Backup guardado hoje" : `Último backup há ${since} ${since === 1 ? "dia" : "dias"}`}
             {overdue ? ": guarda um novo" : ""}
           </Link>
@@ -59,10 +59,10 @@ export function VerifyData() {
     <SectionCard title="Verificar dados" description="Procura inconsistências sem alterar nada. Os erros bloqueiam o fecho fiável; os avisos são informativos.">
       <div className="space-y-3" data-testid="verify-data">
         <Button size="sm" onClick={run} disabled={q.isFetching} data-testid="button-verify">{q.isFetching ? "A verificar…" : "Verificar dados"}</Button>
-        {ran && issues.length === 0 && <p className="text-sm text-primary" data-testid="verify-ok">Sem problemas encontrados.</p>}
+        {ran && issues.length === 0 && <p className="text-sm text-success" data-testid="verify-ok">Sem problemas encontrados.</p>}
         {ran && issues.length > 0 && (
           <div className="space-y-2 text-sm" data-testid="verify-result">
-            <p><span className="font-medium text-destructive">{errs.length} erro(s)</span> · <span className="font-medium text-amber-700 dark:text-amber-400">{warns.length} aviso(s)</span></p>
+            <p><span className="font-medium text-destructive">{errs.length} erro(s)</span> · <span className="font-medium text-warning">{warns.length} aviso(s)</span></p>
             <ul className="space-y-1.5">
               {[...errs, ...warns].slice(0, 100).map((i, k) => (
                 <li key={k} className={`rounded-md border p-2 ${i.severity === "erro" ? "border-destructive/40" : "border-amber-500/40"}`} data-testid={`issue-${i.code}`}>
@@ -171,11 +171,11 @@ export function CsvImport() {
         )}
         {pv && (
           <div className="space-y-2" data-testid="csv-preview">
-            <p data-testid="csv-summary">{pv.summary.total} linha(s): <b>{pv.summary.validas}</b> a importar · <b className="text-destructive">{pv.summary.erros}</b> com erro · <b className="text-amber-700 dark:text-amber-400">{pv.summary.duplicadas}</b> duplicada(s).</p>
-            {pv.alreadyImported && <p className="text-amber-700 dark:text-amber-400" data-testid="csv-already">Este ficheiro já foi importado antes.</p>}
+            <p data-testid="csv-summary">{pv.summary.total} linha(s): <b>{pv.summary.validas}</b> a importar · <b className="text-destructive">{pv.summary.erros}</b> com erro · <b className="text-warning">{pv.summary.duplicadas}</b> duplicada(s).</p>
+            {pv.alreadyImported && <p className="text-warning" data-testid="csv-already">Este ficheiro já foi importado antes.</p>}
             <ul className="max-h-60 space-y-0.5 overflow-y-auto text-xs">
               {pv.results.filter((r: any) => !r.ok || r.duplicate).slice(0, 100).map((r: any) => (
-                <li key={r.line} className={r.ok ? "text-amber-700 dark:text-amber-400" : "text-destructive"}>Linha {r.line}: {r.ok ? `possível duplicado (${r.duplicate === "ficheiro" ? "no ficheiro" : "já existe"})` : r.errors.join("; ")}</li>
+                <li key={r.line} className={r.ok ? "text-warning" : "text-destructive"}>Linha {r.line}: {r.ok ? `possível duplicado (${r.duplicate === "ficheiro" ? "no ficheiro" : "já existe"})` : r.errors.join("; ")}</li>
               ))}
             </ul>
             <div className="flex gap-2">
@@ -185,7 +185,7 @@ export function CsvImport() {
             {!parcel && <p className="text-xs text-muted-foreground">Escolhe a parcela de destino para importar.</p>}
           </div>
         )}
-        {done && <p className="text-primary" role="status" data-testid="csv-done">{done}</p>}
+        {done && <p className="text-success" role="status" data-testid="csv-done">{done}</p>}
       </div>
     </SectionCard>
   );

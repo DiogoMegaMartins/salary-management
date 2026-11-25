@@ -666,7 +666,7 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
       <>
         <H3>1.24.0</H3>
         <UL>
-          <li>Nova secção Definições › Aparência: escolhe a cor da app (Céu, Sálvia, Pêssego, Lavanda ou Maré) e o modo claro, escuro ou automático. A escolha fica guardada na tua conta. A app tem agora uma letra nova, mais redonda.</li>
+          <li>Nova secção Definições › Aparência: escolhe a cor da app (Céu, Sálvia, Pêssego, Lavanda ou Maré) e o modo claro, escuro ou automático. A escolha fica guardada na tua conta. Valores e percentagens a subir ou a descer aparecem a verde, âmbar ou vermelho. A app tem agora uma letra nova, mais redonda.</li>
         </UL>
         <H3>1.23.2</H3>
         <UL>

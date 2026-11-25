@@ -94,4 +94,15 @@ test.describe("aparência", () => {
       await expect(page.getByRole("radio", { name: /Pêssego/ })).toHaveAccessibleDescription(/caloroso/);
     });
   });
+
+  for (const pal of ["ceu", "pessego", "lavanda"]) {
+    test(`valores a subir ficam verdes, em qualquer paleta (${pal})`, async ({ page }) => {
+      await page.addInitScript((p) => localStorage.setItem("sm.appearance", JSON.stringify({ palette: p, mode: "claro" })), pal);
+      await entrar(page);
+      const cor = await page.locator(".text-success").first().evaluate((el) => getComputedStyle(el).color);
+      const [r, g, b] = (cor.match(/\d+/g) ?? []).map(Number);
+      expect(g, `cor ${cor}`).toBeGreaterThan(r);
+      expect(g, `cor ${cor}`).toBeGreaterThan(b);
+    });
+  }
 });

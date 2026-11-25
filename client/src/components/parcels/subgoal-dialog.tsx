@@ -107,7 +107,7 @@ export function SubgoalDialog({
                 Taxa de hoje: 1 {f.currency} = ? {refCurrency}{hasRate ? " (opcional: já existe uma taxa)" : ""}
               </Label>
               <Input id="subgoal-rate" inputMode="decimal" value={f.rate} onChange={(e) => isValidDecimalDraft(e.target.value) && setF({ ...f, rate: e.target.value })} placeholder="Ex.: 0,92" className="tnum h-9 text-sm" data-testid="input-subgoal-rate" />
-              {!hasRate && f.rate.trim() === "" && <p className="text-xs text-amber-700 dark:text-amber-400">Sem taxa, esta submeta não entra no total da parcela.</p>}
+              {!hasRate && f.rate.trim() === "" && <p className="text-xs text-warning">Sem taxa, esta submeta não entra no total da parcela.</p>}
             </div>
           )}
           <div className="grid grid-cols-2 gap-3">

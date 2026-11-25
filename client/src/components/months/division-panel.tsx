@@ -103,8 +103,8 @@ export function DivisionPanel({ month }: { month: Month }) {
             {carry > 0 && <p className="text-xs text-muted-foreground" data-testid="division-carry">Inclui {fmtEur(carry)} transportados do mês anterior (não são rendimento).</p>}
           </div>
           <div className="text-right" role="status" aria-live="polite" data-testid="division-status">
-            {status === "completo" && <p className="text-sm font-medium text-primary">✔ Tudo distribuído</p>}
-            {status === "livre" && <p className="text-sm font-medium">Por distribuir <span className="tnum text-amber-700 dark:text-amber-400">{fmtEur(remaining)}</span></p>}
+            {status === "completo" && <p className="text-sm font-medium text-success">✔ Tudo distribuído</p>}
+            {status === "livre" && <p className="text-sm font-medium">Por distribuir <span className="tnum text-warning">{fmtEur(remaining)}</span></p>}
             {status === "excede" && <p className="text-sm font-medium text-destructive">Excede em <span className="tnum">{fmtEur(-remaining)}</span></p>}
             <p className="text-xs text-muted-foreground">Alocado <span className="tnum">{fmtEur(allocated)}</span> · Restante <span className="tnum" data-testid="badge-remaining">{fmtEur(remaining)}</span></p>
           </div>

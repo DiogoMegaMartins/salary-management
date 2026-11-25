@@ -92,7 +92,7 @@ export function Kpi({
       <p
         className={cn(
           "tnum mt-2 text-lg font-semibold",
-          tone === "positive" && "text-primary",
+          tone === "positive" && "text-success",
           tone === "negative" && "text-destructive",
           tone === "primary" && "text-primary",
         )}
@@ -106,9 +106,9 @@ export function Kpi({
             className={cn(
               "tnum inline-flex items-center gap-0.5 font-medium",
               delta > 0.0001
-                ? deltaTone === "up-bad" ? "text-amber-700 dark:text-amber-400" : "text-primary"
+                ? deltaTone === "up-bad" ? "text-warning" : "text-success"
                 : delta < -0.0001
-                  ? deltaTone === "up-bad" ? "text-primary" : "text-destructive"
+                  ? deltaTone === "up-bad" ? "text-success" : "text-destructive"
                   : "text-muted-foreground",
             )}
           >

@@ -182,7 +182,7 @@ export default function ExpensesPage() {
           Reembolsos não são compensados automaticamente: regista-os como ajuste no mês, se necessário.
         </p>
         {view.unclassifiedCount > 0 && (
-          <button type="button" className="text-xs text-amber-600 underline dark:text-amber-400" onClick={() => setCat(UNCLASSIFIED)} data-testid="button-show-unclassified">
+          <button type="button" className="text-xs text-warning underline" onClick={() => setCat(UNCLASSIFIED)} data-testid="button-show-unclassified">
             {view.unclassifiedCount} despesa(s) sem categoria ({fmtEur(view.unclassifiedTotal)}): ver
           </button>
         )}
@@ -279,7 +279,7 @@ export default function ExpensesPage() {
             )}
           </div>
         )}
-        {saved && <p role="status" className="text-xs text-primary" data-testid="save-feedback">{saved}</p>}
+        {saved && <p role="status" className="text-xs text-success" data-testid="save-feedback">{saved}</p>}
         {view.days.length === 0 ? (
           <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground" data-testid="expenses-empty">
             {view.count === 0 ? "Sem despesas neste mês." : "Nenhuma despesa corresponde aos filtros."}

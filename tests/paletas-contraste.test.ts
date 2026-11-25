@@ -42,3 +42,21 @@ for (const p of PALETTES) {
     });
   }
 }
+
+// Cores de estado (valores a subir ou a descer): verde, âmbar e vermelho têm de se ler em todas as paletas e modos.
+const baseClaro = bloco(":root");
+const baseEscuro = bloco(".dark");
+for (const p of PALETTES) {
+  for (const modo of ["claro", "escuro"] as const) {
+    test(`paleta ${p} (${modo}): verde, âmbar e vermelho legíveis`, () => {
+      const pal = bloco(modo === "claro" ? `:root[data-palette="${p}"]` : `:root[data-palette="${p}"].dark`);
+      const base = modo === "claro" ? baseClaro : baseEscuro;
+      const [bg, card] = ["background", "card"].map((n) => hsl(pal, n));
+      for (const cor of ["success", "warning", "destructive"]) {
+        const c = hsl(base, cor);
+        assert.ok(contraste(c, bg) >= 4.5, `${cor}/fundo ${contraste(c, bg).toFixed(2)}`);
+        assert.ok(contraste(c, card) >= 4.5, `${cor}/cartão ${contraste(c, card).toFixed(2)}`);
+      }
+    });
+  }
+}

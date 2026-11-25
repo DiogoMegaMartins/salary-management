@@ -19,7 +19,7 @@ import {
 } from "@shared/calc";
 import { pctSigned } from "@/components/insights";
 
-const GOOD = "text-emerald-700 dark:text-emerald-400";
+const GOOD = "text-success";
 const BAD = "text-destructive";
 /** Cor da variação: `upIsGood` indica se subir é bom (rendimento, poupança) ou mau (gastos, descontos). */
 const tone = (x: number | null, upIsGood: boolean) => (x == null || Math.abs(x) < 0.0005 ? "text-muted-foreground" : (x > 0) === upIsGood ? GOOD : BAD);

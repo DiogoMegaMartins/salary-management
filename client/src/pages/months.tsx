@@ -156,7 +156,7 @@ export default function Months() {
                   <td className="tnum px-3 py-2.5 text-right text-muted-foreground">{fmtEur(r.allocated)}</td>
                   <td
                     className={`tnum px-3 py-2.5 text-right font-medium ${
-                      r.remaining < -0.01 ? "text-destructive" : r.remaining > 0.01 ? "text-primary" : ""
+                      r.remaining < -0.01 ? "text-destructive" : r.remaining > 0.01 ? "text-success" : ""
                     }`}
                   >
                     {fmtEur(r.remaining)}
