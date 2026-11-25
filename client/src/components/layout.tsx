@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Settings, Eye, EyeOff, LayoutGrid, CalendarCheck, Moon, Sun, LayoutDashboard, CalendarRange, PieChart, Wallet, Target, HelpCircle, Receipt, Ellipsis, Layers } from "lucide-react";
+import { Eye, EyeOff, LayoutGrid, Moon, Sun, Ellipsis } from "lucide-react";
 import { useAppState } from "@/lib/app";
 import { useTheme } from "@/lib/appearance";
 import { usePrivacy } from "@/lib/privacy";
 import { useFeatures } from "@/lib/features";
-import type { FeatureKey } from "@shared/features";
+import { MAIN_NAV, MORE_NAV, visibleNav as visible, isNavActive as isActive, type NavItem } from "@/lib/nav";
 import { layoutEditor, useLayoutEditor } from "@/lib/layout-editor";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -33,61 +33,39 @@ export function Logo({ className }: { className?: string }) {
   );
 }
 
-type NavItem = { href: string; label: string; icon: any; features?: FeatureKey[] };
-/** Só os itens cuja funcionalidade está ligada. */
-const visible = (list: NavItem[], f: Record<FeatureKey, boolean>) => list.filter((i) => !i.features || i.features.some((k) => f[k]));
-
-const NAV: NavItem[] = [
-  { href: "/", label: "Painel", icon: LayoutDashboard },
-  { href: "/meses", label: "Meses", icon: CalendarRange },
-  { href: "/divisao", label: "Divisão", icon: Layers, features: ["divisao", "movimentos"] as FeatureKey[] },
-  { href: "/despesas", label: "Despesas", icon: Receipt },
-  { href: "/fecho", label: "Fecho e planeamento", icon: CalendarCheck },
-  { href: "/parcelas", label: "Parcelas e metas", icon: PieChart, features: ["parcelas"] as FeatureKey[] },
-  { href: "/carteira", label: "Carteira", icon: Wallet, features: ["plataformas"] as FeatureKey[] },
-  { href: "/orcamento", label: "Orçamento", icon: Target },
-  { href: "/dados", label: "Definições", icon: Settings },
-  { href: "/ajuda", label: "Ajuda e documentação", icon: HelpCircle },
-];
-
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const [location] = useLocation();
   const features = useFeatures();
+  const link = (item: NavItem) => {
+    const active = isActive(item.href, location);
+    const Icon = item.icon;
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        onClick={onNavigate}
+        data-testid={`link-${item.testId}`}
+        aria-current={active ? "page" : undefined}
+        className={cn(
+          "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
+          active
+            ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+            : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+        )}
+      >
+        <Icon className="h-4 w-4 shrink-0" />
+        <span className="truncate">{item.label}</span>
+      </Link>
+    );
+  };
   return (
-    <nav className="flex flex-col gap-1">
-      {visible(NAV, features).map((item) => {
-        const active = item.href === "/" ? location === "/" : location.startsWith(item.href);
-        const Icon = item.icon;
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onNavigate}
-            data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
-            className={cn(
-              "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
-              active
-                ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
-            )}
-          >
-            <Icon className="h-4 w-4 shrink-0" />
-            <span className="truncate">{item.label}</span>
-          </Link>
-        );
-      })}
+    <nav className="flex flex-col gap-1" aria-label="Navegação principal">
+      {visible(MAIN_NAV, features).map(link)}
+      <p className="mt-4 px-3 pb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground" data-testid="nav-more-heading">Mais</p>
+      {visible(MORE_NAV, features).map(link)}
     </nav>
   );
 }
-
-const TABS: NavItem[] = [
-  { href: "/", label: "Painel", icon: LayoutDashboard },
-  { href: "/meses", label: "Meses", icon: CalendarRange },
-  { href: "/divisao", label: "Divisão", icon: Layers, features: ["divisao", "movimentos"] as FeatureKey[] },
-  { href: "/despesas", label: "Despesas", icon: Receipt },
-];
-const MORE = NAV.filter((n) => !TABS.some((t) => t.href === n.href));
-const isActive = (href: string, location: string) => (href === "/" ? location === "/" : location.startsWith(href));
 
 /** Barra de separadores no fundo do ecrã (telemóvel). Esconde-se com o teclado aberto. */
 function BottomNav() {
@@ -111,13 +89,13 @@ function BottomNav() {
     };
   }, []);
   useEffect(() => setMoreOpen(false), [location]);
-  const moreActive = visible(MORE, features).some((n) => isActive(n.href, location));
+  const moreActive = visible(MORE_NAV, features).some((n) => isActive(n.href, location));
   const item = "relative flex min-h-13 flex-1 flex-col items-center justify-center gap-0.5 px-1 text-[11px] font-medium transition-colors active:scale-95";
   return (
     <>
       {!typing && (
         <nav aria-label="Navegação principal" data-testid="bottom-nav" className="lg:hidden col-start-1 z-30 flex border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm">
-          {visible(TABS, features).map((t) => {
+          {visible(MAIN_NAV, features).map((t) => {
             const active = isActive(t.href, location);
             return (
               <Link key={t.href} href={t.href} aria-current={active ? "page" : undefined} data-testid={`tab-${t.label.toLowerCase()}`} className={cn(item, active ? "text-primary" : "text-muted-foreground")}>
@@ -144,7 +122,7 @@ function BottomNav() {
             <SheetDescription>{alert ? "Há alterações guardadas só neste dispositivo. Vê o estado em cada página." : "Outras áreas da aplicação."}</SheetDescription>
           </SheetHeader>
           <div className="mt-3 grid grid-cols-1 gap-1">
-            {visible(MORE, features).map((n) => (
+            {visible(MORE_NAV, features).map((n) => (
               <Link key={n.href} href={n.href} data-testid={`more-${n.href.slice(1)}`} className={cn("flex min-h-12 items-center gap-3 rounded-lg px-3 text-base", isActive(n.href, location) ? "bg-primary/10 font-medium text-primary" : "hover:bg-muted")}>
                 <n.icon className="h-5 w-5 shrink-0" />
                 {n.label}
