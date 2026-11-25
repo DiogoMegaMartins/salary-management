@@ -39,3 +39,9 @@ test("lixo, tarefa desconhecida ou instruções na resposta dão 'desconhecido'"
 test("arredonda o valor em cêntimos", () => {
   assert.equal(parseAiReply('{"task":"mes","amount":1450.456}', hoje).amount, 1450.46);
 });
+
+test("fechar o mês: o pedido explica a tarefa e a resposta 'fechar' é aceite, sem campos extra", () => {
+  assert.match(buildAiRequest("fecha o mês", hoje, [], "haiku").system, /fechar = fechar o mês/);
+  assert.deepEqual(parseAiReply('{"task":"fechar","amount":null,"category":null,"date":null}', hoje), { task: "fechar" });
+  assert.deepEqual(parseAiReply('{"task":"fechar","amount":500,"date":"2026-11-30"}', hoje), { task: "fechar", amount: 500, date: "2026-11-30" });
+});

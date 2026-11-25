@@ -2,6 +2,10 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.23.1 | 2026-11-25
+
+- Assistente com IA: a IA também entende "fechar o mês" (nova tarefa `fechar` no pedido e na validação da resposta). Entra no fluxo guiado de fecho, que pergunta o mês e, só se sobrar dinheiro, o destino; só fecha depois de confirmares.
+
 ## 1.23.0 | 2026-11-25
 
 Fecho do mês e transporte do restante.
