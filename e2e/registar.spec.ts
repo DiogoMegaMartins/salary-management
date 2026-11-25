@@ -81,3 +81,9 @@ test("registar: não tapa o assistente", async ({ page }) => {
   const sobrepoe = a!.x < b!.x + b!.width && a!.x + a!.width > b!.x && a!.y < b!.y + b!.height && a!.y + a!.height > b!.y;
   expect(sobrepoe, "botão Registar e assistente não se podem sobrepor").toBe(false);
 });
+
+test("registar: o botão do assistente fica por cima da faixa do botão Registar, nítido", async ({ page }) => {
+  await entrar(page);
+  const z = async (id: string) => Number(await page.getByTestId(id).evaluate((el) => getComputedStyle(el).zIndex));
+  expect(await z("assistant-fab")).toBeGreaterThan(await z("register-bar"));
+});
