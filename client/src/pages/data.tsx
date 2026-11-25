@@ -28,6 +28,7 @@ import { fmtEur } from "@shared/calc";
 import { CatalogsSection } from "@/components/catalogs";
 import { VerifyData, ChangeHistory, CsvImport } from "@/components/data-tools";
 import { FeaturesSettings } from "@/components/features-settings";
+import { AppearanceSettings } from "@/components/appearance-settings";
 import { AiSettings } from "@/components/ai-settings";
 import { OfflineSettings } from "@/components/offline-status";
 import { daysSince } from "@/lib/utils";
@@ -86,6 +87,7 @@ export default function DataPage() {
         <TabsList className="sticky-tabs" data-testid="settings-tablist">
           <TabsTrigger value="calculo" data-testid="settings-tab-calculo">Cálculo</TabsTrigger>
           <TabsTrigger value="funcionalidades" data-testid="settings-tab-funcionalidades">Funcionalidades</TabsTrigger>
+          <TabsTrigger value="aparencia" data-testid="settings-tab-aparencia">Aparência</TabsTrigger>
           <TabsTrigger value="catalogos" data-testid="settings-tab-catalogos">Catálogos</TabsTrigger>
           <TabsTrigger value="backups" data-testid="settings-tab-backups">Backups e importação</TabsTrigger>
           <TabsTrigger value="seguranca" data-testid="settings-tab-seguranca">Segurança</TabsTrigger>
@@ -253,6 +255,7 @@ export default function DataPage() {
 
         </div></TabsContent>
         <TabsContent value="funcionalidades" className="mt-0"><FeaturesSettings settings={s} /><AiSettings settings={s} /></TabsContent>
+        <TabsContent value="aparencia" className="mt-0"><AppearanceSettings /></TabsContent>
         <TabsContent value="catalogos" className="mt-0"><div className="space-y-4">
         <SectionCard
           title="Catálogos"
