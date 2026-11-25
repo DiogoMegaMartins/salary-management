@@ -73,3 +73,15 @@ export function monthOfDate<T extends MonthLike>(months: T[], date: string): T |
   const same = months.filter((m) => m.year === y && m.month === mo);
   return same.find((m) => m.status !== "fechado") ?? same[0] ?? null;
 }
+
+/**
+ * Data que o diálogo "Registar despesa" propõe: hoje, se já existir um mês para hoje; senão o último dia do último mês
+ * aberto (para a despesa não falhar por falta de mês); sem meses abertos, hoje (o diálogo explica o que fazer).
+ */
+export function defaultRegisterDate(months: MonthLike[], today: string): string {
+  if (monthOfDate(months, today)) return today;
+  const m = latestOpenMonth(months);
+  if (!m) return today;
+  const last = new Date(Date.UTC(m.year, m.month, 0)).getUTCDate();
+  return `${m.year}-${String(m.month).padStart(2, "0")}-${String(last).padStart(2, "0")}`;
+}

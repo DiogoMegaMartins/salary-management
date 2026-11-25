@@ -31,7 +31,7 @@ export function AssistantFab() {
       {!open && !(typing && isMobile) && (
         <Button
           size="icon"
-          className="fixed! bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-40 h-14 w-14 rounded-full shadow-lg lg:bottom-6 lg:right-6"
+          className="fixed! bottom-[calc(8.5rem+env(safe-area-inset-bottom))] right-4 z-40 h-14 w-14 rounded-full shadow-lg lg:bottom-6 lg:right-6"
           aria-label="Abrir o assistente"
           data-testid="assistant-fab"
           onClick={() => setOpen(true)}

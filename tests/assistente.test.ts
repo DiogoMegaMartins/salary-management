@@ -54,3 +54,16 @@ test("último mês aberto e mês de uma data", () => {
   assert.equal(monthOfDate(meses, "2026-10-15")?.id, 1);
   assert.equal(monthOfDate(meses, "2027-01-01"), null);
 });
+
+test("registar: data por defeito é hoje se o mês existe, senão o fim do último mês aberto", async () => {
+  const { defaultRegisterDate } = await import("../shared/assistant");
+  const meses = [
+    { id: 1, year: 2026, month: 2, status: "fechado", base: 100 },
+    { id: 2, year: 2026, month: 3, status: "aberto", base: 100 },
+  ] as any[];
+  assert.equal(defaultRegisterDate(meses, "2026-03-12"), "2026-03-12");
+  assert.equal(defaultRegisterDate(meses, "2026-11-25"), "2026-03-31");
+  assert.equal(defaultRegisterDate([{ id: 3, year: 2024, month: 2, status: "aberto", base: 1 }] as any[], "2026-11-25"), "2024-02-29");
+  assert.equal(defaultRegisterDate(meses.slice(0, 1), "2026-11-25"), "2026-11-25"); // só fechados: hoje, e o diálogo explica
+  assert.equal(defaultRegisterDate([], "2026-11-25"), "2026-11-25");
+});

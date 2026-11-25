@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { OfflineStatus } from "@/components/offline-status";
 import { KeyboardShortcuts } from "@/components/shortcuts";
+import { RegisterBar } from "@/components/register-expense";
 import { LogoutButton } from "@/components/logout";
 import { offlineInfo } from "@/lib/offline";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -218,7 +219,10 @@ export function AppShell({
             </Button>
           </div>
         ) : (
-          children
+          <>
+            {children}
+            <RegisterBar />
+          </>
         )}
       </main>
       <BottomNav />
