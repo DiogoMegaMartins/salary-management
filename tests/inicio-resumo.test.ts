@@ -45,7 +45,7 @@ test("início: dias que faltam só no mês de hoje", () => {
 });
 
 test("início: parcela predefinida é a de gastos de menor id; sem ela, nenhuma", () => {
-  const ps = [{ id: 5, kind: "investimento", active: 1 }, { id: 9, kind: "gastos", active: 1 }, { id: 3, kind: "gastos", active: 1 }, { id: 2, kind: "gastos", active: 0 }] as any[];
+  const ps = [{ id: 5, kind: "investimento", archived: 0 }, { id: 9, kind: "gastos", archived: 0 }, { id: 3, kind: "gastos", archived: 0 }, { id: 2, kind: "gastos", archived: 1 }] as any[];
   assert.equal(defaultExpenseParcel(ps), 3);
   assert.equal(defaultExpenseParcel([ps[0]]), null);
   assert.equal(defaultExpenseParcel([]), null);

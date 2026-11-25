@@ -53,8 +53,8 @@ export function inicioSummary(input: {
   return { planned, spent, left, pctSpent, state, daysLeft, categories };
 }
 
-/** Parcela de gastos que o Registar propõe: a ativa de menor id; sem ela, nenhuma. */
-export function defaultExpenseParcel(parcels: { id: number; kind: string; active?: number | boolean }[]): number | null {
-  const ids = parcels.filter((p) => p.kind === "gastos" && p.active !== 0 && p.active !== false).map((p) => p.id);
+/** Parcela de gastos que o Registar propõe: a não arquivada de menor id; sem ela, nenhuma. */
+export function defaultExpenseParcel(parcels: { id: number; kind: string; archived?: number }[]): number | null {
+  const ids = parcels.filter((p) => p.kind === "gastos" && !p.archived).map((p) => p.id);
   return ids.length ? Math.min(...ids) : null;
 }

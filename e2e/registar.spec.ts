@@ -40,6 +40,26 @@ test("registar: grava a despesa e avisa", async ({ page }, info) => {
   expect(t).toHaveLength(1);
   expect(t[0].value).toBe(12.5);
   expect(t[0].type).toBe("expense");
+  // pede a parcela e, por defeito, cai na de gastos
+  const estado = await (await page.request.get("/api/state", { headers: cabecalhosApi() })).json();
+  const gastos = estado.parcels.filter((p: any) => p.kind === "gastos" && !p.archived).sort((a: any, b: any) => a.id - b.id)[0];
+  expect(t[0].parcelId).toBe(gastos.id);
+});
+
+test("registar: a parcela vem preenchida com a de gastos e pode mudar-se", async ({ page }, info) => {
+  const nota = `registo-parcela-${sufixo(info.project.name)}-${Date.now()}`;
+  await entrar(page);
+  await abrir(page);
+  await expect(page.getByTestId("register-parcel")).toContainText("Gastos Mensais");
+  await page.getByTestId("register-parcel").click();
+  await page.getByRole("option", { name: "Fundo de Emergência" }).click();
+  await page.getByTestId("register-value").fill("1");
+  await page.getByTestId("register-note").fill(nota);
+  await page.getByTestId("register-save").click();
+  await expect(page.getByTestId("register-dialog")).toBeHidden();
+  const estado = await (await page.request.get("/api/state", { headers: cabecalhosApi() })).json();
+  const fundo = estado.parcels.find((p: any) => p.name === "Fundo de Emergência");
+  expect((await transacoes(page, nota))[0].parcelId).toBe(fundo.id);
 });
 
 test("registar: valor vazio, zero ou texto dá erro e não grava", async ({ page }, info) => {
