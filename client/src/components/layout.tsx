@@ -170,11 +170,11 @@ export function AppShell({
         </div>
       </aside>
 
-      <header className="app-header col-start-1 lg:col-start-2 [@media(min-height:760px)]:sticky top-0 z-20 flex min-w-0 flex-col gap-3 border-b border-border bg-background/85 px-4 py-3 backdrop-blur-sm md:px-6">
+      <header className="app-header col-start-1 lg:col-start-2 [@media(min-height:760px)]:sticky top-0 z-20 flex min-w-0 flex-col gap-3 border-b border-card-border bg-accent px-4 py-4 md:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 flex-[1_1_16rem] items-center gap-3">
             <div className="min-w-0">
-              <h1 className="wrap-break-word text-lg font-semibold tracking-tight md:text-xl" data-testid="text-page-title">
+              <h1 className="wrap-break-word text-xl font-semibold tracking-tight md:text-2xl" data-testid="text-page-title">
                 {title}
               </h1>
               {subtitle && <div className="wrap-break-word text-xs text-muted-foreground md:text-sm">{subtitle}</div>}
