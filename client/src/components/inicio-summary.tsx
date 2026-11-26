@@ -19,11 +19,26 @@ const AVISO_ATENCAO = "Atenção: já gastaste quase tudo o que planeaste";
  * Resumo do mês no topo do Início: "Valor disponível" = gastos mensais planeados − despesas registadas (passa a "Gasto acima do planeado" se se exceder),
  * a barra de progresso e para onde vai o dinheiro. O Básico mostra as 3 maiores categorias; o Detalhado, todas.
  */
-export function InicioSummary({ state, detailed }: { state: AppState; detailed: boolean }) {
+/** Mês escolhido (por defeito o último aberto) e o resumo calculado para ele. `null` se ainda não há meses. */
+export function useInicioData(state: AppState, pick: number | null) {
   const months = sortMonths(state.months);
-  const [pick, setPick] = useState<number | null>(null);
   const month = months.find((m) => m.id === pick) ?? latestOpenMonth(months) ?? months[months.length - 1];
-  if (!month) {
+  if (!month) return null;
+  const computed = computeMonth(month, state.allocations, state.parcels, state.settings);
+  const kindOf = new Map(state.parcels.map((p) => [p.id, p.kind]));
+  const expenses = state.transactions
+    .filter((t) => t.monthId === month.id && t.type === "expense")
+    .map((t) => ({ value: t.value, category: t.category, parcelKind: t.parcelId == null ? null : (kindOf.get(t.parcelId) ?? null) }));
+  const s = inicioSummary({ month, planned: computed.byKind.gastos ?? 0, expenses, today: hoje() });
+  return { months, month, computed, s };
+}
+
+export function InicioSummary({ state, detailed, hideCategories = false, pick: pickProp, onPick }: { state: AppState; detailed: boolean; hideCategories?: boolean; pick?: number | null; onPick?: (id: number) => void }) {
+  const [ownPick, setOwnPick] = useState<number | null>(null);
+  const pick = pickProp !== undefined ? pickProp : ownPick;
+  const setPick = onPick ?? setOwnPick;
+  const data = useInicioData(state, pick);
+  if (!data) {
     return (
       <section className="rounded-2xl border border-card-border bg-card p-6 text-center" data-testid="inicio-summary">
         <p className="text-base font-medium">Ainda não tens nenhum mês</p>
@@ -32,12 +47,7 @@ export function InicioSummary({ state, detailed }: { state: AppState; detailed: 
       </section>
     );
   }
-  const computed = computeMonth(month, state.allocations, state.parcels, state.settings);
-  const kindOf = new Map(state.parcels.map((p) => [p.id, p.kind]));
-  const expenses = state.transactions
-    .filter((t) => t.monthId === month.id && t.type === "expense")
-    .map((t) => ({ value: t.value, category: t.category, parcelKind: t.parcelId == null ? null : (kindOf.get(t.parcelId) ?? null) }));
-  const s = inicioSummary({ month, planned: computed.byKind.gastos ?? 0, expenses, today: hoje() });
+  const { months, month, computed, s } = data;
   const cats = detailed ? s.categories : s.categories.slice(0, 3);
   const tom = s.state === "excedido" ? "text-destructive" : s.state === "atencao" ? "text-warning" : "text-foreground";
 
@@ -85,6 +95,7 @@ export function InicioSummary({ state, detailed }: { state: AppState; detailed: 
           </div>
         )}
 
+        {!hideCategories && (
         <div>
           <h3 className="text-sm font-semibold">Para onde vai o dinheiro</h3>
           {cats.length === 0 ? (
@@ -101,6 +112,7 @@ export function InicioSummary({ state, detailed }: { state: AppState; detailed: 
           )}
           {!detailed && s.categories.length > 3 && <p className="mt-2 text-xs text-muted-foreground">Mais categorias no modo Detalhado.</p>}
         </div>
+        )}
 
         {detailed && (
           <p className="text-sm text-muted-foreground" data-testid="inicio-undistributed">

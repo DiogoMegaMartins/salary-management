@@ -57,3 +57,27 @@ test("início: o título é Valor disponível e muda quando se passa do planeado
   assert.equal(inicioLabel("atencao"), "Valor disponível");
   assert.equal(inicioLabel("excedido"), "Gasto acima do planeado");
 });
+
+test("inicio: quanto se pode gastar por dia", async () => {
+  const { dailyAllowance } = await import("../shared/inicio");
+  assert.equal(dailyAllowance(1219.99, 4), 305);
+  assert.equal(dailyAllowance(100, 0), 100, "no último dia conta o dia de hoje");
+  assert.equal(dailyAllowance(0, 5), null);
+  assert.equal(dailyAllowance(-20, 5), null);
+  assert.equal(dailyAllowance(100, null), null, "fora do mês de hoje não há valor diário");
+});
+
+test("inicio: últimas despesas do mês, da mais recente para a mais antiga", async () => {
+  const { latestExpenses } = await import("../shared/inicio");
+  const t = (id: number, monthId: number, date: string, type = "expense", category = "Casa") => ({ id, monthId, type, date, value: id, category, note: "" });
+  const r = latestExpenses([t(1, 1, "2026-11-20"), t(2, 1, "2026-11-25"), t(3, 1, "2026-11-25"), t(4, 2, "2026-12-01"), t(5, 1, "2026-11-26", "aporte"), t(6, 1, "2026-11-10", "expense", " ")], 1, 3);
+  assert.deepEqual(r.map((x) => x.id), [3, 2, 1]);
+  assert.equal(latestExpenses([t(6, 1, "2026-11-10", "expense", " ")], 1, 5)[0].category, "Sem categoria");
+});
+
+test("inicio: rótulo do dia", async () => {
+  const { dayLabel } = await import("../shared/inicio");
+  assert.equal(dayLabel("2026-11-26", "2026-11-26"), "Hoje");
+  assert.equal(dayLabel("2026-11-25", "2026-11-26"), "Ontem");
+  assert.match(dayLabel("2026-11-20", "2026-11-26"), /20/);
+});

@@ -63,3 +63,33 @@ export function defaultExpenseParcel(parcels: { id: number; kind: string; archiv
 export function inicioLabel(state: InicioState): string {
   return state === "excedido" ? "Gasto acima do planeado" : "Valor disponível";
 }
+
+/** Quanto se pode gastar por dia até ao fim do mês (hoje conta). Sem valor se não há saldo ou não é o mês de hoje. */
+export function dailyAllowance(left: number, daysLeft: number | null): number | null {
+  if (daysLeft == null || left <= 0.005) return null;
+  return r2(left / Math.max(daysLeft, 1));
+}
+
+export type LatestExpense = { id: number; date: string; value: number; category: string; note: string };
+
+/** As despesas mais recentes de um mês (data e depois id, da mais nova para a mais antiga). */
+export function latestExpenses(
+  transactions: { id: number; monthId: number; type: string; date: string; value: number; category: string; note: string }[],
+  monthId: number,
+  limit: number,
+): LatestExpense[] {
+  return transactions
+    .filter((t) => t.monthId === monthId && t.type === "expense")
+    .sort((a, b) => (a.date === b.date ? b.id - a.id : a.date < b.date ? 1 : -1))
+    .slice(0, limit)
+    .map((t) => ({ id: t.id, date: t.date, value: t.value, category: t.category.trim() || NO_CATEGORY, note: t.note }));
+}
+
+/** "Hoje", "Ontem" ou "seg., 23 nov." para agrupar/mostrar a data de uma despesa. */
+export function dayLabel(date: string, today: string): string {
+  if (date === today) return "Hoje";
+  const d = new Date(`${date}T12:00:00Z`);
+  const t = new Date(`${today}T12:00:00Z`);
+  if (Math.round((t.getTime() - d.getTime()) / 86400000) === 1) return "Ontem";
+  return d.toLocaleDateString("pt-PT", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+}
