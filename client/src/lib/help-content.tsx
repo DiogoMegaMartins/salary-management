@@ -664,6 +664,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.27.0</H3>
+        <UL>
+          <li>Dividir juntou a divisão do salário, as parcelas e metas e o fecho do mês, com um cartão de 3 passos (salário, repartir, fechar) que mostra onde estás. No modo Básico vês o passo em curso; no Detalhado, todos os separadores. As ligações antigas continuam a funcionar.</li>
+        </UL>
         <H3>1.26.0</H3>
         <UL>
           <li>O Painel passou a Início: abre com o valor disponível este mês (gastos planeados menos despesas registadas, e muda para &quot;Gasto acima do planeado&quot; se o ultrapassares) e para onde vai o dinheiro. No modo Básico vês só isto; no Detalhado, também os gráficos de sempre. Ao registar uma despesa escolhes a parcela (por defeito, a de gastos).</li>

@@ -1,6 +1,6 @@
 # Redesenho "Calma": novo aspeto e navegação
 
-Estado: aprovado. Fase 1 (cores e temas) entregue na 1.24.0; fase 2 (menu e Registar) na 1.25.0; fase 3 (novo Início) na 1.26.0; fases 4 a 6 por fazer
+Estado: aprovado. Fase 1 (cores e temas) entregue na 1.24.0; fase 2 (menu e Registar) na 1.25.0; fase 3 (novo Início) na 1.26.0; fase 4 (Dividir) na 1.27.0; fases 5 e 6 por fazer
 
 ## Intenção
 Quem chega à app pela primeira vez vê demasiada informação e não encontra o caminho para tarefas simples, como dividir o salário. O objetivo é uma app mais leve, descontraída, intuitiva, acessível e atual, para todo o tipo de pessoas. O aspeto e a organização mudam de forma radical. Os dados e as regras de negócio não mudam.
