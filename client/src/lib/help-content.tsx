@@ -664,6 +664,12 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.31.0</H3>
+        <UL>
+          <li>O Plano do mês ficou mais claro: os 3 passos (Quanto entra, Para onde vai, Fechar o mês) estão numa coluna à esquerda e o que escolhes abre à direita. As outras ferramentas (Gastos do mês, Parcelas e metas, Recorrências e reservas, Simulador de metas, Composição dos totais) estão por baixo.</li>
+          <li>Em &quot;Quanto entra&quot; vês o total para repartir, o salário do mês e quanto foi transportado do mês anterior.</li>
+          <li>Em &quot;Fechar o mês&quot; há primeiro uma lista do que falta para fechar.</li>
+        </UL>
         <H3>1.30.0</H3>
         <UL>
           <li>Dividir passou a chamar-se Plano do mês. O ecrã ficou mais leve, com os 3 passos num só cartão e mais espaço entre os blocos.</li>

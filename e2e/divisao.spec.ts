@@ -55,18 +55,18 @@ test.describe("Página Divisão: estados", () => {
     await expect(page).toHaveURL(/#\/divisao\/\d+$/);
   });
 
-  test("os movimentos estão num separador próprio, com o painel de movimentos", async ({ page }) => {
+  test("os movimentos estão numa ferramenta própria, com o painel de movimentos", async ({ page }) => {
     await page.goto("/#/divisao");
-    await page.getByTestId("division-tab-movimentos").click();
+    await page.getByTestId("tool-gastos").click();
     await expect(page.getByTestId("movements-panel")).toBeVisible();
   });
 
-  test("só com Movimentos ligados não há barra de separadores e vê-se os movimentos", async ({ page, request }) => {
+  test("só com Movimentos ligados vê-se os movimentos e não há a ferramenta Gastos do mês", async ({ page, request }) => {
     await request.patch("/api/settings", { headers: cabecalhosApi(), data: { features: '{"divisao":false}' } });
     await page.goto("/#/divisao");
     await page.reload();
     await expect(page.getByTestId("movements-panel")).toBeVisible();
-    await expect(page.getByTestId("division-tab-divisao")).toHaveCount(0);
+    await expect(page.getByTestId("tool-gastos")).toHaveCount(0);
   });
 
   test("sem Divisão nem Movimentos, Plano do mês continua a existir, com o fecho do mês", async ({ page, request }) => {
@@ -74,8 +74,8 @@ test.describe("Página Divisão: estados", () => {
     await page.goto("/#/divisao");
     await page.reload();
     await expect(page.getByRole("heading", { level: 1, name: "Plano do mês" })).toBeVisible();
-    await expect(page.getByTestId("division-tab-divisao")).toHaveCount(0);
-    await expect(page.getByTestId("division-tab-fecho")).toBeVisible();
+    await expect(page.getByTestId("tool-gastos")).toHaveCount(0);
+    await expect(page.getByTestId("step-fechar")).toBeVisible();
   });
 });
 
