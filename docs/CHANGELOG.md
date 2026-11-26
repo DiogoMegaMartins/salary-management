@@ -2,6 +2,14 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.28.0 | 2026-11-26
+
+Redesenho "Calma", fase 5: restantes páginas.
+
+- Cabeçalho das páginas em faixa suave (cor de destaque da paleta) com o título maior (`client/src/components/layout.tsx`), e cartões com cantos mais redondos, mais espaço interior e bordas mais leves (`SectionCard`, `Kpi`, `Card`). Aplica-se a todas as páginas.
+- Modo **Básico** nas restantes páginas (`shared/ui-mode.ts`: `visibleSections`, `visibleSettingsTabs`): Despesas esconde "Despesas fora do padrão" e o filtro por plataforma (o filtro guardado deixa de se aplicar no Básico); Orçamento mostra só "Orçamento vs. real por categoria"; Carteira só o valor atual por parcela; Definições só Funcionalidades, Aparência, Backups e importação, e Segurança. O Detalhado mostra tudo como antes. Mudar de modo não apaga nada.
+- Ajuda: igual nos dois modos.
+
 ## 1.27.0 | 2026-11-26
 
 Redesenho "Calma", fase 4: Dividir.
