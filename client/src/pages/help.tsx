@@ -171,7 +171,7 @@ export default function HelpPage() {
       }
     >
       <div className="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-[260px_minmax(0,1fr)]">
-        <aside className="min-w-0 print:hidden md:sticky md:top-0 md:h-[calc(100dvh-7rem)] md:overflow-y-auto">
+        <aside aria-label="Índice da ajuda" className="min-w-0 print:hidden md:sticky md:top-0 md:h-[calc(100dvh-7rem)] md:overflow-y-auto">
           <Button variant="outline" className="mb-3 flex h-11 w-full items-center justify-between gap-2 md:hidden" onClick={() => setIndexOpen((o) => !o)} aria-expanded={indexOpen ? "true" : "false"} data-testid="button-help-index">
             <span className="flex min-w-0 items-center gap-2"><List className="h-4 w-4 shrink-0" /><span className="truncate">Índice · {active.title}</span></span>
             <ChevronDown className={cn("h-4 w-4 shrink-0 transition-transform", indexOpen && "rotate-180")} />

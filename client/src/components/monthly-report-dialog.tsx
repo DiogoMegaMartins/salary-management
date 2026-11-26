@@ -58,7 +58,7 @@ export function MonthlyReportDialog({ d }: { d: Derived }) {
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">O que incluir</Label>
           <Select value={scope} onValueChange={setScope}>
-            <SelectTrigger className="h-9 text-sm" data-testid="select-report-scope"><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Âmbito do relatório" className="h-9 text-sm" data-testid="select-report-scope"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="periodo">Período filtrado ({d.periodLabel})</SelectItem>
               {[...d.years].sort((a, b) => b - a).map((y) => <SelectItem key={y} value={String(y)}>Relatório anual de {y}</SelectItem>)}

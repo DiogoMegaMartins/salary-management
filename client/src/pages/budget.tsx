@@ -131,7 +131,7 @@ export default function BudgetPage() {
           description={`Estimativa para ${year}, com base em meses concluídos`}
           actions={
             <Select value={projMethod} onValueChange={(v) => setProjMethod(v as ProjectionMethod)}>
-              <SelectTrigger className="w-44" data-testid="select-projection-method">
+              <SelectTrigger aria-label="Método de projeção" className="w-44" data-testid="select-projection-method">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -177,7 +177,7 @@ export default function BudgetPage() {
           }
           actions={
             <Select value={String(runwayWindow)} onValueChange={(v) => setRunwayWindow(Number(v) as 3 | 6 | 12)}>
-              <SelectTrigger className="w-44" data-testid="select-runway-window">
+              <SelectTrigger aria-label="Janela da reserva de emergência" className="w-44" data-testid="select-runway-window">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

@@ -215,7 +215,7 @@ export default function DataPage() {
                 value={String(s.runwayMonthsWindow ?? 3)}
                 onValueChange={(v) => save.settings.mutate({ runwayMonthsWindow: Number(v) })}
               >
-                <SelectTrigger className="h-9 w-48 text-sm" data-testid="select-runway-window-default">
+                <SelectTrigger aria-label="Janela da reserva de emergência" className="h-9 w-48 text-sm" data-testid="select-runway-window-default">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

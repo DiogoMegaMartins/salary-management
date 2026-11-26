@@ -34,7 +34,7 @@ const TabsTrigger = React.forwardRef<
       const el = e.currentTarget
       const list = el.closest<HTMLElement>('[role="tablist"]')
       if (list && list.scrollWidth > list.clientWidth)
-        list.scrollTo?.({ left: el.offsetLeft - (list.clientWidth - el.offsetWidth) / 2, behavior: "smooth" })
+        list.scrollTo?.({ left: el.offsetLeft - (list.clientWidth - el.offsetWidth) / 2, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })
     }}
     className={cn(
       "inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-none border-b-2 border-transparent px-4 py-2 text-sm font-medium transition-colors hover:text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 data-[state=active]:border-primary data-[state=active]:text-primary",

@@ -170,7 +170,7 @@ export function CreateTypeDialog({
           <div className="space-y-1.5">
             <Label>{kind === "parcel" ? "Comportamento base" : "Natureza"}</Label>
             <Select value={base} onValueChange={setBase}>
-              <SelectTrigger data-testid="select-new-type-base"><SelectValue /></SelectTrigger>
+              <SelectTrigger aria-label="Tipo base" data-testid="select-new-type-base"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {options.map((o) => (
                   <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>

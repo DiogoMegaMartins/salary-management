@@ -136,7 +136,7 @@ export function ParcelDetail({
           {br.incomplete && <p className="text-xs text-destructive">Total incompleto: falta a taxa {br.missing.join(", ")}. Define-a em Submetas.</p>}
           {f.target > 0 && (
             <div>
-              <Progress value={f.pct * 100} className="h-2" />
+              <Progress value={f.pct * 100} className="h-2" aria-label="Progresso da meta" />
               <p className="mt-1.5 text-xs text-muted-foreground">
                 {fmtPct(f.pct, 0)} da meta
                 {f.missing > 0 ? ` · faltam ${money(f.missing)}${f.monthsLeft ? ` · ~${f.monthsLeft} ${f.monthsLeft === 1 ? "mês" : "meses"} ao ritmo atual` : " · sem contribuições recentes"}` : " · concluída"}
@@ -234,7 +234,7 @@ export function ParcelDetail({
                 </div>
                 {s.sub.target != null && s.sub.target > 0 && (
                   <>
-                    <Progress value={(s.progress ?? 0) * 100} className="h-1.5" />
+                    <Progress value={(s.progress ?? 0) * 100} className="h-1.5" aria-label={`Progresso de ${s.sub.name}`} />
                     <p className="text-xs text-muted-foreground">{Math.round((s.progress ?? 0) * 100)}% de {money(s.sub.target, s.sub.currency)} · faltam {money(s.remaining ?? 0, s.sub.currency)}</p>
                   </>
                 )}
@@ -294,7 +294,7 @@ export function ParcelDetail({
                   else save.parcel.mutate({ id: p.id, patch: { kind: v, typeId: null } });
                 }}
               >
-                <SelectTrigger className="h-9 text-sm" data-testid={`select-kind-${p.id}`}><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="Tipo da parcela" className="h-9 text-sm" data-testid={`select-kind-${p.id}`}><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {KINDS.map((k) => <SelectItem key={k.value} value={k.value}>{k.label}</SelectItem>)}
                   {(state.parcelTypes ?? []).filter((t) => !t.archived || t.id === p.typeId).map((t) => (

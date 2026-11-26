@@ -157,7 +157,7 @@ export function TransactionsPanel({
                   }
                 }}
               >
-                <SelectTrigger className="h-9 text-xs" data-testid="select-tx-type">
+                <SelectTrigger aria-label="Tipo de movimento" className="h-9 text-xs" data-testid="select-tx-type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -191,7 +191,7 @@ export function TransactionsPanel({
                   value={category}
                   onValueChange={(v) => (v === "__custom__" ? setCustomCategory(true) : setCategory(v))}
                 >
-                  <SelectTrigger className="h-9 text-xs" data-testid="select-tx-category">
+                  <SelectTrigger aria-label="Categoria" className="h-9 text-xs" data-testid="select-tx-category">
                     <SelectValue placeholder="Seleciona ou escreve" />
                   </SelectTrigger>
                   <SelectContent>
@@ -222,7 +222,7 @@ export function TransactionsPanel({
             <div className="space-y-1">
               <Label className="text-xs text-muted-foreground">{type === "transfer" ? "Origem" : "Parcela"}</Label>
               <Select value={String(parcelId)} onValueChange={(v) => setParcelId(Number(v))}>
-                <SelectTrigger className="h-9 text-xs" data-testid="select-tx-parcel">
+                <SelectTrigger aria-label="Parcela" className="h-9 text-xs" data-testid="select-tx-parcel">
                   <SelectValue placeholder="Seleciona" />
                 </SelectTrigger>
                 <SelectContent>
@@ -236,7 +236,7 @@ export function TransactionsPanel({
               <div className="space-y-1">
                 <Label className="text-xs text-muted-foreground">Destino</Label>
                 <Select value={String(targetParcelId)} onValueChange={(v) => setTargetParcelId(Number(v))}>
-                  <SelectTrigger className="h-9 text-xs" data-testid="select-tx-target">
+                  <SelectTrigger aria-label="Parcela de destino" className="h-9 text-xs" data-testid="select-tx-target">
                     <SelectValue placeholder="Seleciona" />
                   </SelectTrigger>
                   <SelectContent>

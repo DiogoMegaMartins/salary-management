@@ -148,7 +148,7 @@ export function CsvImport() {
   const sel = (k: keyof typeof map, label: string, optional = false) => (
     <div className="space-y-1"><Label className="text-xs text-muted-foreground">{label}</Label>
       <Select value={map[k]} onValueChange={(v) => { setMap({ ...map, [k]: v }); setPv(null); }}>
-        <SelectTrigger className="h-9 text-xs" data-testid={`csv-map-${k}`}><SelectValue /></SelectTrigger>
+        <SelectTrigger aria-label={`Coluna ${k}`} className="h-9 text-xs" data-testid={`csv-map-${k}`}><SelectValue /></SelectTrigger>
         <SelectContent>{optional && <SelectItem value={NONE}>(não usar)</SelectItem>}{colOpts}</SelectContent>
       </Select></div>
   );
@@ -163,7 +163,7 @@ export function CsvImport() {
             <div className="grid gap-2 sm:grid-cols-4">{sel("date", "Coluna da data")}{sel("amount", "Coluna do montante")}{sel("category", "Categoria", true)}{sel("note", "Descrição", true)}</div>
             <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
               <div className="space-y-1"><Label className="text-xs text-muted-foreground">Parcela de destino</Label>
-                <Select value={parcel} onValueChange={setParcel}><SelectTrigger className="h-9 text-xs" data-testid="csv-parcel"><SelectValue placeholder="Escolher parcela" /></SelectTrigger><SelectContent>{parcels.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}</SelectContent></Select></div>
+                <Select value={parcel} onValueChange={setParcel}><SelectTrigger aria-label="Parcela das linhas importadas" className="h-9 text-xs" data-testid="csv-parcel"><SelectValue placeholder="Escolher parcela" /></SelectTrigger><SelectContent>{parcels.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}</SelectContent></Select></div>
               <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={allowPos} onChange={(e) => { setAllowPos(e.target.checked); setPv(null); }} />Aceitar montantes positivos como despesas</label>
             </div>
             <Button size="sm" onClick={preview} disabled={busy} data-testid="button-csv-preview">Pré-visualizar</Button>

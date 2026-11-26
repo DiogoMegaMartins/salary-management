@@ -84,7 +84,7 @@ export function SubgoalDialog({
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Plataforma</Label>
               <Select value={f.platformId || "none"} onValueChange={(v) => setF({ ...f, platformId: v === "none" ? "" : v })}>
-                <SelectTrigger className="h-9 text-sm" data-testid="select-subgoal-platform"><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="Plataforma" className="h-9 text-sm" data-testid="select-subgoal-platform"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Nenhuma (é um objetivo)</SelectItem>
                   {state.platforms.filter((p) => !p.archived || String(p.id) === f.platformId).map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}
@@ -94,7 +94,7 @@ export function SubgoalDialog({
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Moeda</Label>
               <Select value={f.currency} onValueChange={(v) => setF({ ...f, currency: v })}>
-                <SelectTrigger className="h-9 text-sm" data-testid="select-subgoal-currency"><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="Moeda" className="h-9 text-sm" data-testid="select-subgoal-currency"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {Array.from(new Set([refCurrency, f.currency, ...CURRENCIES])).map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
