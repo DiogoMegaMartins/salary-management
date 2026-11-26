@@ -5,7 +5,6 @@ import { MonthInput } from "@/components/month-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useConfirm } from "@/components/confirm";
 import { useToast } from "@/hooks/use-toast";
@@ -20,24 +19,6 @@ import { closingPlan } from "@shared/closing";
 const num = (s: string) => { const t = s.trim().replace(",", "."); return /^-?\d+(\.\d+)?$/.test(t) ? Number(t) : null; };
 const NONE = "__none__";
 const refresh = (qc: ReturnType<typeof useQueryClient>) => { qc.invalidateQueries({ queryKey: ["/api/state"] }); qc.invalidateQueries({ predicate: (q) => String(q.queryKey[0]).startsWith("/api/") }); };
-
-/** Fecho mensal e planeamento, para usar dentro de Dividir. */
-export function ClosingPanel() {
-  return (
-      <Tabs defaultValue="fecho" className="space-y-4" data-testid="page-closing">
-        <TabsList className="sticky-tabs">
-          <TabsTrigger value="fecho" data-testid="tab-fecho">Fecho mensal</TabsTrigger>
-          <TabsTrigger value="recorrencias" data-testid="tab-recorrencias">Recorrências e reservas</TabsTrigger>
-          <TabsTrigger value="simulador" data-testid="tab-simulador">Simulador de metas</TabsTrigger>
-          <TabsTrigger value="composicao" data-testid="tab-composicao">Composição dos totais</TabsTrigger>
-        </TabsList>
-        <TabsContent value="fecho"><MonthClosing /></TabsContent>
-        <TabsContent value="recorrencias"><Recurring /></TabsContent>
-        <TabsContent value="simulador"><Simulator /></TabsContent>
-        <TabsContent value="composicao"><Composition /></TabsContent>
-      </Tabs>
-  );
-}
 
 /* ------------------------------------------------------------------ fecho mensal */
 export function MonthClosing() {
@@ -198,7 +179,7 @@ export function MonthClosing() {
 }
 
 /* ------------------------------------------------------------------ recorrências e reservas */
-function Recurring() {
+export function Recurring() {
   const { data } = useAppState();
   const qc = useQueryClient();
   const { toast } = useToast();
@@ -301,7 +282,7 @@ function Recurring() {
 }
 
 /* ------------------------------------------------------------------ simulador */
-function Simulator() {
+export function Simulator() {
   const { data } = useAppState();
   const d = useDerived(data);
   const [pid, setPid] = useState("");
@@ -349,7 +330,7 @@ function Simulator() {
 }
 
 /* ------------------------------------------------------------------ composição */
-function Composition() {
+export function Composition() {
   const { data } = useAppState();
   const d = useDerived(data);
   const [open, setOpen] = useState<number | null>(null);
