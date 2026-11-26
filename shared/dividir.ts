@@ -16,7 +16,7 @@ export function dividirSteps(input: { available: number; remaining: number; clos
   const raw: { key: StepKey; label: string; done: boolean; text: string }[] = [
     {
       key: "salario", label: "Quanto entra", done: hasSalary,
-      text: !hasSalary ? "Falta o salário deste mês" : (input.carryIn ?? 0) > EPS ? `${fmtEur(input.available)} + ${fmtEur(input.carryIn!)} do mês anterior` : `${fmtEur(input.available)} definido`,
+      text: !hasSalary ? "Falta o salário deste mês" : (input.carryIn ?? 0) > EPS ? `${fmtEur(input.available)} + ${fmtEur(input.carryIn!)} transportados do mês anterior` : `${fmtEur(input.available)} definido`,
     },
     {
       key: "repartir", label: "Para onde vai", done: split,

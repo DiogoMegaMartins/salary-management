@@ -7,8 +7,8 @@ Ordem do mais recente para o mais antigo.
 Plano do mês remodelado e Início alinhado.
 
 - **Plano do mês**: os 3 passos ficam numa coluna à esquerda, com "Mais ferramentas" por baixo (Gastos do mês, Parcelas e metas e, no Detalhado, Recorrências e reservas, Simulador de metas e Composição dos totais); o que se escolhe abre à direita (`pages/division.tsx`). Acabaram-se os separadores dentro de separadores, que se sobrepunham no Fecho (`ClosingPanel` removido; `Recurring`, `Simulator` e `Composition` passam a ferramentas).
-- Os passos mudam de nome: **Quanto entra**, **Para onde vai** e **Fechar o mês** (`shared/dividir.ts`). O primeiro diz, quando é o caso, quanto veio do mês anterior.
-- Clicar em **Quanto entra** (mesmo com o mês já repartido) abre o total para repartir, o salário líquido do mês e o que veio do mês anterior, com o nome desse mês (`components/salary-info.tsx`).
+- Os passos mudam de nome: **Quanto entra**, **Para onde vai** e **Fechar o mês** (`shared/dividir.ts`). O primeiro diz, quando é o caso, quanto foi transportado do mês anterior.
+- Clicar em **Quanto entra** (mesmo com o mês já repartido) abre o total para repartir, o salário líquido do mês e o que foi transportado do mês anterior, com o nome desse mês (`components/salary-info.tsx`).
 - **Fechar o mês** começa por uma lista do que falta (salário definido, valor repartido, mês acabado), por cima do fecho que já existia (`components/closing-checklist.tsx`).
 - A vista aberta já não salta sozinha quando se acaba de repartir o valor: fica onde estás até escolheres outra.
 - Início (Detalhado): quem tinha um layout guardado antes do resumo do mês via o resumo e os cartões desencontrados. Agora o grupo volta às posições por omissão e as secções de baixo descem o necessário (`migrateSavedLayout` em `lib/layout-geometry.ts`; o que está guardado não é alterado).

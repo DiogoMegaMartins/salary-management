@@ -26,7 +26,7 @@ test("dividir: no Básico há os passos e só as ferramentas do dia a dia", asyn
   await expect(page.getByText("Histórico de abertura e fecho")).toBeVisible();
 });
 
-test("dividir: clicar em Quanto entra mostra o total, o salário e o que veio do mês anterior", async ({ page }) => {
+test("dividir: clicar em Quanto entra mostra o total, o salário e o que foi transportado do mês anterior", async ({ page }) => {
   await entrar(page);
   await page.goto("/#/divisao");
   await page.getByTestId("step-salario").click();
@@ -34,7 +34,7 @@ test("dividir: clicar em Quanto entra mostra o total, o salário e o que veio do
   await expect(info).toBeVisible();
   await expect(info.getByTestId("salary-total")).toContainText("€");
   await expect(info.getByTestId("salary-income")).toContainText("€");
-  await expect(info.getByTestId("salary-carry")).toContainText(/mês anterior/);
+  await expect(info.getByTestId("salary-carry")).toContainText(/transportado do mês anterior/);
   await expect(info).toContainText("Meses");
 });
 

@@ -51,9 +51,9 @@ test("dividir: os passos têm os nomes novos", () => {
   assert.deepEqual(s.steps.map((x) => x.label), ["Quanto entra", "Para onde vai", "Fechar o mês"]);
 });
 
-test("dividir: o primeiro passo diz quanto veio do mês anterior", () => {
+test("dividir: o primeiro passo diz quanto foi transportado do mês anterior", () => {
   const com = dividirSteps({ available: 2100, remaining: 0, closed: false, carryIn: 1219.99 });
-  assert.equal(t(com.steps[0].text), "2 100,00 € + 1 219,99 € do mês anterior");
+  assert.equal(t(com.steps[0].text), "2 100,00 € + 1 219,99 € transportados do mês anterior");
   const sem = dividirSteps({ available: 2100, remaining: 0, closed: false, carryIn: 0 });
   assert.equal(t(sem.steps[0].text), "2 100,00 € definido");
 });

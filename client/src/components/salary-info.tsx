@@ -23,13 +23,13 @@ export function SalaryInfo({ month, income, carryIn, previous }: { month: Month;
         <div className="mt-2 divide-y divide-border text-sm">
           <div className="flex justify-between gap-3 py-2"><span>Salário líquido do mês</span><span className="tnum font-medium" data-testid="salary-income">{fmtEur(income)}</span></div>
           <div className="flex justify-between gap-3 py-2" data-testid="salary-carry" data-carry={carryIn}>
-            <span>{veio ? `Veio do mês anterior${previous ? ` (${nomeMes(previous)})` : ""}` : "Nada veio do mês anterior"}</span>
+            <span>{veio ? `Transportado do mês anterior${previous ? ` (${previous.label})` : ""}` : "Nada transportado do mês anterior"}</span>
             <span className="tnum font-medium">{fmtEur(carryIn)}</span>
           </div>
           <div className="flex justify-between gap-3 py-2 font-semibold"><span>Total para repartir</span><span className="tnum">{fmtEur(total)}</span></div>
         </div>
         <p className="mt-3 text-xs text-muted-foreground">
-          {veio ? "O valor do mês anterior sobrou no fecho e foi transportado para aqui. Não conta como rendimento." : "Se sobrar dinheiro no fecho do mês anterior, pode ser transportado para este mês."}
+          {veio ? "Sobrou no fecho do mês anterior e foi transportado para aqui. Não conta como rendimento." : "Se sobrar dinheiro no fecho do mês anterior, pode ser transportado para este mês."}
         </p>
         <Link href="/meses" className="mt-3 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline">Ver ou alterar o salário em Meses</Link>
       </div>
