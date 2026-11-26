@@ -130,3 +130,26 @@ test("registar: o botão só aparece no modo Básico, e o modo escolhe-se em Def
   await page.getByTestId("ui-mode-basico").click();
   await expect(page.getByTestId("register-button")).toBeVisible();
 });
+
+test("registar: se a categoria ainda não existe, dá para a criar ali mesmo", async ({ page }, info) => {
+  const nota = `registo-categoria-${sufixo(info.project.name)}-${Date.now()}`;
+  const nome = `Cat nova ${sufixo(info.project.name)} ${Date.now()}`;
+  await entrar(page);
+  await abrir(page);
+  await page.getByTestId("register-value").fill("3,20");
+  await page.getByTestId("register-note").fill(nota);
+  await clicar(page.getByTestId("register-category"));
+  await page.getByRole("option", { name: /Criar categoria/ }).click();
+  await page.getByTestId("register-new-category").fill(nome);
+  await page.getByTestId("register-create-category").click();
+  await expect(page.getByTestId("register-category")).toContainText(nome);
+  await page.getByTestId("register-save").click();
+  await expect(page.getByTestId("register-dialog")).toBeHidden();
+  const t = await transacoes(page, nota);
+  expect(t).toHaveLength(1);
+  expect(t[0].category).toBe(nome);
+  const estado = await (await page.request.get("/api/state", { headers: cabecalhosApi() })).json();
+  const criada = (estado.categories as any[]).find((c) => c.name === nome);
+  expect(criada).toBeTruthy();
+  await page.request.delete(`/api/categories/${criada.id}`, { headers: cabecalhosApi() }); // deixa a lista como estava
+});
