@@ -1,12 +1,12 @@
 import { CalendarRange, HelpCircle, Layers, LayoutDashboard, Receipt, Settings, Target, Wallet, type LucideIcon } from "lucide-react";
 import type { FeatureKey } from "@shared/features";
 
-export type NavItem = { href: string; label: string; testId: string; icon: LucideIcon; features?: FeatureKey[] };
+export type NavItem = { href: string; label: string; testId: string; tabId?: string; icon: LucideIcon; features?: FeatureKey[] };
 
 /** Os três destinos de todos os dias. "Registar despesa" não é um destino: é o botão fixo por baixo do conteúdo. */
 export const MAIN_NAV: NavItem[] = [
   { href: "/", label: "Início", testId: "painel", icon: LayoutDashboard },
-  { href: "/divisao", label: "Dividir", testId: "divisão", icon: Layers},
+  { href: "/divisao", label: "Plano do mês", testId: "divisão", tabId: "dividir", icon: Layers},
   { href: "/meses", label: "Meses", testId: "meses", icon: CalendarRange },
 ];
 

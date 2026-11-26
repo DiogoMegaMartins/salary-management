@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Eye, EyeOff, LayoutGrid, Moon, Sun, Ellipsis } from "lucide-react";
+import { ChevronDown, Eye, EyeOff, LayoutGrid, Moon, Sun, Ellipsis } from "lucide-react";
 import { useAppState } from "@/lib/app";
 import { useTheme } from "@/lib/appearance";
 import { usePrivacy } from "@/lib/privacy";
@@ -34,6 +34,8 @@ export function Logo({ className }: { className?: string }) {
   );
 }
 
+const MORE_KEY = "sm.nav.more";
+
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const [location] = useLocation();
   const features = useFeatures();
@@ -59,11 +61,38 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
       </Link>
     );
   };
+  const moreItems = visible(MORE_NAV, features);
+  const moreActive = moreItems.some((n) => isActive(n.href, location));
+  // "Mais" mostra e esconde as outras opções. Lembra a escolha; fica aberto quando a página atual é uma delas.
+  const [moreChoice, setMoreChoice] = useState<boolean>(() => {
+    try { return localStorage.getItem(MORE_KEY) === "1"; } catch { return false; }
+  });
+  const moreOpen = moreChoice || moreActive;
+  const toggleMore = () => {
+    const next = !moreOpen;
+    setMoreChoice(next);
+    try { localStorage.setItem(MORE_KEY, next ? "1" : "0"); } catch { /* sem armazenamento: só vale nesta sessão */ }
+  };
   return (
     <nav className="flex flex-col gap-1" aria-label="Navegação principal">
       {visible(MAIN_NAV, features).map(link)}
-      <p className="mt-4 px-3 pb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground" data-testid="nav-more-heading">Mais</p>
-      {visible(MORE_NAV, features).map(link)}
+      <button
+        type="button"
+        onClick={toggleMore}
+        aria-expanded={moreOpen}
+        aria-controls="nav-more-list"
+        data-testid="nav-more-toggle"
+        className="mt-3 flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+      >
+        <Ellipsis className="h-4 w-4 shrink-0" aria-hidden />
+        <span className="flex-1 text-left" data-testid="nav-more-heading">Mais</span>
+        <ChevronDown className={cn("h-4 w-4 shrink-0 transition-transform motion-reduce:transition-none", moreOpen && "rotate-180")} aria-hidden />
+      </button>
+      {moreOpen && (
+        <div id="nav-more-list" className="flex flex-col gap-1" data-testid="nav-more-list">
+          {moreItems.map(link)}
+        </div>
+      )}
     </nav>
   );
 }
@@ -99,7 +128,7 @@ function BottomNav() {
           {visible(MAIN_NAV, features).map((t) => {
             const active = isActive(t.href, location);
             return (
-              <Link key={t.href} href={t.href} aria-current={active ? "page" : undefined} data-testid={`tab-${t.label.toLowerCase()}`} className={cn(item, active ? "text-primary" : "text-muted-foreground")}>
+              <Link key={t.href} href={t.href} aria-current={active ? "page" : undefined} data-testid={`tab-${t.tabId ?? t.label.toLowerCase()}`} className={cn(item, active ? "text-primary" : "text-muted-foreground")}>
                 <span className={cn("flex h-7 w-12 items-center justify-center rounded-full transition-colors", active && "bg-primary/12")}>
                   <t.icon className="h-5 w-5" strokeWidth={active ? 2.4 : 1.8} />
                 </span>
