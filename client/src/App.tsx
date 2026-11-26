@@ -10,12 +10,11 @@ import NotFound from "@/pages/not-found";
 // cada ecrã é um ficheiro à parte, descarregado só quando se abre (o SW pré-guarda-os todos para uso offline)
 const Dashboard = lazy(() => import("@/pages/dashboard"));
 const Months = lazy(() => import("@/pages/months"));
-const Parcels = lazy(() => import("@/pages/parcels"));
 const Portfolio = lazy(() => import("@/pages/portfolio"));
 const DivisionPage = lazy(() => import("@/pages/division"));
 const BudgetPage = lazy(() => import("@/pages/budget"));
 const ExpensesPage = lazy(() => import("@/pages/expenses"));
-const ClosingPage = lazy(() => import("@/pages/closing"));
+const RedirectDividir = lazy(() => import("@/pages/redirect-dividir"));
 const DataPage = lazy(() => import("@/pages/data"));
 const HelpPage = lazy(() => import("@/pages/help"));
 import { useFeatures } from "@/lib/features";
@@ -36,10 +35,10 @@ function AppRouter() {
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/meses" component={Months} />
-      <Route path="/divisao/:mes?">{() => <FeatureRoute anyOf={["divisao", "movimentos"]} component={DivisionPage} />}</Route>
+      <Route path="/divisao/:mes?" component={DivisionPage} />
       <Route path="/despesas" component={ExpensesPage} />
-      <Route path="/fecho" component={ClosingPage} />
-      <Route path="/parcelas">{() => <FeatureRoute feature="parcelas" component={Parcels} />}</Route>
+      <Route path="/fecho">{() => <RedirectDividir tab="fecho" />}</Route>
+      <Route path="/parcelas">{() => <FeatureRoute feature="parcelas" component={() => <RedirectDividir tab="parcelas" />} />}</Route>
       <Route path="/carteira">{() => <FeatureRoute feature="plataformas" component={Portfolio} />}</Route>
       <Route path="/orcamento" component={BudgetPage} />
       <Route path="/dados" component={DataPage} />

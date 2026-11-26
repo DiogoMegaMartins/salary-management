@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { ArchiveRestore, ArrowLeft, ChevronRight, Plus } from "lucide-react";
-import { AppShell } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,7 +29,8 @@ import { ParcelDetail, parcelFigures, type ParcelTab } from "@/components/parcel
 
 const PALETTE = ["#2f9e8f", "#3b7dd8", "#7a5cd0", "#c9a227", "#d97757", "#c2477f", "#2aa7c0", "#4b9c5c"];
 
-export default function Parcels() {
+/** Parcelas e metas, para usar dentro de Dividir. */
+export function ParcelsPanel() {
   const { data, isLoading } = useAppState();
   const d = useDerived(data);
   const save = useSave();
@@ -46,9 +46,7 @@ export default function Parcels() {
 
   if (isLoading || !d || !data) {
     return (
-      <AppShell title="Parcelas e metas" subtitle="A carregar…">
-        <Skeleton className="h-[420px] rounded-lg" />
-      </AppShell>
+      <Skeleton className="h-[420px] rounded-lg" />
     );
   }
 
@@ -81,20 +79,18 @@ export default function Parcels() {
   );
 
   return (
-    <AppShell
-      title="Parcelas e metas"
-      subtitle={
-        percentSum === 0 && fixedSum === 0
+    <>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground" data-testid="parcels-rules-summary">
+          {percentSum === 0 && fixedSum === 0
           ? "Nenhuma parcela tem regra de divisão"
-          : `Regras: ${fmtPct(percentSum / 100, 1)} do disponível · ${fmtEur(fixedSum)} fixos`
-      }
-      actions={
+          : `Regras: ${fmtPct(percentSum / 100, 1)} do disponível · ${fmtEur(fixedSum)} fixos`}
+        </p>
         <Button size="sm" className="gap-1.5" onClick={() => setAdding(true)} data-testid="button-new-parcel">
           <Plus className="h-4 w-4" />
           Nova parcela
         </Button>
-      }
-    >
+      </div>
       {percentSum > 100 && (
         <p className="mb-3 rounded-md border border-destructive/40 px-3 py-2 text-sm text-destructive" data-testid="rules-over">
           A soma das percentagens passa dos 100% do disponível.
@@ -315,6 +311,6 @@ export default function Parcels() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </AppShell>
+    </>
   );
 }

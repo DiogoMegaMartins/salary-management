@@ -7,7 +7,7 @@ export const GO_SHORTCUTS: { key: string; href: string; label: string }[] = [
   { key: "p", href: "/", label: "Início" },
   { key: "m", href: "/meses", label: "Meses" },
   { key: "d", href: "/despesas", label: "Despesas" },
-  { key: "f", href: "/fecho", label: "Fecho e planeamento" },
+  { key: "f", href: "/fecho", label: "Fechar o mês" },
   { key: "a", href: "/parcelas", label: "Parcelas e metas" },
   { key: "c", href: "/carteira", label: "Carteira" },
   { key: "o", href: "/orcamento", label: "Orçamento" },

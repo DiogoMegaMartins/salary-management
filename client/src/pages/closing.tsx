@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { AppShell } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { MonthInput } from "@/components/month-input";
 import { Input } from "@/components/ui/input";
@@ -22,9 +21,9 @@ const num = (s: string) => { const t = s.trim().replace(",", "."); return /^-?\d
 const NONE = "__none__";
 const refresh = (qc: ReturnType<typeof useQueryClient>) => { qc.invalidateQueries({ queryKey: ["/api/state"] }); qc.invalidateQueries({ predicate: (q) => String(q.queryKey[0]).startsWith("/api/") }); };
 
-export default function ClosingPage() {
+/** Fecho mensal e planeamento, para usar dentro de Dividir. */
+export function ClosingPanel() {
   return (
-    <AppShell title="Fecho e planeamento" subtitle="Fecho mensal, recorrências, reservas, simulador e composição dos totais">
       <Tabs defaultValue="fecho" className="space-y-4" data-testid="page-closing">
         <TabsList className="sticky-tabs">
           <TabsTrigger value="fecho" data-testid="tab-fecho">Fecho mensal</TabsTrigger>
@@ -37,12 +36,11 @@ export default function ClosingPage() {
         <TabsContent value="simulador"><Simulator /></TabsContent>
         <TabsContent value="composicao"><Composition /></TabsContent>
       </Tabs>
-    </AppShell>
   );
 }
 
 /* ------------------------------------------------------------------ fecho mensal */
-function MonthClosing() {
+export function MonthClosing() {
   const { data } = useAppState();
   const d = useDerived(data);
   const qc = useQueryClient();
