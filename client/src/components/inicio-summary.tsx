@@ -12,11 +12,8 @@ const nomeMes = (year: number, month: number) => {
   const n = new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString("pt-PT", { month: "long", timeZone: "UTC" });
   return n.charAt(0).toUpperCase() + n.slice(1);
 };
-const FRASE = {
-  ok: "Estás dentro do previsto",
-  atencao: "Atenção: já gastaste quase tudo o que planeaste",
-  excedido: "Gastaste mais do que planeaste",
-} as const;
+/** Só o aviso de atenção tem frase: no estado normal e quando se excede, o título e a cor do valor já dizem tudo. */
+const AVISO_ATENCAO = "Atenção: já gastaste quase tudo o que planeaste";
 
 /**
  * Resumo do mês no topo do Início: "Valor disponível" = gastos mensais planeados − despesas registadas (passa a "Gasto acima do planeado" se se exceder),
@@ -78,9 +75,9 @@ export function InicioSummary({ state, detailed }: { state: AppState; detailed: 
             <p className="mt-1 text-sm text-muted-foreground">
               {s.state === "excedido" ? `Gastaste ${fmtEur(s.spent)} de ${fmtEur(s.planned)} planeados para gastos` : `de ${fmtEur(s.planned)} planeados para gastos`}
             </p>
-            <p className={cn("mt-3 inline-block rounded-full px-3 py-1 text-sm font-medium", s.state === "ok" ? "bg-success/15 text-success" : s.state === "atencao" ? "bg-warning/15 text-warning" : "bg-destructive/15 text-destructive")} data-testid="inicio-state">
-              {FRASE[s.state]}
-            </p>
+            {s.state === "atencao" && (
+              <p className="mt-3 inline-block rounded-full bg-warning/15 px-3 py-1 text-sm font-medium text-warning" data-testid="inicio-state">{AVISO_ATENCAO}</p>
+            )}
             <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Gasto sobre o planeado" aria-valuemin={0} aria-valuemax={100} aria-valuenow={s.pctSpent} data-testid="inicio-progress">
               <div className={cn("h-full rounded-full", s.state === "excedido" ? "bg-destructive" : s.state === "atencao" ? "bg-warning" : "bg-primary")} style={{ width: `${s.pctSpent}%` }} />
             </div>

@@ -15,7 +15,7 @@
 
 ## Rulings (decisões minhas)
 
-- Estado: `sem-plano` se o planeado é 0; `excedido` se gastou mais do que o planeado; `atencao` se já gastou ≥ 85% e (não é o mês de hoje ou faltam mais de 5 dias); senão `ok`.
+- Estado: `sem-plano` se o planeado é 0; `excedido` se gastou mais do que o planeado; `atencao` se já gastou ≥ 85% e (não é o mês de hoje ou faltam mais de 5 dias); senão `ok`. Só o estado `atencao` tem frase (pedido do utilizador: sem frase no normal nem no excedido, porque o título e a cor já o dizem).
 - Mês mostrado: o último mês aberto (ou o último, se todos fechados), com seletor se houver vários.
 - Várias parcelas de gastos: a do menor id é a predefinida no Registar.
 - O título da página passa a "Início" (testes e atalhos atualizados).

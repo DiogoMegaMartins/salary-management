@@ -73,4 +73,6 @@ test("início: o título é Valor disponível e muda quando se passa do planeado
   await page.getByTestId("register-value").fill(String(Math.max(esq, 0) + 1));
   await page.getByTestId("register-save").click();
   await expect(titulo).toHaveText("Gasto acima do planeado");
+  // o título já diz tudo: sem frase de estado repetida
+  await expect(page.getByTestId("inicio-state")).toHaveCount(0);
 });
