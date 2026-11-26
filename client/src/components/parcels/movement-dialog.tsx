@@ -118,7 +118,7 @@ export function MovementDialog({
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">{kind === "transferir" ? "De" : "Onde"}</Label>
               <Select value={where} onValueChange={setWhere}>
-                <SelectTrigger className="h-9 text-sm" data-testid="select-movement-target"><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="Onde" className="h-9 text-sm" data-testid="select-movement-target"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {targets.map((t) => (
                     <SelectItem key={t.subgoalId ?? "m"} value={t.subgoalId == null ? "m" : String(t.subgoalId)}>{t.label}</SelectItem>
@@ -131,7 +131,7 @@ export function MovementDialog({
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Para</Label>
               <Select value={to} onValueChange={setTo}>
-                <SelectTrigger className="h-9 text-sm" data-testid="select-movement-dest"><SelectValue placeholder="Escolher destino" /></SelectTrigger>
+                <SelectTrigger aria-label="Destino" className="h-9 text-sm" data-testid="select-movement-dest"><SelectValue placeholder="Escolher destino" /></SelectTrigger>
                 <SelectContent>
                   {destinations.map((t) => <SelectItem key={keyOf(t)} value={keyOf(t)}>{t.label}</SelectItem>)}
                 </SelectContent>

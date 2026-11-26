@@ -213,7 +213,7 @@ export function ValuationDialog({
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">Parcela</Label>
             <Select value={chosen} onValueChange={setChosen}>
-              <SelectTrigger className="h-9 text-sm" data-testid="select-valuation-parcel"><SelectValue placeholder="Escolher parcela" /></SelectTrigger>
+              <SelectTrigger aria-label="Parcela" className="h-9 text-sm" data-testid="select-valuation-parcel"><SelectValue placeholder="Escolher parcela" /></SelectTrigger>
               <SelectContent>
                 {parcels.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}
               </SelectContent>

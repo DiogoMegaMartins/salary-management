@@ -127,7 +127,7 @@ export function MonthEditor({ month, isNew, onClose }: { month: Month; isNew: bo
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">Mês</Label>
                 <Select value={String(form.month)} onValueChange={(v) => set("month", Number(v))}>
-                  <SelectTrigger className="h-9 text-sm" data-testid="select-month">
+                  <SelectTrigger aria-label="Mês" className="h-9 text-sm" data-testid="select-month">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -165,7 +165,7 @@ export function MonthEditor({ month, isNew, onClose }: { month: Month; isNew: bo
                 <div className="space-y-1.5">
                   <Label className="text-xs text-muted-foreground">IRS Jovem</Label>
                   <Select value={form.irsJovem || "nenhum"} onValueChange={(v) => set("irsJovem", v === "nenhum" ? "" : v)}>
-                    <SelectTrigger className="h-9 text-sm" data-testid="select-irs-jovem">
+                    <SelectTrigger aria-label="IRS Jovem" className="h-9 text-sm" data-testid="select-irs-jovem">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -184,7 +184,7 @@ export function MonthEditor({ month, isNew, onClose }: { month: Month; isNew: bo
               <div className="flex items-center justify-between gap-3">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Descontos</p>
                 <Select value={form.descontosMode} onValueChange={(v) => set("descontosMode", v)}>
-                  <SelectTrigger className="h-8 w-[210px] text-xs" data-testid="select-descontos-mode">
+                  <SelectTrigger aria-label="Modo dos descontos" className="h-8 w-[210px] text-xs" data-testid="select-descontos-mode">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

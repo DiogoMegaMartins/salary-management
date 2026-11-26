@@ -120,7 +120,7 @@ export default function Months() {
                 <th className="px-3 py-2.5 text-right font-medium">Alocado</th>
                 <th className="px-3 py-2.5 text-right font-medium">Restante</th>
                 <th className="px-3 py-2.5 text-right font-medium">Poupança</th>
-                <th className="px-2 py-2.5"></th>
+                <th className="px-2 py-2.5"><span className="sr-only">Ações</span></th>
               </tr>
             </thead>
             <tbody>

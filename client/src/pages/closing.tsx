@@ -106,7 +106,7 @@ export function MonthClosing() {
         <div className="space-y-1">
           <Label className="text-xs text-muted-foreground">Mês</Label>
           <Select value={String(month.id)} onValueChange={(v) => { setSel(v); setDestChoice(null); setTarget(NONE); }}>
-            <SelectTrigger className="h-9 w-52 text-sm" data-testid="select-closing-month"><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Mês" className="h-9 w-52 text-sm" data-testid="select-closing-month"><SelectValue /></SelectTrigger>
             <SelectContent>{sorted.map((m) => <SelectItem key={m.id} value={String(m.id)}>{m.label} {m.year}{m.status === "fechado" ? " (fechado)" : ""}</SelectItem>)}</SelectContent>
           </Select>
         </div>
@@ -114,23 +114,23 @@ export function MonthClosing() {
       </div>
 
       <section className="rounded-lg border border-card-border bg-card p-4" aria-label="1. Rendimentos">
-        <h3 className="mb-1 text-sm font-semibold">1. Rendimentos</h3>
+        <h2 className="mb-1 text-sm font-semibold">1. Rendimentos</h2>
         {row("Rendimento disponível", computed.available)}
         {(s?.carryIn ?? 0) > 0 && row("Transporte recebido (não é rendimento)", s.carryIn)}
       </section>
       <section className="rounded-lg border border-card-border bg-card p-4" aria-label="2. Despesas">
-        <h3 className="mb-1 text-sm font-semibold">2. Despesas e movimentos</h3>
+        <h2 className="mb-1 text-sm font-semibold">2. Despesas e movimentos</h2>
         {row("Executado (despesas e retiradas)", exec.executado)}
         {row("Transferências internas (não são despesas)", exec.transferenciasInternas)}
       </section>
       <section className="rounded-lg border border-card-border bg-card p-4" aria-label="3. Distribuições">
-        <h3 className="mb-1 text-sm font-semibold">3. Distribuições</h3>
+        <h2 className="mb-1 text-sm font-semibold">3. Distribuições</h2>
         {row("Planeado", exec.planeado)}
         {row("Alocado (inclui aportes)", exec.alocado)}
         {row("Por executar nas parcelas de gastos", exec.porExecutar)}
       </section>
       <section className="rounded-lg border border-card-border bg-card p-4" aria-label="4. Pendências">
-        <h3 className="mb-1 text-sm font-semibold">4. Pendências</h3>
+        <h2 className="mb-1 text-sm font-semibold">4. Pendências</h2>
         <ul className="space-y-1 text-sm" data-testid="closing-pending">
           <li>{pendingHere.length === 0 ? "Sem recorrências pendentes." : `${pendingHere.length} recorrência(s) por confirmar (separador Recorrências).`}</li>
           <li>{blocking === 0 ? "Verificação de dados sem erros bloqueantes." : `${blocking} erro(s) na verificação de dados: corrige-os em Definições.`}</li>
@@ -138,7 +138,7 @@ export function MonthClosing() {
         </ul>
       </section>
       <section className="rounded-lg border border-card-border bg-card p-4" aria-label="5. Fecho">
-        <h3 className="mb-2 text-sm font-semibold">5. Montante restante e fecho</h3>
+        <h2 className="mb-2 text-sm font-semibold">5. Montante restante e fecho</h2>
         {row("Restante do mês", s?.remainder ?? 0, true)}
         {!closed ? (
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -146,7 +146,7 @@ export function MonthClosing() {
               <div className="space-y-1">
                 <Label className="text-xs text-muted-foreground">Destino do restante</Label>
                 <Select value={dest} onValueChange={setDestChoice}>
-                  <SelectTrigger className="h-9 text-sm" data-testid="select-closing-dest"><SelectValue /></SelectTrigger>
+                  <SelectTrigger aria-label="Destino do restante" className="h-9 text-sm" data-testid="select-closing-dest"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="transportar" disabled={!plan.canCarry}>Transportar para o mês seguinte{plan.canCarry ? "" : " (cria o mês seguinte primeiro)"}</SelectItem>
                     <SelectItem value="reforcar">Reforçar parcela/meta</SelectItem>
@@ -165,7 +165,7 @@ export function MonthClosing() {
               <div className="space-y-1">
                 <Label className="text-xs text-muted-foreground">Parcela/meta</Label>
                 <Select value={target} onValueChange={setTarget}>
-                  <SelectTrigger className="h-9 text-sm" data-testid="select-closing-target"><SelectValue /></SelectTrigger>
+                  <SelectTrigger aria-label="Parcela ou meta a reforçar" className="h-9 text-sm" data-testid="select-closing-target"><SelectValue /></SelectTrigger>
                   <SelectContent><SelectItem value={NONE}>Escolher…</SelectItem>{data.parcels.filter((p) => !p.archived).map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
@@ -184,7 +184,7 @@ export function MonthClosing() {
         )}
       </section>
       <section className="rounded-lg border border-card-border bg-card p-4" aria-label="Histórico de fechos">
-        <h3 className="mb-2 text-sm font-semibold">Histórico de abertura e fecho</h3>
+        <h2 className="mb-2 text-sm font-semibold">Histórico de abertura e fecho</h2>
         {(history.data ?? []).filter((c) => c.monthId === month.id).length === 0 ? <p className="text-sm text-muted-foreground">Sem registos para este mês.</p> : (
           <ul className="space-y-1 text-sm" data-testid="closing-history">
             {(history.data ?? []).filter((c) => c.monthId === month.id).map((c) => (
@@ -218,7 +218,7 @@ function Recurring() {
     <div className="space-y-4" data-testid="recurring">
       {dialog}
       <section className="rounded-lg border border-card-border bg-card p-4">
-        <h3 className="mb-2 text-sm font-semibold">Ocorrências pendentes de confirmação</h3>
+        <h2 className="mb-2 text-sm font-semibold">Ocorrências pendentes de confirmação</h2>
         {(pend.data ?? []).length === 0 ? <p className="text-sm text-muted-foreground" data-testid="pending-empty">Sem ocorrências pendentes.</p> : (
           <ul className="space-y-1.5" data-testid="pending-list">
             {(pend.data ?? []).map((p) => (
@@ -233,7 +233,7 @@ function Recurring() {
         )}
       </section>
       <section className="rounded-lg border border-card-border bg-card p-4">
-        <h3 className="mb-2 text-sm font-semibold">Despesas recorrentes</h3>
+        <h2 className="mb-2 text-sm font-semibold">Despesas recorrentes</h2>
         <div className="responsive-form" onKeyDown={(e) => e.key === "Enter" && document.getElementById("btn-add-rec")?.click()}>
           <Input placeholder="Nome" aria-label="Nome" value={r.name} onChange={(e) => setR({ ...r, name: e.target.value })} className="h-9 text-sm" data-testid="input-rec-name" />
           <Input placeholder="Valor" aria-label="Valor" inputMode="decimal" value={r.value} onChange={(e) => setR({ ...r, value: e.target.value })} className="tnum h-9 text-sm" data-testid="input-rec-value" />
@@ -258,7 +258,7 @@ function Recurring() {
         </ul>
       </section>
       <section className="rounded-lg border border-card-border bg-card p-4">
-        <h3 className="mb-1 text-sm font-semibold">Reservas para despesas futuras</h3>
+        <h2 className="mb-1 text-sm font-semibold">Reservas para despesas futuras</h2>
         <p className="mb-2 text-xs text-muted-foreground">Uma reserva não é uma despesa paga: só cria a despesa quando marcas como paga. A sugestão considera o valor já reservado e os meses até ao prazo.</p>
         <div className="responsive-form" onKeyDown={(e) => e.key === "Enter" && document.getElementById("btn-add-res")?.click()}>
           <Input placeholder="Nome (ex.: seguro anual)" aria-label="Nome da reserva" value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} className="h-9 text-sm" data-testid="input-res-name" />
@@ -327,7 +327,7 @@ function Simulator() {
       <p className="text-xs text-muted-foreground">Simulação sem alterar dados reais. Pressupostos: sem rentabilidade nem inflação.</p>
       <div className="space-y-1">
         <Label className="text-xs text-muted-foreground">Meta</Label>
-        <Select value={String(p.id)} onValueChange={setPid}><SelectTrigger className="h-9 w-64 text-sm"><SelectValue /></SelectTrigger><SelectContent>{goals.map((g) => <SelectItem key={g.id} value={String(g.id)}>{g.name}</SelectItem>)}</SelectContent></Select>
+        <Select value={String(p.id)} onValueChange={setPid}><SelectTrigger className="h-9 w-64 text-sm" aria-label="Meta"><SelectValue /></SelectTrigger><SelectContent>{goals.map((g) => <SelectItem key={g.id} value={String(g.id)}>{g.name}</SelectItem>)}</SelectContent></Select>
       </div>
       <div className="grid gap-3 sm:grid-cols-3">
         {fld("monthly", "Contribuição mensal (€)", "100")}

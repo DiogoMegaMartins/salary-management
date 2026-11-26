@@ -1308,3 +1308,15 @@ button:disabled,
 [data-disabled] {
   cursor: not-allowed;
 }
+
+/* Movimento reduzido: sem transições nem animações para quem o pede ao sistema */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -173,7 +173,7 @@ export default function Portfolio() {
               defaultLayout: { x: 0, y: 17, w: 12, h: 13 },
               node: (
                 <SectionCard title="Por ano e parcela" description="Quanto entrou em cada parcela em cada ano">
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Quanto entrou em cada parcela, por ano">
                     <table className="w-full min-w-[720px] text-sm">
                       <thead>
                         <tr className="border-b border-border text-xs text-muted-foreground">

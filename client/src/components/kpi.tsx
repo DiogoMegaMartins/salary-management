@@ -61,34 +61,27 @@ export function Kpi({
   return (
     <div
       className={cn(
-        "h-full min-w-0 rounded-2xl border border-card-border bg-card p-3 sm:p-4",
+        "relative h-full min-w-0 rounded-2xl border border-card-border bg-card p-3 sm:p-4",
         onClick && "cursor-pointer transition-colors hover:border-primary/40 hover:bg-muted/40",
       )}
       onClick={onClick}
-      role={onClick ? "button" : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      onKeyDown={onClick ? (e) => {
-        if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
-          e.preventDefault();
-          onClick();
-        }
-      } : undefined}
     >
-      <div className="flex items-start justify-between gap-2">
-        {/* duas linhas reservadas: com títulos de uma e de duas linhas, os valores ficam alinhados entre cartões */}
-        <p className="min-h-8 text-xs font-medium uppercase leading-4 tracking-wide text-muted-foreground">{label}</p>
-        {helpSlug && (
-          <Link
-            href={`/ajuda/${helpSlug}`}
-            onClick={(e) => e.stopPropagation()}
-            className="-mr-2 -my-2 inline-flex min-h-9 min-w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label={`Saber mais sobre ${label}`}
-            data-testid={`link-help-${testId}`}
-          >
-            <HelpCircle className="h-3.5 w-3.5" />
-          </Link>
-        )}
-      </div>
+      {/* a ligação de ajuda fica fora da zona que se carrega, para não haver controlos dentro de controlos */}
+      <div
+        role={onClick ? "button" : undefined}
+        tabIndex={onClick ? 0 : undefined}
+        className={onClick ? "rounded-lg outline-hidden focus-visible:ring-2 focus-visible:ring-ring" : undefined}
+        onKeyDown={onClick ? (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClick();
+          }
+        } : undefined}
+      >
+        <div className="flex items-start justify-between gap-2">
+          {/* duas linhas reservadas: com títulos de uma e de duas linhas, os valores ficam alinhados entre cartões */}
+          <p className={cn("min-h-8 text-xs font-medium uppercase leading-4 tracking-wide text-muted-foreground", helpSlug && "pr-7")}>{label}</p>
+        </div>
       <p
         className={cn(
           "tnum mt-2 text-lg font-semibold",
@@ -118,6 +111,18 @@ export function Kpi({
         )}
         {hint && <span className="min-w-0 sm:truncate">{hint}</span>}
       </div>
+      </div>
+        {helpSlug && (
+          <Link
+            href={`/ajuda/${helpSlug}`}
+            onClick={(e) => e.stopPropagation()}
+            className="absolute right-1.5 top-1.5 inline-flex min-h-9 min-w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label={`Saber mais sobre ${label}`}
+            data-testid={`link-help-${testId}`}
+          >
+            <HelpCircle className="h-3.5 w-3.5" />
+          </Link>
+        )}
     </div>
   );
 }

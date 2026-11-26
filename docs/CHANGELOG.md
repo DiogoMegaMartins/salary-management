@@ -2,6 +2,16 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.29.0 | 2026-11-26
+
+Redesenho "Calma", fase 6: polimento e acessibilidade.
+
+- Verificação automática de acessibilidade com o axe (`e2e/acessibilidade.spec.ts`, nova dependência de desenvolvimento `@axe-core/playwright`) em todos os ecrãs, nos temas claro e escuro, nos modos Básico e Detalhado, em computador e telemóvel, e nos diálogos abertos. O contraste das cinco paletas passou sem correções.
+- Corrigido: 29 seletores sem nome para leitores de ecrã (`aria-label`); controlos dentro de controlos (ligação de ajuda dentro do cartão clicável do Início, botões dentro de opções na lista de parcelas); barras de progresso sem nome; cabeçalho de coluna vazio em Meses; títulos fora de ordem no Fecho; menu lateral e índice da Ajuda sem nome; tabela da Carteira com deslocação horizontal sem acesso por teclado.
+- Novo botão "Saltar para o conteúdo" no primeiro Tab (`layout.tsx`); `main` aceita foco.
+- Movimento reduzido (`prefers-reduced-motion`): sem transições nem animações, também no deslocamento suave dos separadores.
+- Alvos de toque de 44 px no telemóvel (cabeçalho, navegação, botão Registar, assistente) ficam com teste.
+
 ## 1.28.0 | 2026-11-26
 
 Redesenho "Calma", fase 5: restantes páginas.

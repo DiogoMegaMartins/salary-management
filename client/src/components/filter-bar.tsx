@@ -26,7 +26,7 @@ export function FilterBar({ d, showParcels = true }: { d: Derived; showParcels?:
     </Button>
     <div className={`${mobileOpen ? "flex" : "hidden"} flex-wrap items-center gap-2 md:flex`}>
       <Select value={f.preset} onValueChange={(v) => f.setPreset(v as any)}>
-        <SelectTrigger className="h-8 w-[196px] text-xs" data-testid="select-period-preset">
+        <SelectTrigger aria-label="Período" className="h-8 w-[196px] text-xs" data-testid="select-period-preset">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -43,7 +43,7 @@ export function FilterBar({ d, showParcels = true }: { d: Derived; showParcels?:
         onValueChange={(v) => f.setYear(v === "todos" ? "todos" : Number(v))}
         disabled={f.preset !== "custom"}
       >
-        <SelectTrigger className="h-8 w-[116px] text-xs" data-testid="select-year">
+        <SelectTrigger aria-label="Ano" className="h-8 w-[116px] text-xs" data-testid="select-year">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -62,7 +62,7 @@ export function FilterBar({ d, showParcels = true }: { d: Derived; showParcels?:
           onValueChange={(v) => f.setRange(Number(v), Math.max(f.toMonth, Number(v)))}
           disabled={f.preset !== "custom"}
         >
-          <SelectTrigger className="h-8 w-[112px] text-xs" data-testid="select-from-month">
+          <SelectTrigger aria-label="Mês inicial" className="h-8 w-[112px] text-xs" data-testid="select-from-month">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -79,7 +79,7 @@ export function FilterBar({ d, showParcels = true }: { d: Derived; showParcels?:
           onValueChange={(v) => f.setRange(Math.min(f.fromMonth, Number(v)), Number(v))}
           disabled={f.preset !== "custom"}
         >
-          <SelectTrigger className="h-8 w-[112px] text-xs" data-testid="select-to-month">
+          <SelectTrigger aria-label="Mês final" className="h-8 w-[112px] text-xs" data-testid="select-to-month">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

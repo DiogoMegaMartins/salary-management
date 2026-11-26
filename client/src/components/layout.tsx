@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Eye, EyeOff, LayoutGrid, Moon, Sun, Ellipsis } from "lucide-react";
 import { useAppState } from "@/lib/app";
@@ -155,9 +155,18 @@ export function AppShell({
   const { hidden, toggle: togglePrivacy } = usePrivacy();
   const state = useAppState();
   const failed = state.isError && !state.data;
+  const mainRef = useRef<HTMLElement>(null);
   return (
     <div className="grid h-dvh grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)_auto] bg-background lg:grid-cols-[236px_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)]">
-      <aside className="hidden lg:flex lg:row-span-2 flex-col gap-6 border-r border-sidebar-border bg-sidebar p-4 overflow-y-auto overscroll-contain">
+      {/* botão e não ligação: a navegação usa #, e uma ligação para #conteudo mudava de página */}
+      <button
+        type="button"
+        onClick={() => mainRef.current?.focus()}
+        className="sr-only focus:not-sr-only focus:fixed! focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg"
+      >
+        Saltar para o conteúdo
+      </button>
+      <aside aria-label="Menu" className="hidden lg:flex lg:row-span-2 flex-col gap-6 border-r border-sidebar-border bg-sidebar p-4 overflow-y-auto overscroll-contain">
         <div className="flex items-center gap-2.5 px-1 pt-1">
           <Logo className="h-6 w-6 text-primary" />
           <div className="leading-tight">
@@ -209,7 +218,7 @@ export function AppShell({
       </header>
       <KeyboardShortcuts />
 
-      <main className="min-h-0 min-w-0 col-start-1 lg:col-start-2 overflow-y-auto overscroll-contain px-4 py-5 md:px-6 md:py-6">
+      <main ref={mainRef} tabIndex={-1} className="min-h-0 min-w-0 col-start-1 lg:col-start-2 outline-hidden overflow-y-auto overscroll-contain px-4 py-5 md:px-6 md:py-6">
         {failed ? (
           <div role="alert" className="mx-auto mt-10 max-w-md space-y-3 rounded-lg border border-border bg-card p-5 text-center" data-testid="state-error">
             <p className="font-medium">Não foi possível carregar os dados.</p>

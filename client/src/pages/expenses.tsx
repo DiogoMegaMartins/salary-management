@@ -161,7 +161,7 @@ export default function ExpensesPage() {
           <div className="space-y-1">
             <Label className="text-xs text-muted-foreground">Mês</Label>
             <Select value={String(month.id)} onValueChange={setMonthSel}>
-              <SelectTrigger className="h-9 w-48 text-sm" data-testid="select-expense-month"><SelectValue /></SelectTrigger>
+              <SelectTrigger aria-label="Mês" className="h-9 w-48 text-sm" data-testid="select-expense-month"><SelectValue /></SelectTrigger>
               <SelectContent>{sorted.map((m) => <SelectItem key={m.id} value={String(m.id)}>{m.label} {m.year}</SelectItem>)}</SelectContent>
             </Select>
           </div>

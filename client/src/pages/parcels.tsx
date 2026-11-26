@@ -101,7 +101,7 @@ export function ParcelsPanel() {
           {active.length === 0 ? (
             <p className="p-6 text-center text-sm text-muted-foreground">Ainda não há parcelas. Cria a primeira com "Nova parcela".</p>
           ) : (
-            <ul role="listbox" aria-label="Parcelas" className="divide-y divide-border/60">
+            <ul aria-label="Parcelas" className="divide-y divide-border/60">
               {active.map((p) => {
                 const f = figures(p);
                 const on = sel?.id === p.id;
@@ -110,10 +110,11 @@ export function ParcelsPanel() {
                 const rule = p.defaultValue > 0 ? (p.defaultMode === "percentagem" ? `${fmtPct(p.defaultValue / 100, 1)} do disp.` : `${fmtEur(p.defaultValue, 0)} fixo`) : "sem regra";
                 const meta = [rule, platforms.length ? platforms.join(" · ") : null, subsN ? `${subsN} ${subsN === 1 ? "submeta" : "submetas"}` : null].filter(Boolean).join(" · ");
                 return (
-                  <li key={p.id} role="option" aria-selected={on}>
+                  <li key={p.id}>
                     <button
                       type="button"
                       onClick={() => setSelected(p.id)}
+                      aria-pressed={on}
                       className={cn(
                         "grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1.5 border-l-[3px] px-4 py-3 text-left transition-colors sm:grid-cols-[minmax(0,1fr)_auto_8.5rem]",
                         on ? "border-l-primary bg-primary/6" : "border-l-transparent hover:bg-muted/50",
@@ -134,7 +135,7 @@ export function ParcelsPanel() {
                       <span className="col-span-2 min-w-0 sm:col-span-1">
                         {f.target > 0 ? (
                           <>
-                            <Progress value={f.pct * 100} className="h-1.5" />
+                            <Progress value={f.pct * 100} className="h-1.5" aria-label={`Progresso de ${p.name}`} />
                             <span className="mt-1 block truncate text-[11px] text-muted-foreground">
                               {fmtPct(f.pct, 0)} de {fmtEur(f.target, 0)}{p.targetDate ? ` · até ${p.targetDate.split("-").reverse().join("/")}` : ""}
                             </span>
@@ -219,7 +220,7 @@ export function ParcelsPanel() {
                   } else setDraft({ ...draft, kind: v, typeId: null });
                 }}
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="Tipo da parcela"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {KINDS.map((k) => (
                     <SelectItem key={k.value} value={k.value}>{k.label}</SelectItem>

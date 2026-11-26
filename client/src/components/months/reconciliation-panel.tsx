@@ -176,7 +176,7 @@ export function ReconciliationPanel({
           <div className="space-y-1">
             <Label className="text-xs text-muted-foreground">Motivo do défice</Label>
             <Select value={reason} onValueChange={setReason}>
-              <SelectTrigger className="h-9 text-xs" data-testid="select-deficit-reason">
+              <SelectTrigger aria-label="Motivo da diferença" className="h-9 text-xs" data-testid="select-deficit-reason">
                 <SelectValue placeholder="Seleciona um motivo" />
               </SelectTrigger>
               <SelectContent>

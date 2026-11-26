@@ -218,7 +218,7 @@ export function DrillDownSheet({
                         value={draft.parcelId != null ? String(draft.parcelId) : ""}
                         onValueChange={(v) => setDraft((d) => ({ ...d, parcelId: Number(v) }))}
                       >
-                        <SelectTrigger className="h-8 text-xs">
+                        <SelectTrigger className="h-8 text-xs" aria-label="Parcela">
                           <SelectValue placeholder="Seleciona" />
                         </SelectTrigger>
                         <SelectContent>
