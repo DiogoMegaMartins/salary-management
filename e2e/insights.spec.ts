@@ -32,6 +32,8 @@ test.describe("Leituras sobre o histórico", () => {
       await expect(linha).toBeVisible();
       await expect(linha).toHaveAttribute("data-pace", "prazo_passado");
       await expect(linha).toContainText("O prazo já passou");
+      // a meta que mais precisa de atenção fica em destaque, com a etiqueta do estado
+      await expect(page.getByTestId(`dashboard-goal-${meta.id}`).getByTestId("goal-chip")).toHaveText("Prazo passado");
     } finally {
       await request.patch(`/api/parcels/${meta.id}`, { headers: cabecalhosApi(), data: original });
     }
