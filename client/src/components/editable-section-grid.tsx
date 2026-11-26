@@ -5,7 +5,7 @@ import { layoutEditor } from "@/lib/layout-editor";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { normalizeSectionGeometry, shouldStackSections } from "@/lib/layout-geometry";
+import { migrateSavedLayout, normalizeSectionGeometry, shouldStackSections } from "@/lib/layout-geometry";
 
 export type SectionSpec = {
   /** Identificador estável da secção (não muda entre versões da página). */
@@ -95,7 +95,7 @@ function useContainerWidth(active: boolean) {
 export function EditableSectionGrid({
   pageKey,
   sections,
-  savedLayout,
+  savedLayout: savedLayoutRaw,
   onSave,
   isSaving,
 }: {
@@ -120,6 +120,7 @@ export function EditableSectionGrid({
   const { ref, width } = useContainerWidth(true);
   const isCompact = isMobile || shouldStackSections(width);
 
+  const savedLayout = useMemo(() => migrateSavedLayout(sections, savedLayoutRaw), [sections, savedLayoutRaw]);
   const initialLayout = useMemo(() => toRglLayout(sections, savedLayout), [sections, savedLayout]);
   const initialLayoutRef = useRef(initialLayout);
   initialLayoutRef.current = initialLayout;
