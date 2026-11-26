@@ -73,7 +73,7 @@ test.describe("Página Divisão: estados", () => {
     await request.patch("/api/settings", { headers: cabecalhosApi(), data: { features: '{"divisao":false,"movimentos":false}' } });
     await page.goto("/#/divisao");
     await page.reload();
-    await expect(page.getByRole("heading", { level: 1, name: "Painel" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Início" })).toBeVisible();
   });
 });
 

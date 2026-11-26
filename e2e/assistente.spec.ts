@@ -139,7 +139,7 @@ test.describe("Assistente", () => {
     await request.patch("/api/settings", { headers: cabecalhosApi(), data: { features: '{"assistente":false}' } });
     try {
       await page.reload();
-      await expect(page.getByRole("heading", { level: 1, name: "Painel" })).toBeVisible();
+      await expect(page.getByRole("heading", { level: 1, name: "Início" })).toBeVisible();
       await expect(page.getByTestId("assistant-fab")).toHaveCount(0);
     } finally {
       await request.patch("/api/settings", { headers: cabecalhosApi(), data: { features: "{}" } });

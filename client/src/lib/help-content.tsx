@@ -664,6 +664,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.26.0</H3>
+        <UL>
+          <li>O Painel passou a Início: abre com o valor disponível este mês (gastos planeados menos despesas registadas, e muda para &quot;Gasto acima do planeado&quot; se o ultrapassares) e para onde vai o dinheiro. No modo Básico vês só isto; no Detalhado, também os gráficos de sempre. Ao registar uma despesa escolhes a parcela (por defeito, a de gastos).</li>
+        </UL>
         <H3>1.25.0</H3>
         <UL>
           <li>Menu mais simples: Início, Dividir e Meses à vista, e o resto em &quot;Mais&quot;. Há agora um botão &quot;Registar despesa&quot; sempre à mão, no fundo de cada página, no modo Básico. O modo (Básico ou Detalhado) escolhe-se em Definições › Funcionalidades; quem já usa a app fica no Detalhado.</li>

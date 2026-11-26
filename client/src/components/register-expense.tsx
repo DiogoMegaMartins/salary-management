@@ -10,6 +10,7 @@ import { useAppState, useSave } from "@/lib/app";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { defaultRegisterDate, monthOfDate, parseAmount } from "@shared/assistant";
 import { fmtEur } from "@shared/calc";
+import { defaultExpenseParcel } from "@shared/inicio";
 import { parseUiMode } from "@shared/ui-mode";
 
 const NONE = "__none__";
@@ -28,6 +29,7 @@ export function RegisterBar() {
   const [typing, setTyping] = useState(false);
   const [value, setValue] = useState("");
   const [category, setCategory] = useState(NONE);
+  const [parcel, setParcel] = useState(NONE);
   const [date, setDate] = useState("");
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -44,9 +46,11 @@ export function RegisterBar() {
 
   if (!data || data.settings.onboardingDone === 0 || data.months.length === 0 || parseUiMode(data.settings.uiMode) !== "basico") return null;
   const categories = data.categories.filter((c) => c.active).map((c) => c.name);
+  const parcels = data.parcels.filter((p) => !p.archived);
 
   const abrir = () => {
-    setValue(""); setNote(""); setCategory(NONE); setError(null);
+    const pd = defaultExpenseParcel(data.parcels);
+    setValue(""); setNote(""); setCategory(NONE); setParcel(pd == null ? NONE : String(pd)); setError(null);
     setDate(defaultRegisterDate(data.months, hoje()));
     setOpen(true);
   };
@@ -60,7 +64,7 @@ export function RegisterBar() {
     if (!month) return setError("Não há mês para esta data. Cria o mês em Meses ou escolhe outra data.");
     if (month.status === "fechado") return setError("Esse mês está fechado. Escolhe a data de um mês aberto.");
     busy.current = true;
-    save.createTransaction.mutate({ monthId: month.id, date, type: "expense", value: v, category: category === NONE ? "" : category, note: note.trim() } as any, {
+    save.createTransaction.mutate({ monthId: month.id, date, type: "expense", value: v, category: category === NONE ? "" : category, parcelId: parcel === NONE ? null : Number(parcel), note: note.trim() } as any, {
       onSuccess: () => { busy.current = false; setOpen(false); toast({ title: `${fmtEur(v)} guardado`, description: "A despesa já está em Despesas." }); },
       onError: (e) => { busy.current = false; setError(e instanceof Error ? e.message : "Não foi possível guardar. Tenta de novo."); },
     });
@@ -102,6 +106,16 @@ export function RegisterBar() {
                 <Label htmlFor="register-date">Data</Label>
                 <Input id="register-date" data-testid="register-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
               </div>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="register-parcel">Parcela</Label>
+              <Select value={parcel} onValueChange={setParcel}>
+                <SelectTrigger id="register-parcel" data-testid="register-parcel"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={NONE}>Sem parcela</SelectItem>
+                  {parcels.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1">
               <Label htmlFor="register-note">Nota (opcional)</Label>

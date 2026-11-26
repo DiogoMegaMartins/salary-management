@@ -34,6 +34,8 @@ import { usePageLayout } from "@/lib/page-layout";
 import { buildDashboardModel } from "@/lib/dashboard-model";
 import { GoalPaceLine } from "@/components/insights";
 import { YearOverYearCard, useYoYEmpty } from "@/components/yoy";
+import { InicioSummary } from "@/components/inicio-summary";
+import { parseUiMode } from "@shared/ui-mode";
 
 export default function Dashboard() {
   const features = useFeatures();
@@ -62,7 +64,7 @@ export default function Dashboard() {
 
   if (isLoading || !d || !model) {
     return (
-      <AppShell title="Painel" subtitle="A carregar…">
+      <AppShell title="Início" subtitle="A carregar…">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-[104px] rounded-lg" />
@@ -74,15 +76,19 @@ export default function Dashboard() {
   }
 
   const empty = d.months.length === 0;
+  const detailed = parseUiMode(data!.settings.uiMode) === "detalhado";
 
   return (
     <AppShell
-      title="Painel"
-      subtitle="Visão geral do rendimento e da divisão em parcelas"
-      filters={<FilterBar d={d} />}
-      actions={<MonthlyReportDialog d={d} />}
+      title="Início"
+      subtitle={detailed ? "Visão geral do rendimento e da divisão em parcelas" : "O teu mês de relance"}
+      filters={detailed ? <FilterBar d={d} /> : undefined}
+      actions={detailed ? <MonthlyReportDialog d={d} /> : undefined}
     >
-      {empty ? (
+      <div className={detailed ? "mb-4" : undefined}>
+        <InicioSummary state={data!} detailed={detailed} />
+      </div>
+      {!detailed ? null : empty ? (
         <div className="flex h-[60vh] flex-col items-center justify-center gap-2 text-center">
           <TrendingUp className="h-8 w-8 text-muted-foreground" />
           <p className="text-sm font-medium">Sem meses no período selecionado</p>

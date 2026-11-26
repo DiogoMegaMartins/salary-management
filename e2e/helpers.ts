@@ -4,7 +4,7 @@ export const ACCESS_CODE = process.env.E2E_ACCESS_CODE ?? "codigo-de-teste-1234"
 
 /** Ecrãs da app: rota (hash) e título principal (h1). */
 export const SCREENS = [
-  { route: "#/", title: "Painel" },
+  { route: "#/", title: "Início" },
   { route: "#/meses", title: "Meses" },
   { route: "#/divisao", title: "Divisão" },
   { route: "#/despesas", title: "Despesas" },
@@ -20,7 +20,7 @@ export async function entrar(page: Page) {
   await page.goto("/");
   await page.getByPlaceholder("Código de acesso").fill(ACCESS_CODE);
   await page.getByRole("button", { name: "Entrar" }).click();
-  await expect(page.getByRole("heading", { level: 1, name: "Painel" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Início" })).toBeVisible();
 }
 
 /** Recolhe erros de consola e exceções da página, para afirmar que não há nenhum. */

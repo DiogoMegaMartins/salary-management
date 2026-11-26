@@ -552,6 +552,7 @@
     --muted-foreground: 212 21% 41%;
     --accent: 211 67% 92%;
     --accent-foreground: 214 55% 15%;
+    --chart-1: 213 65% 42%;
     --ring: 213 65% 42%;
   }
   :root[data-palette="ceu"].dark {
@@ -581,6 +582,7 @@
     --muted-foreground: 210 24% 66%;
     --accent: 212 45% 22%;
     --accent-foreground: 212 63% 95%;
+    --chart-1: 211 79% 72%;
     --ring: 211 79% 72%;
   }
   :root[data-palette="salvia"] {
@@ -610,6 +612,7 @@
     --muted-foreground: 149 12% 37%;
     --accent: 145 37% 90%;
     --accent-foreground: 155 37% 10%;
+    --chart-1: 155 59% 30%;
     --ring: 155 59% 30%;
   }
   :root[data-palette="salvia"].dark {
@@ -639,6 +642,7 @@
     --muted-foreground: 147 11% 62%;
     --accent: 153 30% 17%;
     --accent-foreground: 144 31% 94%;
+    --chart-1: 150 50% 62%;
     --ring: 150 50% 62%;
   }
   :root[data-palette="pessego"] {
@@ -668,6 +672,7 @@
     --muted-foreground: 16 18% 41%;
     --accent: 19 81% 92%;
     --accent-foreground: 14 32% 15%;
+    --chart-1: 14 61% 48%;
     --ring: 14 61% 48%;
   }
   :root[data-palette="pessego"].dark {
@@ -697,6 +702,7 @@
     --muted-foreground: 17 23% 67%;
     --accent: 15 41% 21%;
     --accent-foreground: 20 56% 94%;
+    --chart-1: 16 80% 71%;
     --ring: 16 80% 71%;
   }
   :root[data-palette="lavanda"] {
@@ -726,6 +732,7 @@
     --muted-foreground: 251 17% 43%;
     --accent: 253 62% 93%;
     --accent-foreground: 252 32% 15%;
+    --chart-1: 250 52% 52%;
     --ring: 250 52% 52%;
   }
   :root[data-palette="lavanda"].dark {
@@ -755,6 +762,7 @@
     --muted-foreground: 250 27% 70%;
     --accent: 249 38% 23%;
     --accent-foreground: 252 60% 95%;
+    --chart-1: 249 82% 79%;
     --ring: 249 82% 79%;
   }
   :root[data-palette="mare"] {
@@ -784,6 +792,7 @@
     --muted-foreground: 184 16% 37%;
     --accent: 171 42% 88%;
     --accent-foreground: 184 49% 12%;
+    --chart-1: 185 81% 29%;
     --ring: 185 81% 29%;
   }
   :root[data-palette="mare"].dark {
@@ -813,6 +822,7 @@
     --muted-foreground: 182 18% 63%;
     --accent: 185 45% 16%;
     --accent-foreground: 175 35% 93%;
+    --chart-1: 180 55% 59%;
     --ring: 180 55% 59%;
   }
 }

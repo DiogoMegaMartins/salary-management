@@ -9,7 +9,7 @@ test.describe("Interface: erros visíveis, confirmações e teclado", () => {
     await expect(page.getByTestId("state-error")).toBeVisible();
     await page.unroute("**/api/state");
     await clicar(page.getByTestId("button-retry-state"));
-    await expect(page.getByRole("heading", { level: 1, name: "Painel" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Início" })).toBeVisible();
     await expect(page.getByTestId("state-error")).toHaveCount(0);
   });
 
