@@ -85,9 +85,8 @@ export default function Dashboard() {
       filters={detailed ? <FilterBar d={d} /> : undefined}
       actions={detailed ? <MonthlyReportDialog d={d} /> : undefined}
     >
-      <div className={detailed ? "mb-4" : undefined}>
-        <InicioSummary state={data!} detailed={detailed} />
-      </div>
+      {/* No Detalhado com meses, o resumo vive na grelha, ao lado dos cartões pequenos. */}
+      {(!detailed || empty) && <InicioSummary state={data!} detailed={detailed} />}
       {!detailed ? null : empty ? (
         <div className="flex h-[60vh] flex-col items-center justify-center gap-2 text-center">
           <TrendingUp className="h-8 w-8 text-muted-foreground" />
@@ -203,20 +202,35 @@ export default function Dashboard() {
             />
   ) },
 ];
-            const sections: SectionSpec[] = kpiNodes.map((kn, i) => ({
-              id: kn.id,
-              title: kn.title,
-              group: "kpis",
-              groupClass: "grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6",
-              minW: 3,
-              minH: 3,
-              defaultLayout: { x: (i % 3) * 4, y: Math.floor(i / 3) * 3, w: 4, h: 3 },
-              node: kn.node,
-            }));
+            const KPI_GROUP = "grid grid-cols-2 gap-3 lg:grid-cols-4";
+            // resumo do mês à esquerda (meia largura) e os 6 cartões pequenos ao lado, 2 por linha
+            const sections: SectionSpec[] = [
+              {
+                id: "inicio-resumo",
+                title: "Resumo do mês",
+                group: "kpis",
+                groupClass: KPI_GROUP,
+                itemClass: "col-span-2 lg:row-span-3",
+                minW: 4,
+                minH: 8,
+                defaultLayout: { x: 0, y: 0, w: 6, h: 10 },
+                node: <InicioSummary state={data!} detailed={detailed} />,
+              },
+              ...kpiNodes.map((kn, i): SectionSpec => ({
+                id: kn.id,
+                title: kn.title,
+                group: "kpis",
+                groupClass: KPI_GROUP,
+                minW: 3,
+                minH: 3,
+                defaultLayout: { x: 6 + (i % 2) * 3, y: Math.floor(i / 2) * 3, w: 3, h: Math.floor(i / 2) === 2 ? 4 : 3 },
+                node: kn.node,
+              })),
+            ];
             sections.push({
               id: "rendimento-poupanca",
               title: "Rendimento e poupança",
-              defaultLayout: { x: 0, y: 6, w: 7, h: 11 },
+              defaultLayout: { x: 0, y: 10, w: 7, h: 11 },
               node: (
             <SectionCard
               title="Rendimento e poupança"
@@ -282,7 +296,7 @@ export default function Dashboard() {
             sections.push({
               id: "distribuicao-media",
               title: "Distribuição média",
-              defaultLayout: { x: 7, y: 6, w: 5, h: 11 },
+              defaultLayout: { x: 7, y: 10, w: 5, h: 11 },
               node: (
             <SectionCard title="Distribuição média" description="Peso de cada parcela no período filtrado">
               <div className="donut-layout flex h-full min-h-[260px] min-w-0 items-stretch">
@@ -331,7 +345,7 @@ export default function Dashboard() {
             sections.push({
               id: "divisao-por-parcela",
               title: "Divisão por parcela",
-              defaultLayout: { x: 0, y: 17, w: 12, h: 11 },
+              defaultLayout: { x: 0, y: 21, w: 12, h: 11 },
               node: (
           <SectionCard
             title="Divisão por parcela"
@@ -377,7 +391,7 @@ export default function Dashboard() {
             sections.push({
               id: "parcelas-periodo",
               title: "Parcelas no período",
-              defaultLayout: { x: 0, y: 28, w: 6, h: 11 },
+              defaultLayout: { x: 0, y: 32, w: 6, h: 11 },
               node: (
             <SectionCard title="Parcelas no período" description="Total, média e tendência da segunda metade do período">
               <div className="overflow-x-auto">
@@ -445,7 +459,7 @@ export default function Dashboard() {
             sections.push({
               id: "metas",
               title: "Metas",
-              defaultLayout: { x: 6, y: 28, w: 6, h: 11 },
+              defaultLayout: { x: 6, y: 32, w: 6, h: 11 },
               node: (
             <SectionCard
               title="Metas"
@@ -533,7 +547,7 @@ export default function Dashboard() {
             sections.push({
               id: "bruto-descontos",
               title: "Bruto vs. descontos",
-              defaultLayout: { x: 0, y: 39, w: 6, h: 9 },
+              defaultLayout: { x: 0, y: 43, w: 6, h: 9 },
               node: (
             <SectionCard title="Bruto vs. descontos" description="Quanto do rendimento bruto fica retido">
             <div className="in-[.grid-widget]:flex in-[.grid-widget]:h-full in-[.grid-widget]:flex-col">
@@ -564,7 +578,7 @@ export default function Dashboard() {
             sections.push({
               id: "gastos-poupanca-investimento",
               title: "Gastos, poupança e investimento",
-              defaultLayout: { x: 6, y: 39, w: 6, h: 9 },
+              defaultLayout: { x: 6, y: 43, w: 6, h: 9 },
               node: (
             <SectionCard title="Gastos, poupança e investimento" description="Divisão por tipo de parcela">
             <div className="in-[.grid-widget]:flex in-[.grid-widget]:h-full in-[.grid-widget]:flex-col">
@@ -600,7 +614,7 @@ export default function Dashboard() {
             sections.push({
               id: "ano-anterior",
               title: "Comparação mensal e anual",
-              defaultLayout: { x: 0, y: 48, w: 12, h: 16 },
+              defaultLayout: { x: 0, y: 52, w: 12, h: 16 },
               collapsedH: yoyEmpty ? 5 : undefined,
               node: (
                 <SectionCard className={yoyEmpty ? "min-h-0" : undefined} title="Comparação mensal e anual" description="Compara com um ano ou com outros meses do mesmo ano">
