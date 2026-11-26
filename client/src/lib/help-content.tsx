@@ -664,6 +664,11 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.32.0</H3>
+        <UL>
+          <li>No modo Básico, o Início mostra o valor disponível ao lado de para onde vai o dinheiro (com um anel por categoria), três números do dia a dia (quanto gastaste, quanto podes gastar por dia e a última despesa) e as últimas despesas.</li>
+          <li>O cartão de Metas, no modo Detalhado, põe em destaque a meta que mais precisa de atenção, com as submetas, e mostra as outras metas em anéis com o estado de cada uma.</li>
+        </UL>
         <H3>1.31.0</H3>
         <UL>
           <li>O Plano do mês ficou mais claro: os 3 passos (Quanto entra, Para onde vai, Fechar o mês) estão numa coluna à esquerda e o que escolhes abre à direita. As outras ferramentas (Gastos do mês, Parcelas e metas, Recorrências e reservas, Simulador de metas, Composição dos totais) estão por baixo.</li>

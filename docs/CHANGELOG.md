@@ -2,6 +2,14 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.32.0 | 2026-11-27
+
+Início no modo Básico e novo cartão de Metas.
+
+- **Início (Básico)** (`components/inicio-basico.tsx`): o valor disponível fica ao lado de "Para onde vai o dinheiro" (anel com as 5 maiores categorias e "Outras", mais a lista com valores e percentagens); por baixo, três números (gasto este mês, quanto podes gastar por dia até ao fim do mês, última despesa) e as **últimas despesas** (5, com categoria e dia, e ligação para Despesas). Regras novas em `shared/inicio.ts` (`dailyAllowance`, `latestExpenses`, `dayLabel`). O resumo (`InicioSummary`) passa a partilhar o cálculo (`useInicioData`) e pode esconder as categorias.
+- **Metas (Início, Detalhado)** (`components/goals-card.tsx`): a meta que mais precisa de atenção (prazo passado, sem ritmo, atrasada) fica em destaque, com anel de progresso, estado, ritmo e as submetas sempre à vista; as outras metas aparecem em cartões com anel e etiqueta de estado (No ritmo, Atrasada, Sem ritmo, Prazo passado, Concluída). Escolha da meta e etiquetas em `shared/goals-view.ts`. O botão "Mostrar submetas" deixa de existir (as submetas do destaque estão sempre abertas).
+- Testes: `tests/metas-vista.test.ts` e novos casos em `tests/inicio-resumo.test.ts`; `e2e/inicio.spec.ts` e `e2e/insights.spec.ts` seguem os novos cartões.
+
 ## 1.31.0 | 2026-11-27
 
 Plano do mês remodelado e Início alinhado.

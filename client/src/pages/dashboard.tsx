@@ -14,27 +14,25 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { AlertTriangle, ChevronDown, ChevronUp, TrendingUp } from "lucide-react";
+import { AlertTriangle, TrendingUp } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { FilterBar } from "@/components/filter-bar";
 import { Kpi, SectionCard } from "@/components/kpi";
 import { ChartTooltip, LegendDots, axisProps, eurAxis, gridProps, useSquareFit } from "@/components/charts";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { useAppState, useDerived } from "@/lib/app";
 import { useFeatures } from "@/lib/features";
-import { DashboardSubgoals, formatGoalMoney } from "@/components/dashboard-subgoals";
+import { GoalsCard } from "@/components/goals-card";
 import { fmtEur, fmtPct, monthLabelShort } from "@shared/calc";
 import { DrillDownSheet } from "@/components/drill-down-sheet";
 import { MonthlyReportDialog } from "@/components/monthly-report-dialog";
 import { EditableSectionGrid, type SectionSpec } from "@/components/editable-section-grid";
 import { usePageLayout } from "@/lib/page-layout";
 import { buildDashboardModel } from "@/lib/dashboard-model";
-import { GoalPaceLine } from "@/components/insights";
 import { YearOverYearCard, useYoYEmpty } from "@/components/yoy";
 import { InicioSummary } from "@/components/inicio-summary";
+import { InicioBasico } from "@/components/inicio-basico";
 import { parseUiMode } from "@shared/ui-mode";
 
 export default function Dashboard() {
@@ -44,7 +42,6 @@ export default function Dashboard() {
   const d = useDerived(data);
   const yoyEmpty = useYoYEmpty(d);
   const pageLayout = usePageLayout(data?.settings ?? ({} as any), "painel");
-  const [expandedGoals, setExpandedGoals] = useState<Record<number, boolean>>({});
   const [drillDown, setDrillDown] = useState<{ title: string; description: string; filter: (t: any) => boolean } | null>(
     null,
   );
@@ -86,7 +83,8 @@ export default function Dashboard() {
       actions={detailed ? <MonthlyReportDialog d={d} /> : undefined}
     >
       {/* No Detalhado com meses, o resumo vive na grelha, ao lado dos cartões pequenos. */}
-      {(!detailed || empty) && <InicioSummary state={data!} detailed={detailed} />}
+      {!detailed && <InicioBasico state={data!} />}
+      {detailed && empty && <InicioSummary state={data!} detailed />}
       {!detailed ? null : empty ? (
         <div className="flex h-[60vh] flex-col items-center justify-center gap-2 text-center">
           <TrendingUp className="h-8 w-8 text-muted-foreground" />
@@ -465,82 +463,7 @@ export default function Dashboard() {
               title="Metas"
               description="Metas e submetas com base em todo o histórico; ritmo das metas nos últimos 3 meses"
             >
-              {model.goals.length === 0 ? (
-                <p className="py-6 text-center text-xs text-muted-foreground">
-                  Define uma meta em Parcelas e metas para acompanhar o progresso aqui.
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {model.goals.map((g) => (
-                    <div key={g.parcel.id} data-testid={`dashboard-goal-${g.parcel.id}`}>
-                      <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-2 text-sm">
-                        <span className="flex min-w-0 items-center gap-2">
-                          <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: g.parcel.color }} />
-                          <span className="min-w-0 wrap-break-word">
-                            {g.parcel.name}
-                          </span>
-                        </span>
-                        <span className="tnum text-xs text-muted-foreground">
-                          {formatGoalMoney(g.acc, g.parcel.currency || "EUR")}
-                          {g.parcel.targetAmount != null && g.parcel.targetAmount > 0 && ` / ${formatGoalMoney(g.parcel.targetAmount, g.parcel.currency || "EUR")}`}
-                        </span>
-                      </div>
-                      {g.incomplete && (
-                        <p className="mb-1.5 text-xs text-destructive">
-                          Acumulado incompleto: falta taxa {g.missingRates.join(", ")}.
-                        </p>
-                      )}
-                      {g.parcel.targetAmount != null && g.parcel.targetAmount > 0 && (
-                        <Progress value={g.pct * 100} aria-valuenow={g.pct * 100} aria-label={`Progresso de ${g.parcel.name}`} className="h-2" />
-                      )}
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {!g.parcel.targetAmount || g.parcel.targetAmount <= 0
-                          ? "Sem objetivo definido para a meta principal"
-                          : g.incomplete
-                            ? "O progresso é parcial até definires a taxa de conversão."
-                          : g.missing <= 0
-                          ? "Meta concluída"
-                          : g.monthsLeft
-                            ? `Faltam ${formatGoalMoney(g.missing, g.parcel.currency || "EUR")} · ~${g.monthsLeft} ${g.monthsLeft === 1 ? "mês" : "meses"} ao ritmo de ${formatGoalMoney(g.pace, g.parcel.currency || "EUR")}/mês`
-                            : `Faltam ${formatGoalMoney(g.missing, g.parcel.currency || "EUR")}`}
-                      </p>
-                      {!g.incomplete && (
-                        <GoalPaceLine
-                          pace={g.paceInfo}
-                          money={(n) => formatGoalMoney(n, g.parcel.currency || "EUR")}
-                          testId={`dashboard-goal-pace-${g.parcel.id}`}
-                        />
-                      )}
-                      {g.subs.length > 0 && (
-                        <>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="mt-2 min-h-11 gap-1.5 text-xs"
-                            aria-label={`${expandedGoals[g.parcel.id] ? "Esconder" : "Mostrar"} submetas de ${g.parcel.name}`}
-                            aria-expanded={!!expandedGoals[g.parcel.id]}
-                            aria-controls={`dashboard-subgoals-${g.parcel.id}`}
-                            onClick={() => setExpandedGoals((current) => ({
-                              ...current,
-                              [g.parcel.id]: !current[g.parcel.id],
-                            }))}
-                            data-testid={`button-toggle-dashboard-subgoals-${g.parcel.id}`}
-                          >
-                            {expandedGoals[g.parcel.id]
-                              ? <ChevronUp className="h-4 w-4" aria-hidden="true" />
-                              : <ChevronDown className="h-4 w-4" aria-hidden="true" />}
-                            {expandedGoals[g.parcel.id] ? "Esconder submetas" : `Mostrar submetas (${g.subs.length})`}
-                          </Button>
-                          <div id={`dashboard-subgoals-${g.parcel.id}`} hidden={!expandedGoals[g.parcel.id]}>
-                            <DashboardSubgoals subs={g.subs} />
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+              <GoalsCard goals={model.goals} />
             </SectionCard>
               ),
             });

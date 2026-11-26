@@ -22,13 +22,32 @@ test("início: título, resumo do mês e barra de progresso", async ({ page }) =
   expect(v).toBeLessThanOrEqual(100);
 });
 
-test("início: no modo Básico só há o resumo, com as 3 maiores categorias", async ({ page }) => {
+test("início: no modo Básico há o resumo, para onde vai o dinheiro, três números e as últimas despesas", async ({ page }) => {
   await modo(page, "basico");
   await entrar(page);
   await abrirInicio(page);
+  await expect(page.getByTestId("inicio-basico")).toBeVisible();
   await expect(page.getByTestId("kpi-net")).toHaveCount(0);
-  await expect(page.getByTestId("inicio-categories").getByRole("listitem")).not.toHaveCount(4);
-  expect(await page.getByTestId("inicio-categories").getByRole("listitem").count()).toBeLessThanOrEqual(3);
+  for (const id of ["inicio-mini-gasto", "inicio-mini-dia", "inicio-mini-ultima", "inicio-ultimas"]) await expect(page.getByTestId(id)).toBeVisible();
+  await expect(page.getByTestId("inicio-categories")).toBeVisible();
+  expect(await page.getByTestId("inicio-categories").getByRole("listitem").count()).toBeLessThanOrEqual(6); // 5 maiores + Outras
+  await expect(page.getByTestId("inicio-ver-despesas")).toBeVisible();
+});
+
+test("início Básico: uma despesa nova aparece nas últimas despesas e na última despesa", async ({ page }, info) => {
+  const nota = `inicio-ultimas-${info.project.name}-${Date.now()}`;
+  await modo(page, "basico");
+  await entrar(page);
+  await abrirInicio(page);
+  await clicar(page.getByTestId("register-button"));
+  await page.getByTestId("register-value").fill("7,77");
+  await page.getByTestId("register-note").fill(nota);
+  await page.getByTestId("register-save").click();
+  await expect(page.getByTestId("register-dialog")).toBeHidden();
+  const lista = page.getByTestId("inicio-ultimas");
+  await expect(lista).toContainText(nota);
+  await expect(lista.getByTestId("inicio-despesa").first()).toContainText(/7,77/);
+  await expect(page.getByTestId("inicio-mini-ultima")).toContainText(/7,77/);
 });
 
 test("início: no modo Detalhado o resumo vem seguido do painel de hoje", async ({ page }) => {
