@@ -664,6 +664,13 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.30.0</H3>
+        <UL>
+          <li>Dividir passou a chamar-se Plano do mês. O ecrã ficou mais leve, com os 3 passos num só cartão e mais espaço entre os blocos.</li>
+          <li>No Início (modo Detalhado), o resumo do mês e os cartões pequenos ficam lado a lado, alinhados na mesma grelha.</li>
+          <li>Na barra lateral, &quot;Mais&quot; é agora um botão que mostra e esconde as outras opções. Abre sozinho quando estás numa delas e lembra a tua escolha.</li>
+          <li>Ao registar uma despesa, se a categoria ainda não existir, podes criá-la ali mesmo em &quot;+ Criar categoria…&quot;.</li>
+        </UL>
         <H3>1.29.0</H3>
         <UL>
           <li>Acessibilidade: a app diz melhor o que cada controlo faz a quem usa leitor de ecrã, tem um botão &quot;Saltar para o conteúdo&quot; no primeiro Tab e respeita o pedido de movimento reduzido do sistema.</li>
@@ -674,7 +681,7 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
         </UL>
         <H3>1.27.0</H3>
         <UL>
-          <li>Dividir juntou a divisão do salário, as parcelas e metas e o fecho do mês, com um cartão de 3 passos (salário, repartir, fechar) que mostra onde estás. No modo Básico vês o passo em curso; no Detalhado, todos os separadores. As ligações antigas continuam a funcionar.</li>
+          <li>O Plano do mês (antes Dividir) juntou a divisão do salário, as parcelas e metas e o fecho do mês, com um cartão de 3 passos (salário, repartir, fechar) que mostra onde estás. No modo Básico vês o passo em curso; no Detalhado, todos os separadores. As ligações antigas continuam a funcionar.</li>
         </UL>
         <H3>1.26.0</H3>
         <UL>
@@ -682,7 +689,7 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
         </UL>
         <H3>1.25.0</H3>
         <UL>
-          <li>Menu mais simples: Início, Dividir e Meses à vista, e o resto em &quot;Mais&quot;. Há agora um botão &quot;Registar despesa&quot; sempre à mão, no fundo de cada página, no modo Básico. O modo (Básico ou Detalhado) escolhe-se em Definições › Funcionalidades; quem já usa a app fica no Detalhado.</li>
+          <li>Menu mais simples: Início, Plano do mês e Meses à vista, e o resto em &quot;Mais&quot;. Há agora um botão &quot;Registar despesa&quot; sempre à mão, no fundo de cada página, no modo Básico. O modo (Básico ou Detalhado) escolhe-se em Definições › Funcionalidades; quem já usa a app fica no Detalhado.</li>
         </UL>
         <H3>1.24.0</H3>
         <UL>

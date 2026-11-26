@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAppState, useSave } from "@/lib/app";
+import { errMsg } from "@/components/catalogs";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { defaultRegisterDate, monthOfDate, parseAmount } from "@shared/assistant";
 import { fmtEur } from "@shared/calc";
@@ -14,6 +15,7 @@ import { defaultExpenseParcel } from "@shared/inicio";
 import { parseUiMode } from "@shared/ui-mode";
 
 const NONE = "__none__";
+const NEW = "__new__";
 const hoje = () => new Date().toLocaleDateString("sv-SE");
 
 /**
@@ -29,6 +31,7 @@ export function RegisterBar() {
   const [typing, setTyping] = useState(false);
   const [value, setValue] = useState("");
   const [category, setCategory] = useState(NONE);
+  const [newCat, setNewCat] = useState<string | null>(null); // nome da categoria a criar (null = a escolher da lista)
   const [parcel, setParcel] = useState(NONE);
   const [date, setDate] = useState("");
   const [note, setNote] = useState("");
@@ -50,9 +53,21 @@ export function RegisterBar() {
 
   const abrir = () => {
     const pd = defaultExpenseParcel(data.parcels);
-    setValue(""); setNote(""); setCategory(NONE); setParcel(pd == null ? NONE : String(pd)); setError(null);
+    setValue(""); setNote(""); setCategory(NONE); setNewCat(null); setParcel(pd == null ? NONE : String(pd)); setError(null);
     setDate(defaultRegisterDate(data.months, hoje()));
     setOpen(true);
+  };
+
+  const criarCategoria = () => {
+    const name = (newCat ?? "").trim().replace(/\s+/g, " ");
+    if (!name) return setError("Indica o nome da categoria.");
+    const existing = data.categories.find((c) => c.name.trim().toLowerCase() === name.toLowerCase());
+    const done = (n: string) => { setCategory(n); setNewCat(null); setError(null); };
+    if (existing) {
+      if (!existing.active) save.updateCategory.mutate({ id: existing.id, patch: { active: 1 } as any });
+      return done(existing.name);
+    }
+    save.createCategory.mutate({ name } as any, { onSuccess: () => done(name), onError: (e) => setError(`Não foi possível criar a categoria: ${errMsg(e)}`) });
   };
 
   const guardar = () => {
@@ -94,13 +109,26 @@ export function RegisterBar() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1">
                 <Label htmlFor="register-category">Categoria</Label>
-                <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger id="register-category" data-testid="register-category"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={NONE}>Sem categoria</SelectItem>
-                    {categories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                {newCat !== null ? (
+                  <div className="flex gap-1.5">
+                    <Input
+                      id="register-category" data-testid="register-new-category" autoComplete="off" autoFocus maxLength={60}
+                      value={newCat} onChange={(e) => setNewCat(e.target.value)} placeholder="Nome da categoria" aria-label="Nome da nova categoria"
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); criarCategoria(); } if (e.key === "Escape") { e.stopPropagation(); setNewCat(null); } }}
+                    />
+                    <Button type="button" onClick={criarCategoria} disabled={save.createCategory.isPending} data-testid="register-create-category">Criar</Button>
+                  </div>
+                ) : (
+                  <Select value={category} onValueChange={(v) => (v === NEW ? setNewCat("") : setCategory(v))}>
+                    <SelectTrigger id="register-category" data-testid="register-category"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={NONE}>Sem categoria</SelectItem>
+                      {categories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                      {category !== NONE && !categories.includes(category) && <SelectItem value={category}>{category}</SelectItem>}
+                      <SelectItem value={NEW}>+ Criar categoria…</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
               <div className="space-y-1">
                 <Label htmlFor="register-date">Data</Label>

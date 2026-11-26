@@ -2,6 +2,17 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.30.0 | 2026-11-26
+
+Ajustes ao menu, ao Início e a Dividir.
+
+- **Dividir passa a "Plano do mês"** no menu, no título da página, na Ajuda e nos botões. O endereço `/divisao` não muda.
+- Plano do mês mais leve: os 3 passos passam a um só cartão suave (o passo em curso com fundo de cor, sem contorno forte); o cartão-resumo e os cartões das parcelas têm cantos mais redondos e mais espaço; "Por distribuir" fica alinhado à esquerda no telemóvel. Corrigida a sobreposição em que a barra de separadores tapava a parte de baixo dos passos (`pages/division.tsx`).
+- Início (Detalhado): o resumo do mês ocupa metade da largura e os 6 cartões pequenos ficam ao lado, 2 por linha, na mesma grelha (`dashboard.tsx`; novo `itemClass` em `EditableSectionGrid`). Em ecrãs pequenos o resumo ocupa a largura toda e os cartões ficam por baixo. O resumo passa a ser uma secção do layout editável ("Resumo do mês"); as posições por omissão das outras secções desceram 4 linhas.
+- Na barra lateral, "Mais" é um botão que mostra e esconde as outras opções (`nav-more-toggle`, `aria-expanded`). Começa fechado, abre sozinho quando a página atual é uma delas e lembra a escolha (`sm.nav.more`). No telemóvel nada muda.
+- Registar despesa: a lista de categorias tem "+ Criar categoria…" (`register-expense.tsx`): escreve-se o nome, carrega-se em Criar e fica escolhida; se já existir, é reutilizada.
+- Testes: `e2e/menu.spec.ts` cobre o botão Mais; a verificação do histórico de fecho em `e2e/dividir.spec.ts` já não depende de haver um mês fechado antes.
+
 ## 1.29.0 | 2026-11-26
 
 Redesenho "Calma", fase 6: polimento e acessibilidade.

@@ -12,7 +12,7 @@ async function estado(request: APIRequestContext) {
 /** Abre a página Divisão (o mês por omissão é o último aberto) e devolve o id do mês escolhido. */
 async function abrirDivisao(page: Page, mes?: number): Promise<number> {
   await page.goto(mes ? `/#/divisao/${mes}` : "/#/divisao");
-  await expect(page.getByRole("heading", { level: 1, name: "Dividir" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Plano do mês" })).toBeVisible();
   await expect(page.getByTestId("division-panel")).toBeVisible();
   const estadoAtual = await estado(page.request);
   const aberto = [...(estadoAtual as any).months].sort((a: any, b: any) => a.year - b.year || a.month - b.month).reverse().find((m: any) => m.status !== "fechado");
@@ -69,11 +69,11 @@ test.describe("Página Divisão: estados", () => {
     await expect(page.getByTestId("division-tab-divisao")).toHaveCount(0);
   });
 
-  test("sem Divisão nem Movimentos, Dividir continua a existir, com o fecho do mês", async ({ page, request }) => {
+  test("sem Divisão nem Movimentos, Plano do mês continua a existir, com o fecho do mês", async ({ page, request }) => {
     await request.patch("/api/settings", { headers: cabecalhosApi(), data: { features: '{"divisao":false,"movimentos":false}' } });
     await page.goto("/#/divisao");
     await page.reload();
-    await expect(page.getByRole("heading", { level: 1, name: "Dividir" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Plano do mês" })).toBeVisible();
     await expect(page.getByTestId("division-tab-divisao")).toHaveCount(0);
     await expect(page.getByTestId("division-tab-fecho")).toBeVisible();
   });

@@ -93,16 +93,16 @@ export function DivisionPanel({ month }: { month: Month }) {
       {/* visão de relance */}
       <section
         aria-label="Resumo da divisão"
-        className={`space-y-3 rounded-xl border p-4 ${status === "completo" ? "border-primary/40 bg-primary/5" : status === "excede" ? "border-destructive/40 bg-destructive/5" : "border-border bg-background"}`}
+        className={`space-y-4 rounded-2xl border p-4 sm:p-5 ${status === "completo" ? "border-primary/30 bg-primary/5" : status === "excede" ? "border-destructive/30 bg-destructive/5" : "border-card-border bg-card"}`}
         data-testid="division-summary"
       >
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Disponível este mês</p>
             <p className="tnum text-2xl font-semibold" data-testid="division-available">{fmtEur(total)}</p>
             {carry > 0 && <p className="text-xs text-muted-foreground" data-testid="division-carry">Inclui {fmtEur(carry)} transportados do mês anterior (não são rendimento).</p>}
           </div>
-          <div className="text-right" role="status" aria-live="polite" data-testid="division-status">
+          <div className="sm:text-right" role="status" aria-live="polite" data-testid="division-status">
             {status === "completo" && <p className="text-sm font-medium text-success">✔ Tudo distribuído</p>}
             {status === "livre" && <p className="text-sm font-medium">Por distribuir <span className="tnum text-warning">{fmtEur(remaining)}</span></p>}
             {status === "excede" && <p className="text-sm font-medium text-destructive">Excede em <span className="tnum">{fmtEur(-remaining)}</span></p>}
@@ -114,7 +114,7 @@ export function DivisionPanel({ month }: { month: Month }) {
             <span key={r.p.id} style={{ width: `${Math.min(100, (r.amount / total) * 100)}%`, background: r.p.color }} />
           ))}
         </div>
-        <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+        <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
           {counted.map((r) => (
             <li key={r.p.id} className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full" style={{ background: r.p.color }} aria-hidden />{r.p.name} <span className="tnum">{fmtEur(r.amount)}</span></li>
           ))}
@@ -148,7 +148,7 @@ export function DivisionPanel({ month }: { month: Month }) {
           <fieldset
             key={r.p.id}
             disabled={isClosedMonth}
-            className={`min-w-0 space-y-3 rounded-xl border p-3 ${r.included ? "border-border bg-card" : "border-dashed border-border bg-transparent"}`}
+            className={`min-w-0 space-y-3.5 rounded-2xl border p-4 ${r.included ? "border-card-border bg-card" : "border-dashed border-border bg-transparent"}`}
             data-testid={`allocation-card-${r.p.id}`}
           >
             <div className="flex items-center gap-2">

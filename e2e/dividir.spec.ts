@@ -20,7 +20,7 @@ test("dividir: no Básico só se vê o passo em curso, sem separadores", async (
   await expect(page.getByTestId("dividir-basico")).toBeVisible();
   await expect(page.getByTestId("division-tabs")).toHaveCount(0);
   await page.getByTestId("step-fechar").click();
-  await expect(page.getByTestId("closing-history")).toBeVisible();
+  await expect(page.getByText("Histórico de abertura e fecho")).toBeVisible();
   await page.getByTestId("step-salario").click();
   await expect(page.getByTestId("dividir-salario")).toContainText("Meses");
 });
@@ -46,18 +46,18 @@ test("dividir: no Detalhado há Divisão, Parcelas e metas e Fechar o mês", asy
 test("dividir: as ligações antigas /parcelas e /fecho levam ao separador certo", async ({ page }) => {
   await entrar(page);
   await page.goto("/#/parcelas");
-  await expect(page.getByRole("heading", { level: 1, name: "Dividir" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Plano do mês" })).toBeVisible();
   await expect(page.getByTestId("parcels-list")).toBeVisible();
   await expect(page).toHaveURL(/#\/divisao/);
   await page.goto("/#/fecho");
   await expect(page.getByTestId("page-closing")).toBeVisible();
 });
 
-test("dividir: Dividir continua no menu mesmo com Divisão e Movimentos desligados", async ({ page }, info) => {
+test("dividir: Plano do mês continua no menu mesmo com Divisão e Movimentos desligados", async ({ page }, info) => {
   await page.request.patch("/api/settings", { data: { features: JSON.stringify({ divisao: false, movimentos: false, reconciliacao: false }) }, headers: cabecalhosApi() });
   try {
     await entrar(page);
-    if (info.project.name !== "telemovel") await expect(page.locator("aside").getByRole("link", { name: "Dividir", exact: true })).toBeVisible();
+    if (info.project.name !== "telemovel") await expect(page.locator("aside").getByRole("link", { name: "Plano do mês", exact: true })).toBeVisible();
     await page.goto("/#/divisao");
     await expect(page.getByTestId("division-tab-fecho")).toBeVisible();
   } finally {

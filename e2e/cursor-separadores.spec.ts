@@ -17,7 +17,7 @@ test.describe("Cursor e barras de separadores", () => {
     expect(await cursor(page.getByTestId("feature-switch-reconciliacao"))).toBe("not-allowed");
   });
 
-  for (const [rota, nome] of [["#/divisao", "Dividir"], ["#/dados", "Definições"]] as const) {
+  for (const [rota, nome] of [["#/divisao", "Plano do mês"], ["#/dados", "Definições"]] as const) {
     test(`${nome}: ao descer, a barra de separadores cobre o topo e o conteúdo não aparece por cima dela`, async ({ page }) => {
       await page.goto(`/${rota}`);
       await expect(page.getByRole("tablist").first()).toBeVisible();

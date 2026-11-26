@@ -23,6 +23,8 @@ export type SectionSpec = {
    */
   group?: string;
   groupClass?: string;
+  /** Classes do contentor desta secção quando está dentro de um grupo (ex.: ocupar várias colunas e linhas). */
+  itemClass?: string;
   /**
    * Altura máxima (unidades de grid) a mostrar enquanto o cartão está vazio. Só vale fora do modo de edição:
    * o layout guardado não muda e o cartão volta ao tamanho escolhido quando tiver conteúdo.
@@ -54,7 +56,7 @@ function renderStack(list: SectionSpec[]) {
     while (j < list.length && list[j].group === s.group) j++;
     out.push(
       <div key={`group-${s.group}-${s.id}`} className={s.groupClass}>
-        {list.slice(i, j).map((x) => <div key={x.id} className="min-w-0 *:h-full">{x.node}</div>)}
+        {list.slice(i, j).map((x) => <div key={x.id} className={cn("min-w-0 *:h-full", x.itemClass)}>{x.node}</div>)}
       </div>,
     );
     i = j;

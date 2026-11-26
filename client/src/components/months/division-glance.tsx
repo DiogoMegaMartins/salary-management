@@ -21,7 +21,7 @@ export function DivisionGlance({ month, onOpen }: { month: Month; onOpen: () => 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Divisão e movimentos</p>
         <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs" onClick={onOpen} data-testid="button-open-division">
-          {started ? "Abrir Divisão" : "Dividir este mês"}
+          {started ? "Abrir Divisão" : "Planear este mês"}
           <ArrowRight className="h-3.5 w-3.5" aria-hidden />
         </Button>
       </div>
