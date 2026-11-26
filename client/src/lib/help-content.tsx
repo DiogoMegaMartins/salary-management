@@ -664,6 +664,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.28.0</H3>
+        <UL>
+          <li>Visual novo em todas as páginas: cabeçalho em faixa suave e cartões mais redondos. No modo Básico, Despesas, Orçamento, Carteira e Definições mostram só o essencial; o Detalhado mostra tudo.</li>
+        </UL>
         <H3>1.27.0</H3>
         <UL>
           <li>Dividir juntou a divisão do salário, as parcelas e metas e o fecho do mês, com um cartão de 3 passos (salário, repartir, fechar) que mostra onde estás. No modo Básico vês o passo em curso; no Detalhado, todos os separadores. As ligações antigas continuam a funcionar.</li>

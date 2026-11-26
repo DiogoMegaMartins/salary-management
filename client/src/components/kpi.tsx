@@ -61,7 +61,7 @@ export function Kpi({
   return (
     <div
       className={cn(
-        "h-full min-w-0 rounded-lg border border-card-border bg-card p-3 sm:p-4",
+        "h-full min-w-0 rounded-2xl border border-card-border bg-card p-3 sm:p-4",
         onClick && "cursor-pointer transition-colors hover:border-primary/40 hover:bg-muted/40",
       )}
       onClick={onClick}
@@ -137,15 +137,15 @@ export function SectionCard({
   className?: string;
 }) {
   return (
-    <section className={cn("section-card flex h-full min-w-0 min-h-[280px] flex-col rounded-lg border border-card-border bg-card in-[.grid-widget]:min-h-0", className)}>
-      <header className="flex flex-wrap items-center justify-between gap-2 border-b border-card-border px-4 py-3">
+    <section className={cn("section-card flex h-full min-w-0 min-h-[280px] flex-col rounded-2xl border border-card-border bg-card in-[.grid-widget]:min-h-0", className)}>
+      <header className="flex flex-wrap items-center justify-between gap-2 border-b border-card-border px-5 py-3.5">
         <div className="min-w-0 wrap-break-word">
           {title && <h2 className="text-sm font-semibold tracking-tight">{title}</h2>}
           {description && <p className="text-xs text-muted-foreground">{description}</p>}
         </div>
         {actions}
       </header>
-      <div className="min-h-0 min-w-0 flex-1 overflow-auto p-4">{children}</div>
+      <div className="min-h-0 min-w-0 flex-1 overflow-auto p-4 sm:p-5">{children}</div>
     </section>
   );
 }

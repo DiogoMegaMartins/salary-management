@@ -11,6 +11,7 @@ import { useConfirm } from "@/components/confirm";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useAppState, useDerived, useSave } from "@/lib/app";
+import { useUiMode } from "@/lib/ui-mode";
 import { SectionCard } from "@/components/kpi";
 import { AnomaliesCard } from "@/components/insights";
 import { errMsg } from "@/components/catalogs";
@@ -43,6 +44,7 @@ const dayLabel = (iso: string, withYear = false) => {
 type Draft = { id?: number; date: string; value: string; category: string; parcelId: string; note: string };
 
 export default function ExpensesPage() {
+  const detailed = useUiMode() === "detalhado";
   const { data, isLoading } = useAppState();
   const derived = useDerived(data);
   const save = useSave();
@@ -53,7 +55,8 @@ export default function ExpensesPage() {
   const [monthSel, setMonthSel] = usePersisted("sm.exp.month", "");
   const [cat, setCat] = usePersisted("sm.exp.cat", ALL);
   const [parcel, setParcel] = usePersisted("sm.exp.parcel", ALL);
-  const [platform, setPlatform] = usePersisted("sm.exp.platform", ALL);
+  const [platformSaved, setPlatform] = usePersisted("sm.exp.platform", ALL);
+  const platform = detailed ? platformSaved : ALL; // no Básico não há filtro por plataforma, por isso nunca fica um filtro escondido
   const [search, setSearch] = usePersisted("sm.exp.search", "");
   const [allMonths, setAllMonths] = usePersisted("sm.exp.all", false); // pesquisar em todo o histórico
   const [favs, setFavs] = usePersisted<string[]>("sm.exp.favs", []);
@@ -215,13 +218,13 @@ export default function ExpensesPage() {
               {parcels.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Select value={platform} onValueChange={setPlatform}>
+          {detailed && <Select value={platform} onValueChange={setPlatform}>
             <SelectTrigger className="h-9 w-44 text-xs" aria-label="Plataforma"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>Todas as plataformas</SelectItem>
               {data.platforms.filter((p) => !p.archived).map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}
             </SelectContent>
-          </Select>
+          </Select>}
           {(cat !== ALL || parcel !== ALL || platform !== ALL || search) && (
             <Button variant="ghost" size="sm" onClick={() => { setCat(ALL); setParcel(ALL); setPlatform(ALL); setSearch(""); }}>Limpar filtros</Button>
           )}
@@ -331,7 +334,7 @@ export default function ExpensesPage() {
             ))}
           </div>
         )}
-        {derived && (
+        {detailed && derived && (
           <SectionCard className="min-h-0" title="Despesas fora do padrão" description={`${month.label} ${month.year} contra o habitual de cada categoria`}>
             <AnomaliesCard d={derived} monthId={month.id} />
           </SectionCard>
