@@ -3,6 +3,8 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { AppShell } from "@/components/layout";
 import { FilterBar } from "@/components/filter-bar";
 import { Kpi, SectionCard } from "@/components/kpi";
+import { useUiMode } from "@/lib/ui-mode";
+import { visibleSections } from "@shared/ui-mode";
 import { ChartTooltip, LegendDots, axisProps, eurAxis, gridProps } from "@/components/charts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppState, useDerived } from "@/lib/app";
@@ -14,6 +16,7 @@ import { usePageLayout } from "@/lib/page-layout";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Portfolio() {
+  const uiMode = useUiMode();
   const isMobile = useIsMobile();
   const { data, isLoading } = useAppState();
   const d = useDerived(data);
@@ -264,7 +267,7 @@ export default function Portfolio() {
           return (
             <EditableSectionGrid
               pageKey="carteira"
-              sections={sections}
+              sections={visibleSections("carteira", sections, uiMode)}
               savedLayout={pageLayout.savedLayout}
               isSaving={pageLayout.isSaving}
               onSave={pageLayout.onSave}

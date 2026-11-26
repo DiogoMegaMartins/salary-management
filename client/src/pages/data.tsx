@@ -30,6 +30,7 @@ import { VerifyData, ChangeHistory, CsvImport } from "@/components/data-tools";
 import { FeaturesSettings } from "@/components/features-settings";
 import { AppearanceSettings } from "@/components/appearance-settings";
 import { UiModeSettings } from "@/components/ui-mode-settings";
+import { parseUiMode, visibleSettingsTabs } from "@shared/ui-mode";
 import { AiSettings } from "@/components/ai-settings";
 import { OfflineSettings } from "@/components/offline-status";
 import { daysSince } from "@/lib/utils";
@@ -60,6 +61,10 @@ export default function DataPage() {
   const overdue = since === null || since >= s.backupReminderDays;
   const restoreSince = daysSince(s.lastRestoreAt);
 
+  const ALL_TABS = ["calculo", "funcionalidades", "aparencia", "catalogos", "backups", "seguranca", "historico"];
+  const shown = visibleSettingsTabs(ALL_TABS, parseUiMode(s.uiMode));
+  const activeTab = shown.includes(tab) ? tab : shown[0];
+
   const markBackup = () => save.settings.mutate({ lastBackupAt: new Date().toISOString() });
 
   // download por fetch com cabeçalho: o código de acesso nunca vai no URL
@@ -84,15 +89,15 @@ export default function DataPage() {
 
   return (
     <AppShell title="Definições" subtitle="Cálculo, catálogos, backups, segurança e histórico">
-      <Tabs value={tab} onValueChange={setTab} className="space-y-4" data-testid="settings-tabs">
+      <Tabs value={activeTab} onValueChange={setTab} className="space-y-4" data-testid="settings-tabs">
         <TabsList className="sticky-tabs" data-testid="settings-tablist">
-          <TabsTrigger value="calculo" data-testid="settings-tab-calculo">Cálculo</TabsTrigger>
-          <TabsTrigger value="funcionalidades" data-testid="settings-tab-funcionalidades">Funcionalidades</TabsTrigger>
-          <TabsTrigger value="aparencia" data-testid="settings-tab-aparencia">Aparência</TabsTrigger>
-          <TabsTrigger value="catalogos" data-testid="settings-tab-catalogos">Catálogos</TabsTrigger>
-          <TabsTrigger value="backups" data-testid="settings-tab-backups">Backups e importação</TabsTrigger>
-          <TabsTrigger value="seguranca" data-testid="settings-tab-seguranca">Segurança</TabsTrigger>
-          <TabsTrigger value="historico" data-testid="settings-tab-historico">Histórico</TabsTrigger>
+          {shown.includes("calculo") && <TabsTrigger value="calculo" data-testid="settings-tab-calculo">Cálculo</TabsTrigger>}
+          {shown.includes("funcionalidades") && <TabsTrigger value="funcionalidades" data-testid="settings-tab-funcionalidades">Funcionalidades</TabsTrigger>}
+          {shown.includes("aparencia") && <TabsTrigger value="aparencia" data-testid="settings-tab-aparencia">Aparência</TabsTrigger>}
+          {shown.includes("catalogos") && <TabsTrigger value="catalogos" data-testid="settings-tab-catalogos">Catálogos</TabsTrigger>}
+          {shown.includes("backups") && <TabsTrigger value="backups" data-testid="settings-tab-backups">Backups e importação</TabsTrigger>}
+          {shown.includes("seguranca") && <TabsTrigger value="seguranca" data-testid="settings-tab-seguranca">Segurança</TabsTrigger>}
+          {shown.includes("historico") && <TabsTrigger value="historico" data-testid="settings-tab-historico">Histórico</TabsTrigger>}
         </TabsList>
         <TabsContent value="calculo" className="mt-0"><div className="grid gap-4 xl:grid-cols-2">
         <SectionCard title="Regras de cálculo" description="Definem como o líquido e o valor disponível são apurados">

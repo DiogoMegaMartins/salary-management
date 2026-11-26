@@ -2,6 +2,8 @@ import { useState } from "react";
 import { AlertTriangle, CheckCircle2, Info, Plus, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { SectionCard } from "@/components/kpi";
+import { useUiMode } from "@/lib/ui-mode";
+import { visibleSections } from "@shared/ui-mode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,6 +38,7 @@ import { cn } from "@/lib/utils";
 import { useConfirm } from "@/components/confirm";
 
 export default function BudgetPage() {
+  const uiMode = useUiMode();
   const { data, isLoading } = useAppState();
   const d = useDerived(data);
   const yoyEmpty = useYoYEmpty(d);
@@ -342,7 +345,7 @@ export default function BudgetPage() {
         return (
           <EditableSectionGrid
             pageKey="orcamento"
-            sections={sections}
+            sections={visibleSections("orcamento", sections, uiMode)}
             savedLayout={pageLayout.savedLayout}
             isSaving={pageLayout.isSaving}
             onSave={pageLayout.onSave}
