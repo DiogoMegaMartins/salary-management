@@ -30,3 +30,5 @@ playwright-report/
 
 # Cloudflare Workers (estado local do wrangler)
 .wrangler/
+
+.claude/worktrees/
