@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils";
 import type { AppState } from "@/lib/app";
 import { computeMonth, fmtEur, sortMonths } from "@shared/calc";
-import { inicioSummary } from "@shared/inicio";
+import { inicioLabel, inicioSummary } from "@shared/inicio";
 import { latestOpenMonth } from "@shared/assistant";
 
 const hoje = () => new Date().toLocaleDateString("sv-SE");
@@ -19,7 +19,7 @@ const FRASE = {
 } as const;
 
 /**
- * Resumo do mês no topo do Início: "Ainda podes gastar" = gastos mensais planeados − despesas registadas,
+ * Resumo do mês no topo do Início: "Valor disponível" = gastos mensais planeados − despesas registadas (passa a "Gasto acima do planeado" se se exceder),
  * a barra de progresso e para onde vai o dinheiro. O Básico mostra as 3 maiores categorias; o Detalhado, todas.
  */
 export function InicioSummary({ state, detailed }: { state: AppState; detailed: boolean }) {
@@ -73,9 +73,11 @@ export function InicioSummary({ state, detailed }: { state: AppState; detailed: 
           </div>
         ) : (
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Ainda podes gastar</p>
-            <p className={cn("tnum text-4xl font-semibold tracking-tight sm:text-5xl", tom)} data-testid="inicio-left">{fmtEur(s.left)}</p>
-            <p className="mt-1 text-sm text-muted-foreground">de {fmtEur(s.planned)} planeados para gastos</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground" data-testid="inicio-label">{inicioLabel(s.state)}</p>
+            <p className={cn("tnum text-4xl font-semibold tracking-tight sm:text-5xl", tom)} data-testid="inicio-left" data-left={s.left}>{fmtEur(Math.abs(s.left))}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {s.state === "excedido" ? `Gastaste ${fmtEur(s.spent)} de ${fmtEur(s.planned)} planeados para gastos` : `de ${fmtEur(s.planned)} planeados para gastos`}
+            </p>
             <p className={cn("mt-3 inline-block rounded-full px-3 py-1 text-sm font-medium", s.state === "ok" ? "bg-success/15 text-success" : s.state === "atencao" ? "bg-warning/15 text-warning" : "bg-destructive/15 text-destructive")} data-testid="inicio-state">
               {FRASE[s.state]}
             </p>

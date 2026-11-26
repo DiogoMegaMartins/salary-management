@@ -1,5 +1,5 @@
 /**
- * Regras puras do Início: "Ainda podes gastar" = gastos mensais planeados (parcelas do tipo "gastos" do mês)
+ * Regras puras do Início: "Valor disponível" = gastos mensais planeados (parcelas do tipo "gastos" do mês)
  * menos as despesas registadas. Contam as despesas sem parcela e as ligadas a parcelas de gastos; as ligadas a
  * poupança ou investimento ficam de fora.
  */
@@ -57,4 +57,9 @@ export function inicioSummary(input: {
 export function defaultExpenseParcel(parcels: { id: number; kind: string; archived?: number }[]): number | null {
   const ids = parcels.filter((p) => p.kind === "gastos" && !p.archived).map((p) => p.id);
   return ids.length ? Math.min(...ids) : null;
+}
+
+/** Título do número principal: muda quando já se gastou mais do que o planeado. */
+export function inicioLabel(state: InicioState): string {
+  return state === "excedido" ? "Gasto acima do planeado" : "Valor disponível";
 }

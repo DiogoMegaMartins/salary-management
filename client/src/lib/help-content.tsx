@@ -666,7 +666,7 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
       <>
         <H3>1.26.0</H3>
         <UL>
-          <li>O Painel passou a Início: abre com quanto ainda podes gastar este mês (gastos planeados menos despesas registadas) e para onde vai o dinheiro. No modo Básico vês só isto; no Detalhado, também os gráficos de sempre. Ao registar uma despesa escolhes a parcela (por defeito, a de gastos).</li>
+          <li>O Painel passou a Início: abre com o valor disponível este mês (gastos planeados menos despesas registadas, e muda para &quot;Gasto acima do planeado&quot; se o ultrapassares) e para onde vai o dinheiro. No modo Básico vês só isto; no Detalhado, também os gráficos de sempre. Ao registar uma despesa escolhes a parcela (por defeito, a de gastos).</li>
         </UL>
         <H3>1.25.0</H3>
         <UL>

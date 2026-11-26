@@ -2,7 +2,6 @@ import { expect, test, type Page } from "@playwright/test";
 import { cabecalhosApi, clicar, entrar } from "./helpers";
 
 const modo = (page: Page, uiMode: "basico" | "detalhado") => page.request.patch("/api/settings", { data: { uiMode }, headers: cabecalhosApi() });
-const eur = (t: string | null) => Number((t ?? "").replace(/[^\d,\-−]/g, "").replace("−", "-").replace(",", "."));
 test.afterEach(async ({ page }) => { await modo(page, "detalhado"); });
 
 const abrirInicio = async (page: Page) => {
@@ -41,13 +40,14 @@ test("início: registar uma despesa baixa o que ainda podes gastar", async ({ pa
   await modo(page, "basico");
   await entrar(page);
   await abrirInicio(page);
-  const antes = eur(await page.getByTestId("inicio-left").textContent());
+  const valor = async () => Number(await page.getByTestId("inicio-left").getAttribute("data-left"));
+  const antes = await valor();
   await clicar(page.getByTestId("register-button"));
   await page.getByTestId("register-value").fill("10");
   await page.getByTestId("register-save").click();
   await expect(page.getByTestId("register-dialog")).toBeHidden();
   await expect(async () => {
-    const depois = eur(await page.getByTestId("inicio-left").textContent());
+    const depois = await valor();
     expect(Math.round((antes - depois) * 100) / 100).toBe(10);
   }).toPass({ timeout: 8000 });
 });
@@ -59,4 +59,18 @@ test("início: mudar de mês muda o título do resumo", async ({ page }) => {
   await page.getByTestId("inicio-month").click();
   await page.getByRole("option").last().click();
   await expect(page.getByTestId("inicio-title")).not.toHaveText(antes ?? "");
+});
+
+test("início: o título é Valor disponível e muda quando se passa do planeado", async ({ page }) => {
+  await modo(page, "basico");
+  await entrar(page);
+  await abrirInicio(page);
+  const titulo = page.getByTestId("inicio-label");
+  const esq = Number(await page.getByTestId("inicio-left").getAttribute("data-left"));
+  await expect(titulo).toHaveText(esq < 0 ? "Gasto acima do planeado" : "Valor disponível");
+  // regista o suficiente para passar do planeado e o título muda
+  await clicar(page.getByTestId("register-button"));
+  await page.getByTestId("register-value").fill(String(Math.max(esq, 0) + 1));
+  await page.getByTestId("register-save").click();
+  await expect(titulo).toHaveText("Gasto acima do planeado");
 });

@@ -8,7 +8,7 @@
 
 ## Decisões do utilizador (desta fase)
 
-- Número principal: **"Ainda podes gastar" = gastos mensais planeados − despesas registadas** (planeado = soma das parcelas do tipo `gastos` do mês).
+- Número principal: **"Valor disponível" = gastos mensais planeados − despesas registadas**; se já se ultrapassou o planeado, o título muda para **"Gasto acima do planeado"** e mostra o valor excedido (pedido do utilizador) (planeado = soma das parcelas do tipo `gastos` do mês).
 - Despesa registada **pede a parcela**; por defeito cai na parcela de gastos. Despesas sem parcela contam como gasto do mês; as ligadas a poupança ou investimento ficam de fora.
 - Topo do Início: título do mês, "faltam N dias", pesquisa e definições (opção 2). Valores a subir/descer a verde, âmbar ou vermelho.
 - Básico mostra só o resumo (3 maiores categorias); Detalhado mostra o resumo (todas as categorias) e, por baixo, os filtros, indicadores e gráficos de hoje.

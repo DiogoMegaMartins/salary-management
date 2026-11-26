@@ -1,4 +1,4 @@
-// Início: "Ainda podes gastar" = gastos planeados − despesas registadas (sem parcela ou na de gastos), estado e categorias.
+// Início: "Valor disponível" = gastos planeados − despesas registadas (sem parcela ou na de gastos), estado e categorias.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { inicioSummary, defaultExpenseParcel } from "../shared/inicio";
@@ -6,7 +6,7 @@ import { inicioSummary, defaultExpenseParcel } from "../shared/inicio";
 const gasto = (value: number, category = "", parcelKind: string | null = "gastos") => ({ value, category, parcelKind });
 const base = { month: { year: 2026, month: 11 }, planned: 1400, today: "2026-11-20" };
 
-test("início: ainda podes gastar = planeado menos gasto, e só conta gastos e despesas sem parcela", () => {
+test("início: valor disponível = planeado menos gasto, e só conta gastos e despesas sem parcela", () => {
   const s = inicioSummary({
     ...base,
     expenses: [gasto(620, "Casa"), gasto(340, "Alimentação"), gasto(100, "Casa"), gasto(50, "", null), gasto(500, "Bolsa", "investimento"), gasto(200, "Fundo", "poupanca")],
@@ -49,4 +49,11 @@ test("início: parcela predefinida é a de gastos de menor id; sem ela, nenhuma"
   assert.equal(defaultExpenseParcel(ps), 3);
   assert.equal(defaultExpenseParcel([ps[0]]), null);
   assert.equal(defaultExpenseParcel([]), null);
+});
+
+test("início: o título é Valor disponível e muda quando se passa do planeado", async () => {
+  const { inicioLabel } = await import("../shared/inicio");
+  assert.equal(inicioLabel("ok"), "Valor disponível");
+  assert.equal(inicioLabel("atencao"), "Valor disponível");
+  assert.equal(inicioLabel("excedido"), "Gasto acima do planeado");
 });
