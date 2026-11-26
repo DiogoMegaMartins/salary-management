@@ -36,10 +36,10 @@ test.describe("Interface: erros visíveis, confirmações e teclado", () => {
     await page.keyboard.press("Enter");
     await expect(page.getByRole("menuitemcheckbox").first()).toBeVisible();
     const atual = page.locator('[role="menuitemcheckbox"]:focus');
-    await expect(async () => {
-      await page.keyboard.press("ArrowDown");
-      await expect(atual).toHaveCount(1, { timeout: 500 });
-    }).toPass({ timeout: 5000 });
+    await expect(atual).toHaveCount(1); // ao abrir, o foco vai para o primeiro item
+    const primeiro = await atual.textContent();
+    await page.keyboard.press("ArrowDown");
+    await expect(atual).not.toHaveText(primeiro ?? ""); // só carrega em Espaço depois de o foco ter mudado
     const antes = await atual.getAttribute("aria-checked");
     await page.keyboard.press("Space");
     await expect(page.locator('[role="menuitemcheckbox"]:focus')).not.toHaveAttribute("aria-checked", String(antes));
