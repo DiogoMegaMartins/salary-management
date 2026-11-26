@@ -66,7 +66,7 @@ export function InicioSummary({ state, detailed }: { state: AppState; detailed: 
           <div data-testid="inicio-no-plan">
             <p className="text-lg font-medium">Define quanto queres gastar este mês</p>
             <p className="mt-1 text-sm text-muted-foreground">Ainda não há gastos planeados neste mês, por isso não consigo dizer quanto ainda podes gastar.</p>
-            <Link href="/divisao" className="mt-3 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline">Ir para Dividir</Link>
+            <Link href="/divisao" className="mt-3 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline">Ir para Plano do mês</Link>
           </div>
         ) : (
           <div>

@@ -21,7 +21,7 @@ import { parseUiMode } from "@shared/ui-mode";
 type View = StepKey | "parcelas";
 
 /**
- * Dividir: o teu mês em 3 passos (salário, repartir, fechar). O Básico mostra os passos e o passo em curso; o Detalhado
+ * Plano do mês (rota /divisao): o teu mês em 3 passos (salário, repartir, fechar). O Básico mostra os passos e o passo em curso; o Detalhado
  * junta os separadores completos (Divisão, Movimentos, Parcelas e metas, Fechar o mês). O mês vem da rota
  * (`#/divisao/<id>`); sem id, usa o último mês aberto (ou o último, se todos estiverem fechados).
  */
@@ -37,7 +37,7 @@ export default function DivisionPage() {
 
   if (isLoading || !d || !data) {
     return (
-      <AppShell title="Dividir" subtitle="A carregar…">
+      <AppShell title="Plano do mês" subtitle="A carregar…">
         <Skeleton className="h-[360px] rounded-lg" />
       </AppShell>
     );
@@ -47,7 +47,7 @@ export default function DivisionPage() {
   const subtitle = "O teu mês em 3 passos";
   if (!months.length) {
     return (
-      <AppShell title="Dividir" subtitle={subtitle}>
+      <AppShell title="Plano do mês" subtitle={subtitle}>
         <SectionCard description="Ainda não há meses.">
           <p className="text-sm" data-testid="division-empty">
             Cria primeiro um mês em <Link href="/meses" className="font-medium text-primary underline-offset-4 hover:underline">Meses</Link> para o dividires aqui.
@@ -79,7 +79,7 @@ export default function DivisionPage() {
 
   return (
     <AppShell
-      title="Dividir"
+      title="Plano do mês"
       subtitle={subtitle}
       actions={
         <Select value={String(month.id)} onValueChange={(v) => navigate(`/divisao/${v}`, { replace: true })}>
@@ -95,7 +95,10 @@ export default function DivisionPage() {
       }
     >
       <div className="space-y-4" data-testid="page-dividir">
-        <DividirSteps steps={steps} shown={view === "parcelas" ? null : view} onShow={(k) => { setView(k); setTab(k === "fechar" ? "fecho" : k === "repartir" ? (features.divisao ? "divisao" : "movimentos") : tab); }} />
+        {/* Folga por baixo: a barra de separadores fixa (sticky-tabs) sobe por cima desta zona e não deve tapar os passos. */}
+        <div className={detailed ? "pb-5 md:pb-6" : undefined}>
+          <DividirSteps steps={steps} shown={view === "parcelas" ? null : view} onShow={(k) => { setView(k); setTab(k === "fechar" ? "fecho" : k === "repartir" ? (features.divisao ? "divisao" : "movimentos") : tab); }} />
+        </div>
 
         {detailed ? (
           <Tabs value={tab} onValueChange={(v) => setTab(v as DividirTab)} className="space-y-4" data-testid="division-tabs">

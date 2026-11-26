@@ -6,10 +6,10 @@ export const ACCESS_CODE = process.env.E2E_ACCESS_CODE ?? "codigo-de-teste-1234"
 export const SCREENS = [
   { route: "#/", title: "Início" },
   { route: "#/meses", title: "Meses" },
-  { route: "#/divisao", title: "Dividir" },
+  { route: "#/divisao", title: "Plano do mês" },
   { route: "#/despesas", title: "Despesas" },
-  { route: "#/fecho", title: "Dividir" },
-  { route: "#/parcelas", title: "Dividir" },
+  { route: "#/fecho", title: "Plano do mês" },
+  { route: "#/parcelas", title: "Plano do mês" },
   { route: "#/carteira", title: "Carteira" },
   { route: "#/orcamento", title: "Orçamento" },
   { route: "#/dados", title: "Definições" },
