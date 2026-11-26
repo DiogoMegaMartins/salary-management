@@ -6,10 +6,10 @@ export const ACCESS_CODE = process.env.E2E_ACCESS_CODE ?? "codigo-de-teste-1234"
 export const SCREENS = [
   { route: "#/", title: "Início" },
   { route: "#/meses", title: "Meses" },
-  { route: "#/divisao", title: "Divisão" },
+  { route: "#/divisao", title: "Dividir" },
   { route: "#/despesas", title: "Despesas" },
-  { route: "#/fecho", title: "Fecho e planeamento" },
-  { route: "#/parcelas", title: "Parcelas e metas" },
+  { route: "#/fecho", title: "Dividir" },
+  { route: "#/parcelas", title: "Dividir" },
   { route: "#/carteira", title: "Carteira" },
   { route: "#/orcamento", title: "Orçamento" },
   { route: "#/dados", title: "Definições" },
@@ -61,4 +61,16 @@ export async function clicarAteAparecer(botao: Locator, efeito: Locator) {
     await clicar(botao);
     await expect(efeito).toBeVisible({ timeout: 2000 });
   }).toPass({ timeout: 15_000 });
+}
+
+/**
+ * Para testes que criam despesas: guarda as que já existem e devolve a função que apaga todas as novas.
+ * Sem isto, as despesas ficam na base e mudam o resto do mês (o fecho, por exemplo, desconta-as).
+ */
+export async function guardarTransacoes(page: Page) {
+  const ler = async () => ((await (await page.request.get("/api/state", { headers: cabecalhosApi() })).json()).transactions as { id: number }[]).map((t) => t.id);
+  const antes = new Set(await ler());
+  return async () => {
+    for (const id of await ler()) if (!antes.has(id)) await page.request.delete(`/api/transactions/${id}`, { headers: cabecalhosApi() });
+  };
 }

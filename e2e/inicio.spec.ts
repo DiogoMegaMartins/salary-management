@@ -1,8 +1,10 @@
 import { expect, test, type Page } from "@playwright/test";
-import { cabecalhosApi, clicar, entrar } from "./helpers";
+import { cabecalhosApi, clicar, entrar, guardarTransacoes } from "./helpers";
 
 const modo = (page: Page, uiMode: "basico" | "detalhado") => page.request.patch("/api/settings", { data: { uiMode }, headers: cabecalhosApi() });
-test.afterEach(async ({ page }) => { await modo(page, "detalhado"); });
+let limpar: () => Promise<void> = async () => {};
+test.beforeEach(async ({ page }) => { limpar = await guardarTransacoes(page); });
+test.afterEach(async ({ page }) => { await limpar(); await modo(page, "detalhado"); });
 
 const abrirInicio = async (page: Page) => {
   await page.goto("/#/");

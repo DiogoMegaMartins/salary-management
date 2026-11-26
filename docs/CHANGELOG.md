@@ -2,6 +2,15 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.27.0 | 2026-11-26
+
+Redesenho "Calma", fase 4: Dividir.
+
+- A página Divisão passa a **Dividir** e abre com o cartão "O teu mês em 3 passos" (`client/src/components/dividir-steps.tsx`, regras em `shared/dividir.ts`): **Salário** (vem do mês criado; se o mês não tem salário, aponta para Meses), **Repartir** (faltam X por distribuir, excede X ou tudo repartido) e **Fechar**. O passo em curso é o primeiro por fazer; cada passo pode ser aberto.
+- Modo **Básico**: o cartão e o passo escolhido (Salário, Divisão ou fecho mensal), com uma ligação para "Parcelas e metas". Modo **Detalhado**: separadores Divisão, Movimentos, Parcelas e metas e Fechar o mês (este com Recorrências, Simulador e Composição lá dentro).
+- Parcelas e metas e Fecho e planeamento passam a viver dentro de Dividir (`ParcelsPanel` em `pages/parcels.tsx`, `ClosingPanel` e `MonthClosing` em `pages/closing.tsx`). Saem do menu Mais; `/parcelas` e `/fecho` redirecionam para o separador certo (`/parcelas` só com a funcionalidade ligada).
+- Dividir está sempre no menu, mesmo com Divisão e Movimentos desligadas (também guarda o fecho do mês). Atalho "f" passa a "Fechar o mês".
+
 ## 1.26.0 | 2026-11-25
 
 Redesenho "Calma", fase 3: novo Início.

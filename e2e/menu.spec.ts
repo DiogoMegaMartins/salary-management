@@ -3,7 +3,7 @@ import { clicar, entrar } from "./helpers";
 
 const principais = ["Início", "Dividir", "Meses"];
 const restantes = [
-  { id: "despesas", href: "despesas" }, { id: "fecho-e-planeamento", href: "fecho" }, { id: "parcelas-e-metas", href: "parcelas" },
+  { id: "despesas", href: "despesas" },
   { id: "carteira", href: "carteira" }, { id: "orçamento", href: "orcamento" }, { id: "definições", href: "dados" }, { id: "ajuda-e-documentação", href: "ajuda" },
 ];
 
@@ -26,7 +26,7 @@ test("menu: três destinos principais e o resto em Mais", async ({ page }, info)
 
 test("menu: cada destino abre a página certa", async ({ page }, info) => {
   await entrar(page);
-  const alvos = [{ href: "divisao", h1: "Divisão" }, { href: "meses", h1: "Meses" }, { href: "despesas", h1: "Despesas" }, { href: "orcamento", h1: "Orçamento" }];
+  const alvos = [{ href: "divisao", h1: "Dividir" }, { href: "meses", h1: "Meses" }, { href: "despesas", h1: "Despesas" }, { href: "orcamento", h1: "Orçamento" }];
   for (const a of alvos) {
     if (info.project.name === "telemovel") {
       const principal = ["divisao", "meses"].includes(a.href);
