@@ -52,7 +52,7 @@ export function InicioSummary({ state, detailed, hideCategories = false, pick: p
   const tom = s.state === "excedido" ? "text-destructive" : s.state === "atencao" ? "text-warning" : "text-foreground";
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-card-border bg-card" data-testid="inicio-summary">
+    <section className="h-full overflow-hidden rounded-2xl border border-card-border bg-card" data-testid="inicio-summary">
       <div className="flex items-start justify-between gap-3 bg-accent px-5 py-4">
         <div className="min-w-0">
           <h2 className="text-2xl font-semibold tracking-tight" data-testid="inicio-title">{nomeMes(month.year, month.month)}</h2>

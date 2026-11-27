@@ -97,3 +97,27 @@ test("início: o título é Valor disponível e muda quando se passa do planeado
   // o título já diz tudo: sem frase de estado repetida
   await expect(page.getByTestId("inicio-state")).toHaveCount(0);
 });
+
+test("início: com um layout antigo guardado, o resumo enche a sua caixa e alinha com os cartões da direita", async ({ page }, info) => {
+  test.skip(info.project.name === "telemovel", "a grelha com layout guardado só existe em ecrãs largos");
+  const antigo: Record<string, { x: number; y: number; w: number; h: number }> = {};
+  ["kpi-net", "kpi-avg", "kpi-savings", "kpi-spent", "kpi-tax", "kpi-remaining"].forEach((id, i) => { antigo[id] = { x: (i % 3) * 4, y: Math.floor(i / 3) * 3, w: 4, h: 3 }; });
+  antigo["rendimento-poupanca"] = { x: 0, y: 6, w: 7, h: 11 };
+  await page.request.patch("/api/settings", { data: { uiMode: "detalhado", pageLayouts: JSON.stringify({ painel: antigo }) }, headers: cabecalhosApi() });
+  try {
+    await entrar(page);
+    await page.goto("/#/");
+    await page.reload();
+    await expect(page.getByTestId("inicio-summary")).toBeVisible();
+    const m = await page.evaluate(() => {
+      const bottom = (e: Element | null) => Math.round((e as HTMLElement).getBoundingClientRect().bottom);
+      const resumo = document.querySelector('[data-testid="inicio-summary"]');
+      const ultimo = document.querySelector('[data-testid="kpi-remaining"]')!.closest(".grid-widget");
+      return { resumo: bottom(resumo), caixaResumo: bottom(resumo!.closest(".grid-widget")), ultimo: bottom(ultimo) };
+    });
+    expect(Math.abs(m.resumo - m.caixaResumo)).toBeLessThanOrEqual(2); // o cartão enche a caixa
+    expect(Math.abs(m.resumo - m.ultimo)).toBeLessThanOrEqual(2); // e acaba onde acaba o cartão de baixo, à direita
+  } finally {
+    await page.request.patch("/api/settings", { data: { pageLayouts: "{}" }, headers: cabecalhosApi() });
+  }
+});
