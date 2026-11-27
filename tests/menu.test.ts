@@ -6,7 +6,7 @@ import { parseFeatures } from "../shared/features";
 
 test("menu: destinos principais e Mais", () => {
   assert.deepEqual(MAIN_NAV.map((n) => n.label), ["Início", "Plano do mês", "Meses"]);
-  assert.deepEqual(MORE_NAV.map((n) => n.label), ["Despesas", "Carteira", "Orçamento", "Definições", "Ajuda e documentação"]);
+  assert.deepEqual(MORE_NAV.map((n) => n.label), ["Organizar", "Despesas", "Carteira", "Orçamento", "Definições", "Ajuda e documentação"]);
   const hrefs = [...MAIN_NAV, ...MORE_NAV].map((n) => n.href);
   assert.equal(new Set(hrefs).size, hrefs.length, "nenhum destino repetido");
 });

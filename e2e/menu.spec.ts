@@ -3,6 +3,7 @@ import { clicar, entrar } from "./helpers";
 
 const principais = ["Início", "Plano do mês", "Meses"];
 const restantes = [
+  { id: "organizar", href: "organizar" },
   { id: "despesas", href: "despesas" },
   { id: "carteira", href: "carteira" }, { id: "orçamento", href: "orcamento" }, { id: "definições", href: "dados" }, { id: "ajuda-e-documentação", href: "ajuda" },
 ];

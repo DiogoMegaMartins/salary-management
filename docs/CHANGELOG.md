@@ -2,6 +2,14 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.34.0 | 2026-11-27
+
+Legendas clicáveis nos gráficos e o novo menu Organizar.
+
+- **Legendas clicáveis**: em todos os gráficos (Início: Rendimento e poupança, Distribuição média, Divisão por parcela, Bruto vs. descontos, Gastos, poupança e investimento; Carteira: Evolução do acumulado), carregar num item da legenda esconde ou mostra essa série (`aria-pressed`, texto riscado quando escondida). A última série visível não se esconde (`shared/legend-filter.ts`, `useLegendFilter` e `LegendDots` em `components/charts.tsx`). A legenda de "Divisão por parcela" passa a incluir "Disponível".
+- **Organizar** (novo, primeiro item de "Mais"; `pages/organize.tsx`): um ecrã com as quatro áreas (Parcelas e metas, Categorias, Plataformas, Movimentos), cada uma com resumo e um botão. **Categorias** e **Plataformas** têm gestão própria (`components/manage-list.tsx`): procurar (sem acentos nem maiúsculas), criar, renomear, arquivar/restaurar e eliminar; só se elimina o que não está em uso (movimentos, no caso das categorias; parcelas, no das plataformas). Nomes repetidos são recusados. Regras em `shared/organizar.ts`. Parcelas e metas e Movimentos abrem os ecrãs que já existiam. Rotas `/organizar`, `/organizar/categorias`, `/organizar/plataformas`.
+- Testes: `tests/legenda-filtro.test.ts`, `tests/organizar.test.ts`, `e2e/legendas.spec.ts`, `e2e/organizar.spec.ts`; `tests/menu.test.ts` e `e2e/menu.spec.ts` incluem Organizar.
+
 ## 1.33.0 | 2026-11-27
 
 Editar o layout também no modo Básico.

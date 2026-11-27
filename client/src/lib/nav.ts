@@ -1,4 +1,4 @@
-import { CalendarRange, HelpCircle, Layers, LayoutDashboard, Receipt, Settings, Target, Wallet, type LucideIcon } from "lucide-react";
+import { CalendarRange, FolderCog, HelpCircle, Layers, LayoutDashboard, Receipt, Settings, Target, Wallet, type LucideIcon } from "lucide-react";
 import type { FeatureKey } from "@shared/features";
 
 export type NavItem = { href: string; label: string; testId: string; tabId?: string; icon: LucideIcon; features?: FeatureKey[] };
@@ -12,6 +12,7 @@ export const MAIN_NAV: NavItem[] = [
 
 /** O resto da app, agrupado em "Mais". */
 export const MORE_NAV: NavItem[] = [
+  { href: "/organizar", label: "Organizar", testId: "organizar", icon: FolderCog },
   { href: "/despesas", label: "Despesas", testId: "despesas", icon: Receipt },
   { href: "/carteira", label: "Carteira", testId: "carteira", icon: Wallet, features: ["plataformas"] },
   { href: "/orcamento", label: "Orçamento", testId: "orçamento", icon: Target },

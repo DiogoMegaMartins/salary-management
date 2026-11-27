@@ -664,6 +664,11 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.34.0</H3>
+        <UL>
+          <li>Nos gráficos, podes carregar num item da legenda para esconder ou mostrar essa série. A última série visível fica sempre.</li>
+          <li>Novo menu &quot;Organizar&quot; (em Mais): resume as parcelas e metas, as categorias, as plataformas e os movimentos. Em Categorias e Plataformas podes procurar, criar, renomear, arquivar e eliminar. Só se elimina o que não está em uso; o resto arquiva-se.</li>
+        </UL>
         <H3>1.33.0</H3>
         <UL>
           <li>No modo Básico, o Início também deixa editar o layout (botão com os quatro quadrados, no topo). Podes mover e redimensionar os cartões e o layout fica guardado.</li>

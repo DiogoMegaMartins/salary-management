@@ -18,7 +18,7 @@ import { AlertTriangle, TrendingUp } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { FilterBar } from "@/components/filter-bar";
 import { Kpi, SectionCard } from "@/components/kpi";
-import { ChartTooltip, LegendDots, axisProps, eurAxis, gridProps, useSquareFit } from "@/components/charts";
+import { ChartTooltip, LegendDots, axisProps, eurAxis, gridProps, useLegendFilter, useSquareFit } from "@/components/charts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useAppState, useDerived } from "@/lib/app";
@@ -42,6 +42,7 @@ export default function Dashboard() {
   const d = useDerived(data);
   const yoyEmpty = useYoYEmpty(d);
   const pageLayout = usePageLayout(data?.settings ?? ({} as any), "painel");
+  const legend = useLegendFilter(); // séries escondidas em cada gráfico (carregar na legenda)
   const [drillDown, setDrillDown] = useState<{ title: string; description: string; filter: (t: any) => boolean } | null>(
     null,
   );
@@ -260,16 +261,18 @@ export default function Dashboard() {
                       type="linear"
                       dataKey="liquido"
                       name="Líquido"
+                      hide={legend.isHidden("rendimento", "Líquido")}
                       stroke="hsl(var(--chart-1))"
                       strokeWidth={2}
                       fill="url(#fillNet)"
                     />
-                    <Bar dataKey="subsidio" name="Subsídio alimentação" fill="hsl(var(--chart-4))" radius={[3, 3, 0, 0]} barSize={14} />
+                    <Bar dataKey="subsidio" name="Subsídio alimentação" hide={legend.isHidden("rendimento", "Subsídio alimentação")} fill="hsl(var(--chart-4))" radius={[3, 3, 0, 0]} barSize={14} />
                     <Line
                       yAxisId="pct"
                       type="linear"
                       dataKey="taxa"
                       name="Taxa de poupança"
+                      hide={legend.isHidden("rendimento", "Taxa de poupança")}
                       stroke="hsl(var(--chart-3))"
                       strokeWidth={2}
                       dot={{ r: 2.5 }}
@@ -280,6 +283,8 @@ export default function Dashboard() {
               </div>
               <div className="mt-3 shrink-0">
                 <LegendDots
+                  chart="rendimento"
+                  filter={legend}
                   items={[
                     { name: "Líquido", color: "hsl(var(--chart-1))" },
                     { name: "Subsídio alimentação", color: "hsl(var(--chart-4))" },
@@ -302,7 +307,7 @@ export default function Dashboard() {
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={model.perParcel.filter((p) => p.total > 0).map((p) => ({
+                        data={model.perParcel.filter((p) => p.total > 0 && !legend.isHidden("donut", p.parcel.name)).map((p) => ({
                           name: p.parcel.name,
                           value: p.total,
                           color: p.parcel.color,
@@ -316,7 +321,7 @@ export default function Dashboard() {
                         strokeWidth={2}
                       >
                         {model.perParcel
-                          .filter((p) => p.total > 0)
+                          .filter((p) => p.total > 0 && !legend.isHidden("donut", p.parcel.name))
                           .map((p) => (
                             <Cell key={p.parcel.id} fill={p.parcel.color} />
                           ))}
@@ -328,13 +333,21 @@ export default function Dashboard() {
                 <div className="donut-legend flex min-w-0 flex-1 flex-col justify-center space-y-2 pl-2">
                   {model.perParcel
                     .filter((p) => p.total > 0)
-                    .map((p) => (
-                      <div key={p.parcel.id} className="flex items-center gap-2 text-xs">
-                        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: p.parcel.color }} />
-                        <span className="min-w-0 wrap-break-word">{p.parcel.name}</span>
-                        <span className="tnum ml-auto font-medium">{fmtPct(p.share)}</span>
-                      </div>
-                    ))}
+                    .map((p, _i, all) => {
+                      const off = legend.isHidden("donut", p.parcel.name);
+                      return (
+                        <button
+                          key={p.parcel.id} type="button" aria-pressed={!off} title={off ? `Mostrar ${p.parcel.name}` : `Esconder ${p.parcel.name}`}
+                          data-testid={`legend-${p.parcel.name}`} data-hidden={off}
+                          onClick={() => legend.toggle("donut", p.parcel.name, all.map((x) => x.parcel.name))}
+                          className={`flex min-h-8 w-full items-center gap-2 rounded-md px-1.5 text-left text-xs hover:bg-muted pointer-coarse:min-h-11 ${off ? "opacity-60" : ""}`}
+                        >
+                          <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: off ? "transparent" : p.parcel.color, boxShadow: off ? `inset 0 0 0 1.5px ${p.parcel.color}` : undefined }} />
+                          <span className={`min-w-0 wrap-break-word ${off ? "line-through" : ""}`}>{p.parcel.name}</span>
+                          <span className="tnum ml-auto font-medium">{fmtPct(p.share)}</span>
+                        </button>
+                      );
+                    })}
                 </div>
               </div>
             </SectionCard>
@@ -362,6 +375,7 @@ export default function Dashboard() {
                       key={p.id}
                       dataKey={`p${p.id}`}
                       name={p.name}
+                      hide={legend.isHidden("divisao", p.name)}
                       stackId="a"
                       fill={p.color}
                       radius={i === d.parcels.length - 1 ? [3, 3, 0, 0] : undefined}
@@ -371,6 +385,7 @@ export default function Dashboard() {
                     type="monotone"
                     dataKey="disponivel"
                     name="Disponível"
+                    hide={legend.isHidden("divisao", "Disponível")}
                     stroke="hsl(var(--foreground))"
                     strokeWidth={1.5}
                     strokeDasharray="4 3"
@@ -380,7 +395,7 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </div>
             <div className="mt-3 shrink-0">
-              <LegendDots items={d.parcels.map((p) => ({ name: p.name, color: p.color }))} />
+              <LegendDots chart="divisao" filter={legend} items={[...d.parcels.map((p) => ({ name: p.name, color: p.color })), { name: "Disponível", color: "hsl(var(--foreground))" }]} />
             </div>
           </div>
           </SectionCard>
@@ -481,13 +496,15 @@ export default function Dashboard() {
                     <XAxis dataKey="name" {...axisProps} />
                     <YAxis {...axisProps} tickFormatter={eurAxis} width={44} />
                     <Tooltip trigger={isMobile ? "click" : "hover"} content={<ChartTooltip />} />
-                    <Bar dataKey="liquido" name="Líquido" stackId="b" fill="hsl(var(--chart-1))" />
-                    <Bar dataKey="descontos" name="Descontos" stackId="b" fill="hsl(var(--chart-5))" radius={[3, 3, 0, 0]} />
+                    <Bar dataKey="liquido" name="Líquido" hide={legend.isHidden("bruto", "Líquido")} stackId="b" fill="hsl(var(--chart-1))" />
+                    <Bar dataKey="descontos" name="Descontos" hide={legend.isHidden("bruto", "Descontos")} stackId="b" fill="hsl(var(--chart-5))" radius={[3, 3, 0, 0]} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
               <div className="mt-3 shrink-0">
                 <LegendDots
+                  chart="bruto"
+                  filter={legend}
                   items={[
                     { name: "Líquido", color: "hsl(var(--chart-1))" },
                     { name: "Descontos", color: "hsl(var(--chart-5))" },
@@ -512,14 +529,16 @@ export default function Dashboard() {
                     <XAxis dataKey="name" {...axisProps} />
                     <YAxis {...axisProps} tickFormatter={eurAxis} width={44} />
                     <Tooltip trigger={isMobile ? "click" : "hover"} content={<ChartTooltip total />} />
-                    <Bar dataKey="gastos" name="Gastos" stackId="c" fill="hsl(var(--chart-5))" />
-                    <Bar dataKey="poupanca" name="Poupança" stackId="c" fill="hsl(var(--chart-2))" />
-                    <Bar dataKey="investimento" name="Investimento" stackId="c" fill="hsl(var(--chart-1))" radius={[3, 3, 0, 0]} />
+                    <Bar dataKey="gastos" name="Gastos" hide={legend.isHidden("tipos", "Gastos")} stackId="c" fill="hsl(var(--chart-5))" />
+                    <Bar dataKey="poupanca" name="Poupança" hide={legend.isHidden("tipos", "Poupança")} stackId="c" fill="hsl(var(--chart-2))" />
+                    <Bar dataKey="investimento" name="Investimento" hide={legend.isHidden("tipos", "Investimento")} stackId="c" fill="hsl(var(--chart-1))" radius={[3, 3, 0, 0]} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
               <div className="mt-3 flex flex-wrap items-center justify-between gap-2 shrink-0">
                 <LegendDots
+                  chart="tipos"
+                  filter={legend}
                   items={[
                     { name: "Gastos", color: "hsl(var(--chart-5))" },
                     { name: "Poupança", color: "hsl(var(--chart-2))" },
