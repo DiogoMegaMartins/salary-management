@@ -664,6 +664,12 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.36.0</H3>
+        <UL>
+          <li>O botão &quot;Registar despesa&quot; passa a aparecer só no modo Básico e só no Início. Nos outros menus usa o botão de registar desse menu ou volta ao Início.</li>
+          <li>Em Organizar › Movimentos vês todos os movimentos de todos os meses, filtras por mês, categoria, parcela e tipo e pesquisas por nota, categoria ou valor.</li>
+          <li>Podes escolher vários movimentos (ou todos) e, de uma vez, mudar a categoria, mudar a parcela ou eliminá-los. É tudo ou nada: se algum estiver num mês fechado, nenhum muda. Só funciona com ligação.</li>
+        </UL>
         <H3>1.35.1</H3>
         <UL>
           <li>Sem ligação, uma despesa com data num mês que não existe ou está fechado é recusada logo, com uma explicação, em vez de bloquear a sincronização.</li>

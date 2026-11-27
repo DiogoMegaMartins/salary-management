@@ -48,3 +48,30 @@ test("organizar: uma parcela conta movimentos (origem ou destino), recorrências
   );
   assert.deepEqual(rows, [{ id: 1, name: "Férias", archived: false, uses: 4 }, { id: 2, name: "Antiga", archived: true, uses: 0 }]);
 });
+
+import { filterMovements, selectionSummary, NO_CATEGORY } from "../shared/organizar";
+const mov = (id: number, over: any = {}) => ({ id, monthId: 1, date: "2026-03-10", type: "expense", value: 10, parcelId: 1, targetParcelId: null, category: "Casa", note: "", ...over });
+
+test("organizar: filtrar movimentos por mês, categoria, parcela, tipo e pesquisa; mais recentes primeiro", () => {
+  const txs = [
+    mov(1, { date: "2026-03-01", note: "Café da manhã" }),
+    mov(2, { date: "2026-03-09", category: "", value: 7.5 }),
+    mov(3, { monthId: 2, date: "2026-04-02", category: "casa ", parcelId: 2 }),
+    mov(4, { type: "transfer", parcelId: 1, targetParcelId: 2, category: "" }),
+  ];
+  const todos = { monthId: null, category: "", parcelId: null, type: "", search: "" };
+  assert.deepEqual(filterMovements(txs, todos).map((t) => t.id), [3, 4, 2, 1]);
+  assert.deepEqual(filterMovements(txs, { ...todos, monthId: 1 }).map((t) => t.id), [4, 2, 1]);
+  assert.deepEqual(filterMovements(txs, { ...todos, category: "CASA" }).map((t) => t.id), [3, 1]);
+  assert.deepEqual(filterMovements(txs, { ...todos, category: NO_CATEGORY }).map((t) => t.id), [4, 2]);
+  assert.deepEqual(filterMovements(txs, { ...todos, parcelId: 2 }).map((t) => t.id), [3, 4]);
+  assert.deepEqual(filterMovements(txs, { ...todos, type: "transfer" }).map((t) => t.id), [4]);
+  assert.deepEqual(filterMovements(txs, { ...todos, search: "cafe" }).map((t) => t.id), [1]);
+  assert.deepEqual(filterMovements(txs, { ...todos, search: "7,5" }).map((t) => t.id), [2]);
+});
+
+test("organizar: resumo dos movimentos escolhidos", () => {
+  const txs = [mov(1, { value: 10.1 }), mov(2, { value: 20.2 }), mov(3, { type: "contribution", value: 5 }), mov(4, { value: 99 })];
+  assert.deepEqual(selectionSummary(txs, new Set([1, 2, 3])), { count: 3, out: 30.3, into: 5 });
+  assert.deepEqual(selectionSummary(txs, new Set()), { count: 0, out: 0, into: 0 });
+});

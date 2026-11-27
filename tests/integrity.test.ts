@@ -218,3 +218,37 @@ test("restaurar: um backup com meses, parcelas ou movimentos fora dos limites é
   assert.equal(state().months.length, antes);
   assert.equal((await call("POST", "/api/import", exp)).status, 200); // o backup legítimo continua a restaurar
 });
+
+test("movimentos em lote: mudar categoria/parcela e eliminar, tudo ou nada", async () => {
+  const m = (await call("POST", "/api/months", { year: 2096, month: 2, label: "Lote", base: 1000 })).json;
+  const fechado = (await call("POST", "/api/months", { year: 2096, month: 1, label: "Lote fechado", base: 1000 })).json;
+  const p1 = (await call("POST", "/api/parcels", { name: "Lote A", defaultMode: "fixo", defaultValue: 0 })).json;
+  const p2 = (await call("POST", "/api/parcels", { name: "Lote B", defaultMode: "fixo", defaultValue: 0 })).json;
+  const nova = async (monthId: number, date: string, category: string) =>
+    (await call("POST", "/api/transactions", { monthId, date, type: "expense", value: 5, parcelId: p1.id, category, note: "lote" })).json;
+  const t1 = await nova(m.id, "2096-02-03", "Velha");
+  const t2 = await nova(m.id, "2096-02-04", "Velha");
+  const t3 = await nova(fechado.id, "2096-01-05", "Velha");
+  const get = (id: number) => state().transactions.find((t) => t.id === id);
+
+  const ok = await call("POST", "/api/transactions/bulk", { ids: [t1.id, t2.id], action: "update", patch: { category: "  Nova  ", parcelId: p2.id } });
+  assert.equal(ok.status, 200);
+  assert.equal(ok.json.count, 2);
+  assert.equal(get(t1.id)?.category, "Nova");
+  assert.equal(get(t2.id)?.parcelId, p2.id);
+
+  assert.equal((await call("POST", "/api/months/" + fechado.id + "/close", { destination: "manter" })).status, 200);
+  const falha = await call("POST", "/api/transactions/bulk", { ids: [t1.id, t3.id], action: "update", patch: { category: "Outra" } });
+  assert.ok(falha.status >= 400, "mês fechado recusa");
+  assert.equal(get(t1.id)?.category, "Nova", "nada mudou");
+  assert.equal(get(t3.id)?.category, "Velha");
+
+  assert.equal((await call("POST", "/api/transactions/bulk", { ids: [t1.id, 987654], action: "delete" })).status, 404);
+  assert.ok(get(t1.id), "nada foi eliminado");
+  for (const mau of [{ ids: [], action: "delete" }, { ids: [t1.id], action: "update" }, { ids: [t1.id], action: "update", patch: {} }, { ids: [t1.id], action: "x" }, { ids: ["a"], action: "delete" }])
+    assert.equal((await call("POST", "/api/transactions/bulk", mau)).status, 400, JSON.stringify(mau));
+
+  assert.equal((await call("POST", "/api/transactions/bulk", { ids: [t1.id, t2.id], action: "delete" })).status, 200);
+  assert.equal(get(t1.id), undefined);
+  assert.equal(get(t2.id), undefined);
+});
