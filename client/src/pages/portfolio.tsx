@@ -5,7 +5,7 @@ import { FilterBar } from "@/components/filter-bar";
 import { Kpi, SectionCard } from "@/components/kpi";
 import { useUiMode } from "@/lib/ui-mode";
 import { visibleSections } from "@shared/ui-mode";
-import { ChartTooltip, LegendDots, axisProps, eurAxis, gridProps } from "@/components/charts";
+import { ChartTooltip, LegendDots, axisProps, eurAxis, gridProps, useLegendFilter } from "@/components/charts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppState, useDerived } from "@/lib/app";
 import { goalTotalOf } from "@/components/goal-panel";
@@ -21,6 +21,7 @@ export default function Portfolio() {
   const { data, isLoading } = useAppState();
   const d = useDerived(data);
   const pageLayout = usePageLayout(data?.settings ?? ({} as any), "carteira");
+  const legend = useLegendFilter(); // séries escondidas no gráfico (carregar na legenda)
 
   const model = useMemo(() => {
     if (!d) return null;
@@ -150,6 +151,7 @@ export default function Portfolio() {
                             type="monotone"
                             dataKey={`p${p.id}`}
                             name={p.name}
+                            hide={legend.isHidden("evolucao", p.name)}
                             stackId="1"
                             stroke={p.color}
                             fill={p.color}
@@ -161,7 +163,7 @@ export default function Portfolio() {
                     </ResponsiveContainer>
                   </div>
                   <div className="mt-3 shrink-0">
-                    <LegendDots items={d.parcels.map((p) => ({ name: p.name, color: p.color }))} />
+                    <LegendDots chart="evolucao" filter={legend} items={d.parcels.map((p) => ({ name: p.name, color: p.color }))} />
                   </div>
                 </div>
                 </SectionCard>

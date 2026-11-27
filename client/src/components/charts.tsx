@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { fmtEur, fmtPct } from "@shared/calc";
+import { toggleSeries } from "@shared/legend-filter";
+import { cn } from "@/lib/utils";
 
 /**
  * Mede o container pai e devolve o maior lado quadrado que cabe nele,
@@ -80,15 +82,45 @@ export function ChartTooltip({
   );
 }
 
-export function LegendDots({ items }: { items: { name: string; color: string }[] }) {
+/** Séries escondidas por gráfico (a legenda é o filtro). `chart` identifica o gráfico; `all` são os nomes das suas séries. */
+export function useLegendFilter() {
+  const [hidden, setHidden] = useState<Record<string, string[]>>({});
+  const isHidden = (chart: string, name: string) => !!hidden[chart]?.includes(name);
+  const toggle = (chart: string, name: string, all: readonly string[]) =>
+    setHidden((h) => ({ ...h, [chart]: toggleSeries(h[chart] ?? [], name, all) }));
+  return { isHidden, toggle };
+}
+export type LegendFilter = ReturnType<typeof useLegendFilter>;
+
+/**
+ * Legenda do gráfico. Com `filter` e `chart`, cada item é um botão que esconde ou mostra a série (a legenda é o filtro);
+ * sem eles, é só texto.
+ */
+export function LegendDots({ items, chart, filter }: { items: { name: string; color: string }[]; chart?: string; filter?: LegendFilter }) {
+  const all = items.map((i) => i.name);
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
-      {items.map((i) => (
-        <span key={i.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className="h-2 w-2 rounded-full" style={{ background: i.color }} />
-          {i.name}
-        </span>
-      ))}
+    <div className="flex flex-wrap items-center gap-x-1 gap-y-1" role={filter ? "group" : undefined} aria-label={filter ? "Legenda do gráfico: carrega para esconder ou mostrar" : undefined}>
+      {items.map((i) => {
+        const off = !!(filter && chart && filter.isHidden(chart, i.name));
+        const inner = (
+          <>
+            <span className="h-2 w-2 rounded-full" style={{ background: off ? "transparent" : i.color, boxShadow: off ? `inset 0 0 0 1.5px ${i.color}` : undefined }} />
+            <span className={cn(off && "line-through")}>{i.name}</span>
+          </>
+        );
+        return filter && chart ? (
+          <button
+            key={i.name} type="button" aria-pressed={!off} title={off ? `Mostrar ${i.name}` : `Esconder ${i.name}`}
+            data-testid={`legend-${i.name}`} data-hidden={off}
+            onClick={() => filter.toggle(chart, i.name, all)}
+            className={cn("flex min-h-8 items-center gap-1.5 rounded-md px-2 text-xs transition-opacity hover:bg-muted pointer-coarse:min-h-11", off ? "text-muted-foreground opacity-60" : "text-muted-foreground")}
+          >
+            {inner}
+          </button>
+        ) : (
+          <span key={i.name} className="flex items-center gap-1.5 px-1 text-xs text-muted-foreground">{inner}</span>
+        );
+      })}
     </div>
   );
 }
