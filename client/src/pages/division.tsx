@@ -114,8 +114,8 @@ export default function DivisionPage() {
         </Select>
       }
     >
-      <div className="grid items-start gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]" data-testid="page-dividir">
-        <aside className="space-y-3 lg:sticky lg:top-4">
+      <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]" data-testid="page-dividir">
+        <aside className="min-w-0 space-y-3">
           <div className="rounded-2xl border border-card-border bg-card p-1.5">
             <DividirSteps steps={steps} shown={["salario", "repartir", "fechar"].includes(view) ? view : null} onShow={setView} />
           </div>

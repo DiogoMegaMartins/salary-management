@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { MonthInput } from "@/components/month-input";
@@ -18,6 +18,10 @@ import { closingPlan } from "@shared/closing";
 
 const num = (s: string) => { const t = s.trim().replace(",", "."); return /^-?\d+(\.\d+)?$/.test(t) ? Number(t) : null; };
 const NONE = "__none__";
+/** Campo com rótulo visível por cima (os formulários curtos desta página não tinham). */
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  return <div className="min-w-0 space-y-1"><span className="block text-xs text-muted-foreground">{label}</span>{children}</div>;
+}
 const refresh = (qc: ReturnType<typeof useQueryClient>) => { qc.invalidateQueries({ queryKey: ["/api/state"] }); qc.invalidateQueries({ predicate: (q) => String(q.queryKey[0]).startsWith("/api/") }); };
 
 /* ------------------------------------------------------------------ fecho mensal */
@@ -94,23 +98,23 @@ export function MonthClosing() {
         <span className={`rounded-full px-3 py-1 text-xs font-medium ${closed ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"}`} data-testid="closing-status">{closed ? "Fechado" : "Aberto"}</span>
       </div>
 
-      <section className="rounded-lg border border-card-border bg-card p-4" aria-label="1. Rendimentos">
+      <section className="rounded-2xl border border-card-border bg-card p-4 sm:p-5" aria-label="1. Rendimentos">
         <h2 className="mb-1 text-sm font-semibold">1. Rendimentos</h2>
         {row("Rendimento disponível", computed.available)}
         {(s?.carryIn ?? 0) > 0 && row("Transporte recebido (não é rendimento)", s.carryIn)}
       </section>
-      <section className="rounded-lg border border-card-border bg-card p-4" aria-label="2. Despesas">
+      <section className="rounded-2xl border border-card-border bg-card p-4 sm:p-5" aria-label="2. Despesas">
         <h2 className="mb-1 text-sm font-semibold">2. Despesas e movimentos</h2>
         {row("Executado (despesas e retiradas)", exec.executado)}
         {row("Transferências internas (não são despesas)", exec.transferenciasInternas)}
       </section>
-      <section className="rounded-lg border border-card-border bg-card p-4" aria-label="3. Distribuições">
+      <section className="rounded-2xl border border-card-border bg-card p-4 sm:p-5" aria-label="3. Distribuições">
         <h2 className="mb-1 text-sm font-semibold">3. Distribuições</h2>
         {row("Planeado", exec.planeado)}
         {row("Alocado (inclui aportes)", exec.alocado)}
         {row("Por executar nas parcelas de gastos", exec.porExecutar)}
       </section>
-      <section className="rounded-lg border border-card-border bg-card p-4" aria-label="4. Pendências">
+      <section className="rounded-2xl border border-card-border bg-card p-4 sm:p-5" aria-label="4. Pendências">
         <h2 className="mb-1 text-sm font-semibold">4. Pendências</h2>
         <ul className="space-y-1 text-sm" data-testid="closing-pending">
           <li>{pendingHere.length === 0 ? "Sem recorrências pendentes." : `${pendingHere.length} recorrência(s) por confirmar (separador Recorrências).`}</li>
@@ -118,7 +122,7 @@ export function MonthClosing() {
           <li>{(s?.remainder ?? 0) > 0.004 ? `Restante por decidir: ${fmtEur(s.remainder)}.` : "Sem restante positivo."}</li>
         </ul>
       </section>
-      <section className="rounded-lg border border-card-border bg-card p-4" aria-label="5. Fecho">
+      <section className="rounded-2xl border border-card-border bg-card p-4 sm:p-5" aria-label="5. Fecho">
         <h2 className="mb-2 text-sm font-semibold">5. Montante restante e fecho</h2>
         {row("Restante do mês", s?.remainder ?? 0, true)}
         {!closed ? (
@@ -164,7 +168,7 @@ export function MonthClosing() {
           </div>
         )}
       </section>
-      <section className="rounded-lg border border-card-border bg-card p-4" aria-label="Histórico de fechos">
+      <section className="rounded-2xl border border-card-border bg-card p-4 sm:p-5" aria-label="Histórico de fechos">
         <h2 className="mb-2 text-sm font-semibold">Histórico de abertura e fecho</h2>
         {(history.data ?? []).filter((c) => c.monthId === month.id).length === 0 ? <p className="text-sm text-muted-foreground">Sem registos para este mês.</p> : (
           <ul className="space-y-1 text-sm" data-testid="closing-history">
@@ -198,7 +202,7 @@ export function Recurring() {
   return (
     <div className="space-y-4" data-testid="recurring">
       {dialog}
-      <section className="rounded-lg border border-card-border bg-card p-4">
+      <section className="rounded-2xl border border-card-border bg-card p-4 sm:p-5">
         <h2 className="mb-2 text-sm font-semibold">Ocorrências pendentes de confirmação</h2>
         {(pend.data ?? []).length === 0 ? <p className="text-sm text-muted-foreground" data-testid="pending-empty">Sem ocorrências pendentes.</p> : (
           <ul className="space-y-1.5" data-testid="pending-list">
@@ -213,16 +217,16 @@ export function Recurring() {
           </ul>
         )}
       </section>
-      <section className="rounded-lg border border-card-border bg-card p-4">
+      <section className="rounded-2xl border border-card-border bg-card p-4 sm:p-5">
         <h2 className="mb-2 text-sm font-semibold">Despesas recorrentes</h2>
         <div className="responsive-form" onKeyDown={(e) => e.key === "Enter" && document.getElementById("btn-add-rec")?.click()}>
-          <Input placeholder="Nome" aria-label="Nome" value={r.name} onChange={(e) => setR({ ...r, name: e.target.value })} className="h-9 text-sm" data-testid="input-rec-name" />
-          <Input placeholder="Valor" aria-label="Valor" inputMode="decimal" value={r.value} onChange={(e) => setR({ ...r, value: e.target.value })} className="tnum h-9 text-sm" data-testid="input-rec-value" />
-          <Input placeholder="Categoria" aria-label="Categoria" value={r.category} onChange={(e) => setR({ ...r, category: e.target.value })} className="h-9 text-sm" />
-          <Input placeholder="Dia" aria-label="Dia do mês" inputMode="numeric" value={r.day} onChange={(e) => setR({ ...r, day: e.target.value })} className="h-9 text-sm" />
-          <MonthInput aria-label="Início" value={r.start} onChange={(x) => setR({ ...r, start: x })} className="h-9 text-sm" data-testid="input-rec-start" />
-          <MonthInput clearable aria-label="Fim (opcional)" value={r.end} onChange={(x) => setR({ ...r, end: x })} className="h-9 text-sm" />
-          <Button id="btn-add-rec" size="sm" disabled={busy} data-testid="button-add-rec" onClick={() => {
+          <Field label="Nome"><Input placeholder="Nome" aria-label="Nome" value={r.name} onChange={(e) => setR({ ...r, name: e.target.value })} className="h-9 text-sm" data-testid="input-rec-name" /></Field>
+          <Field label="Valor (€)"><Input placeholder="Valor" aria-label="Valor" inputMode="decimal" value={r.value} onChange={(e) => setR({ ...r, value: e.target.value })} className="tnum h-9 text-sm" data-testid="input-rec-value" /></Field>
+          <Field label="Categoria"><Input placeholder="Categoria" aria-label="Categoria" value={r.category} onChange={(e) => setR({ ...r, category: e.target.value })} className="h-9 text-sm" /></Field>
+          <Field label="Dia do mês"><Input placeholder="Dia" aria-label="Dia do mês" inputMode="numeric" value={r.day} onChange={(e) => setR({ ...r, day: e.target.value })} className="h-9 text-sm" /></Field>
+          <Field label="Começa em"><MonthInput aria-label="Início" value={r.start} onChange={(x) => setR({ ...r, start: x })} className="h-9 text-sm" data-testid="input-rec-start" /></Field>
+          <Field label="Acaba em (opcional)"><MonthInput clearable aria-label="Fim (opcional)" value={r.end} onChange={(x) => setR({ ...r, end: x })} className="h-9 text-sm" /></Field>
+          <Button id="btn-add-rec" size="sm" className="self-end" disabled={busy} data-testid="button-add-rec" onClick={() => {
             const value = num(r.value);
             if (!r.name.trim() || value == null || value <= 0 || !r.start) return toast({ title: "Preenche nome, valor e mês de início", variant: "destructive" });
             act(async () => { await apiRequest("POST", "/api/recurring", { name: r.name, value, category: r.category, dayOfMonth: Number(r.day) || 1, startMonth: r.start, endMonth: r.end || null }); setR({ name: "", value: "", category: "", day: "1", start: r.start, end: "" }); }, "Recorrência criada");
@@ -238,15 +242,15 @@ export function Recurring() {
           ))}
         </ul>
       </section>
-      <section className="rounded-lg border border-card-border bg-card p-4">
+      <section className="rounded-2xl border border-card-border bg-card p-4 sm:p-5">
         <h2 className="mb-1 text-sm font-semibold">Reservas para despesas futuras</h2>
         <p className="mb-2 text-xs text-muted-foreground">Uma reserva não é uma despesa paga: só cria a despesa quando marcas como paga. A sugestão considera o valor já reservado e os meses até ao prazo.</p>
         <div className="responsive-form" onKeyDown={(e) => e.key === "Enter" && document.getElementById("btn-add-res")?.click()}>
-          <Input placeholder="Nome (ex.: seguro anual)" aria-label="Nome da reserva" value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} className="h-9 text-sm" data-testid="input-res-name" />
-          <Input placeholder="Valor-alvo" aria-label="Valor-alvo" inputMode="decimal" value={v.target} onChange={(e) => setV({ ...v, target: e.target.value })} className="tnum h-9 text-sm" data-testid="input-res-target" />
-          <MonthInput aria-label="Prazo" value={v.due} onChange={(x) => setV({ ...v, due: x })} className="h-9 text-sm" data-testid="input-res-due" />
-          <Input placeholder="Já reservado" aria-label="Já reservado" inputMode="decimal" value={v.reserved} onChange={(e) => setV({ ...v, reserved: e.target.value })} className="tnum h-9 text-sm" />
-          <Button id="btn-add-res" size="sm" disabled={busy} data-testid="button-add-res" onClick={() => {
+          <Field label="Nome"><Input placeholder="Nome (ex.: seguro anual)" aria-label="Nome da reserva" value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} className="h-9 text-sm" data-testid="input-res-name" /></Field>
+          <Field label="Valor-alvo (€)"><Input placeholder="Valor-alvo" aria-label="Valor-alvo" inputMode="decimal" value={v.target} onChange={(e) => setV({ ...v, target: e.target.value })} className="tnum h-9 text-sm" data-testid="input-res-target" /></Field>
+          <Field label="Prazo"><MonthInput aria-label="Prazo" value={v.due} onChange={(x) => setV({ ...v, due: x })} className="h-9 text-sm" data-testid="input-res-due" /></Field>
+          <Field label="Já reservado (€)"><Input placeholder="Já reservado" aria-label="Já reservado" inputMode="decimal" value={v.reserved} onChange={(e) => setV({ ...v, reserved: e.target.value })} className="tnum h-9 text-sm" /></Field>
+          <Button id="btn-add-res" size="sm" className="self-end" disabled={busy} data-testid="button-add-res" onClick={() => {
             const target = num(v.target); const reserved = num(v.reserved || "0");
             if (!v.name.trim() || target == null || target <= 0 || !v.due || reserved == null || reserved < 0) return toast({ title: "Preenche nome, valor-alvo e prazo", variant: "destructive" });
             act(async () => { await apiRequest("POST", "/api/reserves", { name: v.name, target, dueMonth: v.due, reserved }); setV({ name: "", target: "", due: v.due, reserved: "0" }); }, "Reserva criada");
@@ -318,7 +322,7 @@ export function Simulator() {
         {fld("pauseLen", "Duração da pausa (meses)")}
         {fld("deadline", "Prazo (meses a partir de agora)")}
       </div>
-      <section className="rounded-lg border border-card-border bg-card p-4 text-sm" data-testid="sim-result">
+      <section className="rounded-2xl border border-card-border bg-card p-4 sm:p-5 text-sm" data-testid="sim-result">
         <p>Acumulado atual: <span className="tnum font-medium">{fmtEur(current)}</span> de {fmtEur(p.targetAmount ?? 0)}.</p>
         <p className="mt-1" data-testid="sim-outcome">{res.reachable ? `Meta atingida em ${res.monthsToReach} mês(es).` : "A meta não é atingível com estes pressupostos."}{res.reason ? ` ${res.reason}` : ""}</p>
         {res.finalAtDeadline != null && <p className="mt-1">No prazo: {fmtEur(res.finalAtDeadline)}{res.shortfallAtDeadline ? ` (faltam ${fmtEur(res.shortfallAtDeadline)})` : ""}.</p>}
@@ -345,7 +349,7 @@ export function Composition() {
         const labels = d.allComputed.map((x) => ({ label: `${String(x.month.month).padStart(2, "0")}/${x.month.year}`, amount: x.byParcel[p.id] ?? 0 }));
         const c = composeTotal(b, labels, periodLabels, (data.goalEntries ?? []).filter((e) => e.parcelId === p.id) as any, data.transactions.filter((t) => t.parcelId === p.id) as any);
         return (
-          <section key={p.id} className="rounded-lg border border-card-border bg-card p-3" data-testid={`composition-${p.id}`}>
+          <section key={p.id} className="rounded-xl border border-card-border bg-card p-3" data-testid={`composition-${p.id}`}>
             <button type="button" className="flex w-full items-center justify-between text-left text-sm" onClick={() => setOpen(open === p.id ? null : p.id)} aria-expanded={open === p.id}>
               <span className="font-medium">{p.name}</span>
               <span className="tnum"><span className="text-xs text-muted-foreground">período {fmtEur(c.periodFlow)} · </span><span className="font-semibold">{fmtEur(c.accumulated)}</span></span>

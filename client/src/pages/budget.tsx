@@ -142,7 +142,7 @@ export default function BudgetPage() {
             </Select>
           }
         >
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3">
             <Stat label="Projeção" value={fmtEur(projection.projecaoAnual)} testId="stat-projecao" />
             <Stat label="Meta" value={fmtEur(projection.meta)} testId="stat-meta" />
             <Stat
@@ -188,7 +188,7 @@ export default function BudgetPage() {
             </Select>
           }
         >
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3">
             <Stat label="Saldo reserva" value={fmtEur(runway.saldoReservaElegivel)} testId="stat-saldo-reserva" />
             <Stat
               label="Despesa essencial média"
@@ -419,11 +419,11 @@ function Stat({
   testId?: string;
 }) {
   return (
-    <div className="rounded-md border border-card-border/70 p-3" data-testid={testId}>
+    <div className="rounded-xl border border-card-border/70 p-3" data-testid={testId}>
       <p className="text-xs text-muted-foreground">{label}</p>
       <p
         className={cn(
-          "tnum mt-1 text-base font-semibold",
+          "tnum mt-1 whitespace-nowrap text-base font-semibold",
           tone === "positive" && "text-success",
           tone === "negative" && "text-destructive",
         )}

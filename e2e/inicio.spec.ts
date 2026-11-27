@@ -121,3 +121,45 @@ test("início: com um layout antigo guardado, o resumo enche a sua caixa e alinh
     await page.request.patch("/api/settings", { data: { pageLayouts: "{}" }, headers: cabecalhosApi() });
   }
 });
+
+test("início Básico: os dois cartões de cima têm a mesma altura, mesmo sem despesas", async ({ page }, info) => {
+  test.skip(info.project.name === "telemovel", "no telemóvel os cartões ficam um por baixo do outro");
+  await modo(page, "basico");
+  await entrar(page);
+  await abrirInicio(page);
+  const alturas = await page.evaluate(() => {
+    const resumo = document.querySelector('[data-testid="inicio-summary"]') as HTMLElement;
+    const anel = document.querySelector('section[aria-label="Para onde vai o dinheiro"]') as HTMLElement;
+    return { resumo: Math.round(resumo.getBoundingClientRect().height), anel: Math.round(anel.getBoundingClientRect().height) };
+  });
+  expect(Math.abs(alturas.resumo - alturas.anel)).toBeLessThanOrEqual(2);
+});
+
+test("início Básico: dá para editar e guardar o layout", async ({ page, request }, info) => {
+  test.skip(info.project.name === "telemovel", "a edição por arrastar só existe em ecrãs largos");
+  await modo(page, "basico");
+  await entrar(page);
+  await abrirInicio(page);
+  await clicar(page.getByTestId("button-edit-layout"));
+  await expect(page.getByText("Modo de edição")).toBeVisible();
+  await expect(page.getByText("Valor disponível", { exact: true }).first()).toBeVisible(); // as secções ficam arrastáveis
+  await clicar(page.getByTestId("button-save-layout-painel-basico"));
+  await expect(page.getByText("Modo de edição")).toBeHidden();
+  await expect(async () => {
+    const e = await (await request.get("/api/state", { headers: cabecalhosApi() })).json();
+    const guardado = JSON.parse(e.settings.pageLayouts || "{}")["painel-basico"];
+    expect(guardado?.["basico-resumo"]).toBeTruthy();
+    expect(guardado?.["basico-ultimas"]).toBeTruthy();
+  }).toPass({ timeout: 8000 });
+  await request.patch("/api/settings", { data: { pageLayouts: "{}" }, headers: cabecalhosApi() }); // deixa como estava
+});
+
+test("modo Básico: Orçamento e Carteira também deixam editar o layout", async ({ page }, info) => {
+  test.skip(info.project.name === "telemovel", "a edição por arrastar só existe em ecrãs largos");
+  await modo(page, "basico");
+  await entrar(page);
+  for (const rota of ["#/orcamento", "#/carteira"]) {
+    await page.goto(`/${rota}`);
+    await expect(page.getByTestId("button-edit-layout")).toBeVisible();
+  }
+});
