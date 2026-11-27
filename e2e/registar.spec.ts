@@ -151,5 +151,7 @@ test("registar: se a categoria ainda não existe, dá para a criar ali mesmo", a
   const estado = await (await page.request.get("/api/state", { headers: cabecalhosApi() })).json();
   const criada = (estado.categories as any[]).find((c) => c.name === nome);
   expect(criada).toBeTruthy();
-  await page.request.delete(`/api/categories/${criada.id}`, { headers: cabecalhosApi() }); // deixa a lista como estava
+  // deixa tudo como estava: primeiro o movimento (uma categoria com movimentos não se elimina), depois a categoria
+  await page.request.delete(`/api/transactions/${t[0].id}`, { headers: cabecalhosApi() });
+  await page.request.delete(`/api/categories/${criada.id}`, { headers: cabecalhosApi() });
 });
