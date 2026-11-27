@@ -230,7 +230,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     // tudo ou nada: se algo falhar, não fica um mês a meio
     return storage.transaction(() => {
       const created = storage.createMonth(target as any);
-      for (const a of state.allocations.filter((x) => x.monthId === src.id)) storage.setAllocation(created.id, a.parcelId, a.mode, a.value);
+      for (const a of state.allocations.filter((x) => x.monthId === src.id)) storage.setAllocation(created.id, a.parcelId, a.mode, a.value, a.included);
       return created;
     });
   }));
