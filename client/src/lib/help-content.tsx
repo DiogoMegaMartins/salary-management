@@ -664,6 +664,11 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.32.2</H3>
+        <UL>
+          <li>Os cartões dos vários menus ficaram alinhados e com o mesmo aspeto: no Plano do mês, em Parcelas e metas, em Definições e no Orçamento.</li>
+          <li>Em Recorrências e reservas, cada campo tem agora o seu nome por cima.</li>
+        </UL>
         <H3>1.32.1</H3>
         <UL>
           <li>No Início (modo Detalhado), o cartão do resumo do mês passa a acabar na mesma linha que os cartões pequenos da direita, mesmo com um layout guardado.</li>

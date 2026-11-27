@@ -2,6 +2,17 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.32.2 | 2026-11-27
+
+Cartões alinhados e com o mesmo estilo em todos os menus.
+
+- **Plano do mês**: a coluna dos passos deixa de ficar 16 px mais baixa do que o conteúdo (o `sticky` da coluna foi retirado) e, no telemóvel, deixa de sair fora do ecrã (`grid-cols-[minmax(0,1fr)]`).
+- **Parcelas e metas**: a lista e o detalhe só ficam lado a lado a partir de ecrãs muito largos (`2xl`); antes a lista ficava espremida ao lado dos passos e escondia os nomes.
+- **Separadores fixos** (`.sticky-tabs`, usados em Definições): voltam a ter folga por baixo; os cartões já não colam à barra.
+- **Orçamento**: os cartões de números ficam em 2 colunas e os valores em euros já não partem em duas linhas.
+- **Recorrências e reservas**: cada campo tem rótulo visível por cima.
+- Cartões com os mesmos cantos (`rounded-2xl`, e `rounded-xl` para os pequenos) e o mesmo espaço interior (`p-4`, `sm:p-5`) em Meses, Despesas, Parcelas, Fecho e estado offline.
+
 ## 1.32.1 | 2026-11-27
 
 Corrige o alinhamento do cartão do topo do Início.
