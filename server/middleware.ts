@@ -1,7 +1,7 @@
 import express from "express";
 import type { Express } from "express";
 import { storage } from "./storage";
-import { authLimiter, globalLimiter, GLOBAL_KEY, ipKey, knownGood, verifyCodeAsync, secretCode } from "./access";
+import { authLimiter, globalLimiter, GLOBAL_KEY, ipKey, verifyCodeAsync, secretCode, isInternalRequest } from "./access";
 
 /**
  * Configuração base partilhada pelo servidor e pelos testes: proxy, cabeçalhos, limites de corpo
@@ -47,12 +47,13 @@ export function installBase(app: Express) {
       // aberta, recusa tudo até o segredo ser corrigido.
       if (process.env.ACCESS_CODE_FROM_SECRET === "1" && (process.env.ACCESS_CODE ?? "").trim() && !secretCode())
         return res.status(503).json({ ok: false, message: "O segredo ACCESS_CODE é demasiado curto (mínimo 8 caracteres). Corrige-o na Cloudflare." });
+      if (isInternalRequest(req.headers["x-sm-interno"])) return next();
       const code = storage.getAccessCode().trim();
       if (!code) return next();
       const given = String(req.headers["x-codigo-acesso"] ?? "").trim();
-      // um código já verificado passa sempre: quem partilha o IP de um atacante (NAT) não fica trancado
-      if (given && knownGood(code, given)) return next();
       if (given) {
+        // O limite vem ANTES de olhar para o código: um IP bloqueado leva 429 mesmo com o código certo. Se o certo
+        // passasse, «429 ou 200» dizia a quem está bloqueado se acertou, e os palpites não custavam nada.
         const ip = ipKey(req.ip);
         const wait = Math.max(authLimiter.retryAfterSeconds(ip), globalLimiter.retryAfterSeconds(GLOBAL_KEY));
         if (wait) {

@@ -41,6 +41,15 @@ export function verifyCode(stored: string, given: string): boolean {
   return good;
 }
 
+/**
+ * Senha só deste processo, para os pedidos que o próprio Worker faz a si mesmo (a cópia agendada para o R2).
+ * Não sai do processo nem é previsível, por isso um visitante não a consegue enviar; assim estes pedidos
+ * não dependem do código de acesso nem ficam presos no limite de tentativas quando alguém o esgota.
+ */
+export const INTERNAL_TOKEN = randomBytes(24).toString("hex");
+export const isInternalRequest = (given: unknown) =>
+  typeof given === "string" && given.length === INTERNAL_TOKEN.length && timingSafeEqual(Buffer.from(given), Buffer.from(INTERNAL_TOKEN));
+
 /** Já foi verificado como certo (cache em memória): não custa scrypt e não passa pelo limitador. */
 export function knownGood(stored: string, given: string): boolean {
   stored = stored.trim();

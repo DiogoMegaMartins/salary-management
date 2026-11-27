@@ -1,4 +1,4 @@
-import { secretCode, hashCode, verifyCode, verifyCodeAsync, knownGood, isHashed, authLimiter, globalLimiter, GLOBAL_KEY, ipKey, publicState, publicSettings, MIN_CODE_LENGTH } from "./access";
+import { secretCode, hashCode, verifyCode, verifyCodeAsync, isHashed, authLimiter, globalLimiter, GLOBAL_KEY, ipKey, publicState, publicSettings, MIN_CODE_LENGTH } from "./access";
 import {
   idParamSchema, platformCreateSchema, platformPatchSchema, parcelTypeCreateSchema, parcelTypePatchSchema,
   txTypeCreateSchema, txTypePatchSchema, goalEntryCreateSchema, goalEntryPatchSchema, subgoalCreateSchema, subgoalPatchSchema,
@@ -76,12 +76,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     const given = String(req.body?.code ?? "").trim();
     if (!code) return res.json({ ok: true });
     const ip = ipKey(req.ip);
-    if (!knownGood(code, given)) {
-      const wait = Math.max(authLimiter.retryAfterSeconds(ip), globalLimiter.retryAfterSeconds(GLOBAL_KEY));
-      if (wait) {
-        res.setHeader("Retry-After", String(wait));
-        return res.status(429).json({ ok: false, message: "Demasiadas tentativas. Tenta novamente dentro de alguns minutos." });
-      }
+    // o limite vem antes de verificar o código (ver middleware.ts): bloqueado é bloqueado, mesmo com o código certo
+    const wait = Math.max(authLimiter.retryAfterSeconds(ip), globalLimiter.retryAfterSeconds(GLOBAL_KEY));
+    if (wait) {
+      res.setHeader("Retry-After", String(wait));
+      return res.status(429).json({ ok: false, message: "Demasiadas tentativas. Tenta novamente dentro de alguns minutos." });
     }
     if (await verifyCodeAsync(code, given)) {
       authLimiter.reset(ip);

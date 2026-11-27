@@ -671,7 +671,7 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
           <li>Ao restaurar um backup, a app confirma os valores (taxas, limites, movimentos) como nos ecrãs normais. Um ficheiro editado à mão com valores impossíveis é recusado e nada muda.</li>
           <li>Não se elimina uma categoria que já tem movimentos: arquiva-se.</li>
           <li>O histórico de alterações das metas e submetas passa a mostrar o que mudou ao editar e eliminar.</li>
-          <li>Correções de segurança no servidor: limite de tentativas do código e aviso quando o segredo é demasiado curto.</li>
+          <li>Correções de segurança no servidor: depois de várias tentativas falhadas, o acesso fica bloqueado alguns minutos mesmo com o código certo (antes ainda dava para ir adivinhando). A cópia diária para a Cloudflare deixa de falhar quando alguém esgota o limite.</li>
         </UL>
         <H3>1.35.0</H3>
         <UL>
