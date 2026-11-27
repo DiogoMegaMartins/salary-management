@@ -96,7 +96,7 @@ export function ParcelsPanel() {
           A soma das percentagens passa dos 100% do disponível.
         </p>
       )}
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] xl:grid-cols-[minmax(0,1fr)_minmax(0,32rem)]">
+      <div className="grid gap-4 2xl:grid-cols-[minmax(0,1fr)_minmax(0,32rem)]">
         <div className="min-w-0 overflow-hidden rounded-lg border border-card-border bg-card" data-testid="parcels-list">
           {active.length === 0 ? (
             <p className="p-6 text-center text-sm text-muted-foreground">Ainda não há parcelas. Cria a primeira com "Nova parcela".</p>
@@ -170,7 +170,7 @@ export function ParcelsPanel() {
         </div>
 
         {!isMobile && sel && (
-          <section className="min-w-0 self-start rounded-lg border border-card-border bg-card p-4 lg:sticky lg:top-0" aria-label={`Detalhe de ${sel.name}`}>
+          <section className="min-w-0 self-start rounded-2xl border border-card-border bg-card p-4 sm:p-5 2xl:sticky 2xl:top-0" aria-label={`Detalhe de ${sel.name}`}>
             {header(sel)}
             <div className="mt-3">{detail}</div>
           </section>

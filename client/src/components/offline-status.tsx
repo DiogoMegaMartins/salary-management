@@ -69,7 +69,7 @@ export function OfflineSettings() {
   const [busy, setBusy] = useState(false);
   useEffect(() => { const update = () => setInfo(offlineInfo()); window.addEventListener("sm:offline", update); return () => window.removeEventListener("sm:offline", update); }, []);
   const run = async (fn: () => Promise<void>) => { setBusy(true); setMessage(""); try { await fn(); } catch (e: any) { setMessage(e.message); } finally { setBusy(false); } };
-  return <section className="space-y-3 rounded-lg border border-border bg-card p-4" data-testid="offline-settings">
+  return <section className="space-y-3 rounded-2xl border border-card-border bg-card p-4 sm:p-5" data-testid="offline-settings">
     <h2 className="text-base font-semibold">Aplicação no telemóvel e offline</h2>
     <p className="text-sm text-muted-foreground">Ativa neste dispositivo para consultar os dados, editar vencimentos e divisões de meses existentes, distribuir por plataformas e ativos, e registar despesas sem internet. Fechar/reabrir meses, criar meses, catálogos e outros movimentos exigem ligação.</p>
     <p className="text-xs text-muted-foreground">Usa um código forte de pelo menos 8 caracteres. A cópia local é cifrada; não substitui um backup. Para instalar, abre o endereço próprio da aplicação e escolhe “Adicionar ao ecrã principal” no navegador. A pré-visualização incorporada pode não permitir instalação ou armazenamento.</p>

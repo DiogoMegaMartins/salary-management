@@ -1268,7 +1268,7 @@ table td.tnum, table td[class*="text-right"] { white-space: nowrap; min-width: 5
   position: sticky;
   top: -1.25rem;
   z-index: 10;
-  margin: -1.25rem -1rem 0;
+  margin: -1.25rem -1rem 1rem; /* a folga por baixo repõe o espaço que o conteúdo teria */
   padding: 1.25rem 1rem 0;
   width: calc(100% + 2rem);
   max-width: none; /* anula o [role=tablist] { max-width: 100% } */
@@ -1277,7 +1277,7 @@ table td.tnum, table td[class*="text-right"] { white-space: nowrap; min-width: 5
 @media (min-width: 768px) {
   .sticky-tabs {
     top: -1.5rem;
-    margin: -1.5rem -1.5rem 0;
+    margin: -1.5rem -1.5rem 1rem;
     padding: 1.5rem 1.5rem 0;
     width: calc(100% + 3rem);
   }

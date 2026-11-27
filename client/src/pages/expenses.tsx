@@ -165,12 +165,12 @@ export default function ExpensesPage() {
               <SelectContent>{sorted.map((m) => <SelectItem key={m.id} value={String(m.id)}>{m.label} {m.year}</SelectItem>)}</SelectContent>
             </Select>
           </div>
-          <div className="rounded-md border border-card-border bg-card px-4 py-2" data-testid="expense-month-total">
+          <div className="rounded-xl border border-card-border bg-card px-4 py-2" data-testid="expense-month-total">
             <p className="text-xs text-muted-foreground">{allMonths ? "Total de despesas (todos os meses)" : "Total de despesas do mês"}</p>
             <p className="tnum text-lg font-semibold">{fmtEur(view.monthTotal)}</p>
           </div>
           {view.filteredCount !== view.count && (
-            <div className="rounded-md border border-card-border bg-card px-4 py-2" data-testid="expense-filtered-total">
+            <div className="rounded-xl border border-card-border bg-card px-4 py-2" data-testid="expense-filtered-total">
               <p className="text-xs text-muted-foreground">Filtrado ({view.filteredCount})</p>
               <p className="tnum text-lg font-semibold">{fmtEur(view.filteredTotal)}</p>
             </div>
@@ -231,7 +231,7 @@ export default function ExpensesPage() {
         </div>
 
         {draft && (
-          <div className="responsive-form rounded-lg border border-card-border bg-card p-3" data-testid="expense-form"
+          <div className="responsive-form rounded-xl border border-card-border bg-card p-3" data-testid="expense-form"
             onKeyDown={(e) => { if (e.key === "Enter") submit(true); if (e.key === "Escape") setDraft(null); }}>
             <Input type="date" value={draft.date} min={`${ym}-01`} max={draft.id != null ? undefined : `${ym}-${pad(last)}`} onChange={(e) => setDraft({ ...draft, date: e.target.value })} aria-label="Data" className="h-9 text-sm" data-testid="input-expense-date" />
             <Input value={draft.value} onChange={(e) => setDraft({ ...draft, value: e.target.value })} inputMode="decimal" placeholder="valor" aria-label="Valor" autoFocus className="tnum h-9 text-sm" data-testid="input-expense-value" />

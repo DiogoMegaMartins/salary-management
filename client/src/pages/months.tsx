@@ -85,7 +85,7 @@ export default function Months() {
       ) : (
         <>
         <div className="space-y-3 md:hidden" data-testid="mobile-months">
-          {rows.map((r) => <article key={r.month.id} className="rounded-lg border border-border bg-card p-4">
+          {rows.map((r) => <article key={r.month.id} className="rounded-2xl border border-card-border bg-card p-4 sm:p-5">
             <div className="flex items-start justify-between gap-3">
               <button className="min-w-0 text-left font-semibold" data-testid={`button-mobile-edit-${r.month.id}`} onClick={() => { setCreating(false); setEditing(r.month); }}>
                 {r.month.label} <span className="text-muted-foreground">{r.month.year}</span>
