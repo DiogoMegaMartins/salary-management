@@ -4,7 +4,7 @@ Ordem do mais recente para o mais antigo.
 
 ## 1.35.1 | 2026-11-27
 
-Mais correções da auditoria ao servidor e ao Worker (F8, F10, F11, F12, F13, F14).
+Mais correções da auditoria ao servidor e ao Worker (F4, F5, F8, F10, F11, F12, F13, F14).
 
 - **F8**: `TRUST_PROXY` passa a vir desligado por omissão em produção. Antes, sem proxy à frente, um `X-Forwarded-For` forjado fugia ao limite por IP. Quem corre atrás de um proxy define `TRUST_PROXY=1` (README e `docs/SEGURANCA.md`). No Worker nada muda.
 - **F11**: no Worker, um segredo `ACCESS_CODE` com menos de 8 caracteres já não deixa a app aberta: a API responde 503 com uma mensagem clara.
@@ -12,7 +12,9 @@ Mais correções da auditoria ao servidor e ao Worker (F8, F10, F11, F12, F13, F
 - **F12**: o histórico de alterações das metas e submetas guarda agora o que mudou, também ao alterar e eliminar (antes ficava `{}`).
 - **F13**: as migrações da base de dados só ignoram «coluna já existe»; outros erros param o arranque. O preenchimento inicial corre na mesma transação do `ALTER`.
 - **F14**: eliminar uma categoria que tem movimentos devolve 409 («arquiva-a»); removido o código morto do import CSV.
-- Testes em `tests/integrity.test.ts` e `tests/acesso-middleware.test.ts`.
+- **F4**: uma despesa registada sem ligação com data num mês que não existe ou está fechado deixava a fila presa e bloqueava todas as sincronizações. Agora é recusada ao registar, com uma mensagem a explicar o que fazer; se a data for de outro mês aberto, o movimento vai para esse mês (`projectOffline` em `shared/offline.ts`).
+- **F5**: o total alocado do mês arredonda a soma uma só vez (`allocatedTotal` em `shared/calc/month.ts`). Antes cada parcela arredondava-se primeiro: 2 × 50 % de 1000,01 € davam um «défice de 0,01 €» no fecho e o erro `dist_excede`, enquanto a divisão dizia «completa». Os valores em euros usam todos o mesmo arredondamento (`round2`): 2,135 € grava 2,14 € em todas as rotas (uma gravava 2,13 €). `divisionStatus` compara em cêntimos.
+- Testes em `tests/integrity.test.ts`, `tests/acesso-middleware.test.ts`, `tests/offline-projecao.test.ts` e `tests/arredondamentos.test.ts`.
 
 ## 1.35.0 | 2026-11-27
 

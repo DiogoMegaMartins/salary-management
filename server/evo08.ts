@@ -2,8 +2,8 @@
 import { eq, and, desc } from "drizzle-orm";
 import { db, storage, httpError } from "./storage";
 import { months, transactions, monthClosures, changeLog, recurringExpenses, recurrenceSkips, reserves, importBatches } from "@shared/schema";
-import { availableOf, allocationAmount } from "@shared/calc";
-import { checkConsistency, monthRemainder, nextMonthKey, isClosed, pendingOccurrences, parseCsv, validateCsvRows, fingerprint, round2, sumEuros, type CsvMapping } from "@shared/evo08";
+import { availableOf, allocatedTotal } from "@shared/calc";
+import { checkConsistency, monthRemainder, nextMonthKey, isClosed, pendingOccurrences, parseCsv, validateCsvRows, fingerprint, round2, type CsvMapping } from "@shared/evo08";
 
 export { APP_VERSION } from "@shared/version";
 export const ENV_NAME = process.env.NODE_ENV === "production" ? "produção" : "desenvolvimento";
@@ -111,7 +111,7 @@ export function monthSummary(monthId: number) {
   const m = st.months.find((x) => x.id === monthId);
   if (!m) throw httpError(404, "Mês não encontrado.");
   const available = availableOf(m, st.settings);
-  const allocated = sumEuros(st.allocations.filter((a) => a.monthId === monthId).map((a) => allocationAmount(a as any, available)));
+  const allocated = allocatedTotal(st.allocations.filter((a) => a.monthId === monthId) as any, available);
   const txs = st.transactions.filter((t) => t.monthId === monthId);
   const remainder = monthRemainder(available, m.carryIn ?? 0, allocated, txs as any);
   return { month: m, available, carryIn: m.carryIn ?? 0, allocated, remainder, status: m.status, transactions: txs.length };

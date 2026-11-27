@@ -23,6 +23,7 @@ import type {
 import { eq, and } from "drizzle-orm";
 import seedData from "./seed.json";
 import { availableOf, allocationAmount, distribute, distributeAssets, type DistLine } from "@shared/calc";
+import { round2 } from "@shared/evo08";
 import { db, sqlite, httpError, dataDir } from "./db";
 import { secretCode } from "./access";
 import { catalogMethods } from "./storage-catalogs";
@@ -247,7 +248,7 @@ export const storage = {
    */
   normalizeTransaction(data: Partial<Transaction>, current?: Transaction): Partial<Transaction> {
     const out = { ...data };
-    if (out.value !== undefined && Number.isFinite(Number(out.value))) out.value = Math.round((Number(out.value) + Number.EPSILON) * 100) / 100; // cêntimos
+    if (out.value !== undefined && Number.isFinite(Number(out.value))) out.value = round2(Number(out.value)); // cêntimos (o mesmo arredondamento de todo o cálculo)
     if (out.value !== undefined && !(Number.isFinite(Number(out.value)) && Number(out.value) > 0))
       throw httpError(400, "O valor tem de ser maior que zero.");
     if (out.parcelId != null && !db.select().from(parcels).where(eq(parcels.id, Number(out.parcelId))).get())
@@ -402,7 +403,7 @@ export const storage = {
   },
 
   setAllocation(monthId: number, parcelId: number, mode: string, value: number, included?: number): Allocation {
-    if (mode === "fixo") value = Math.round((value + Number.EPSILON) * 100) / 100; // valores fixos em cêntimos; percentagens ficam como estão
+    if (mode === "fixo") value = round2(value); // valores fixos em cêntimos; percentagens ficam como estão
     // não permitir reduzir o total abaixo do que já está distribuído por valor
     const lines = storage.getDistribution(monthId, parcelId);
     if (lines.length) {

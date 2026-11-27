@@ -1,10 +1,11 @@
 /** Regras puras da divisão do salário (barra de relance, "por distribuir", repartir o que sobra). */
+import { toCents } from "./calc/distribution";
 
 export type DivisionStatus = "livre" | "completo" | "excede";
 
 /** Estado da divisão: sobra, está completa (a menos de 1 cêntimo) ou excede o disponível. */
 export function divisionStatus(available: number, allocated: number): { status: DivisionStatus; remaining: number } {
-  const remaining = Math.round((available - allocated) * 100) / 100;
+  const remaining = (toCents(available) - toCents(allocated)) / 100;
   return { status: Math.abs(remaining) < 0.005 ? "completo" : remaining > 0 ? "livre" : "excede", remaining };
 }
 

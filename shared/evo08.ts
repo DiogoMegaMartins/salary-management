@@ -2,7 +2,7 @@
  * EVO-08: cálculos puros partilhados (cliente, servidor e testes).
  * Precisão: todos os montantes são tratados em cêntimos inteiros nas somas e comparações.
  */
-import { allocationAmount, distribute, toCents } from "./calc";
+import { allocationAmount, allocatedTotal, distribute, toCents } from "./calc";
 
 export const cents = toCents;
 export const euros = (c: number) => c / 100;
@@ -81,7 +81,7 @@ export function checkConsistency(d: CheckInput): Issue[] {
   for (const m of d.months) {
     const avail = d.availableByMonth[m.id] ?? 0;
     const al = d.allocations.filter((a) => a.monthId === m.id);
-    const total = sumEuros(al.map((a) => allocationAmount(a as any, avail)));
+    const total = allocatedTotal(al as any, avail);
     const pct = al.filter((a) => a.mode === "percentagem").reduce((s, a) => s + a.value, 0);
     if (cents(total) > cents(avail)) out.push({ severity: "erro", code: "dist_excede", where: monthLabel(m.id), message: `A distribuição (${total.toFixed(2)} €) excede o valor disponível (${avail.toFixed(2)} €).`, fix: "Reduz alocações em Meses ou ajusta o rendimento." });
     else if (avail > 0 && cents(avail) - cents(total) >= 1) out.push({ severity: "aviso", code: "por_distribuir", where: monthLabel(m.id), message: `Por distribuir: ${round2(avail - total).toFixed(2)} €.`, fix: "Atribui o restante a uma parcela ou decide-o no fecho mensal." });
