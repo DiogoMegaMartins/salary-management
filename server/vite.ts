@@ -13,6 +13,8 @@ export async function setupVite(server: Server, app: Express) {
     middlewareMode: true,
     hmr: { server, path: "/vite-hmr" },
     allowedHosts: true as const,
+    // mantém a proteção de ficheiros do vite.config.ts (base de dados e cópias de segurança nunca saem daqui)
+    fs: viteConfig.server?.fs,
   };
 
   const vite = await createViteServer({
@@ -22,6 +24,8 @@ export async function setupVite(server: Server, app: Express) {
       ...viteLogger,
       error: (msg, options) => {
         viteLogger.error(msg, options);
+        // pedido a ficheiro protegido (ex.: data.db) só é recusado, não pode deitar o servidor abaixo
+        if (/serving allow list|denied by|restricted/i.test(msg)) return;
         process.exit(1);
       },
     },

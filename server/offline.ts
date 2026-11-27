@@ -4,6 +4,7 @@ import { storage, sqlite } from "./storage";
 import { publicState } from "./access";
 import { supportsOffline, type OfflineOp } from "../shared/offline";
 import { editableMonthPatch } from "../shared/month-patch";
+import { monthPatchSchema } from "./validation";
 import { months } from "../shared/schema";
 import { getTableColumns } from "drizzle-orm";
 
@@ -36,10 +37,12 @@ export function registerOffline(app: Express) {
             const allowed = new Set(Object.keys(getTableColumns(months)).filter(k => !["id", "status", "carryIn"].includes(k)));
             if (Object.keys(d).some(k => !allowed.has(k))) fail(400, "Campos do mês não permitidos.");
             for (const [k, v] of Object.entries(d)) if (typeof v === "number" && !Number.isFinite(v)) fail(400, `Valor inválido: ${k}`);
+            const check = monthPatchSchema.safeParse(d);
+            if (!check.success) fail(400, "Dados do mês inválidos.");
             storage.updateMonth(Number(parts[3]), editableMonthPatch(d));
           } else if (op.url === "/api/allocations") {
             if (!Number.isFinite(d.value) || d.value < 0 || !["fixo", "percentagem"].includes(d.mode)) fail(400, "Alocação inválida.");
-            storage.setAllocation(Number(d.monthId), Number(d.parcelId), d.mode, d.value);
+            storage.setAllocation(Number(d.monthId), Number(d.parcelId), d.mode, d.value, d.included === undefined ? undefined : d.included ? 1 : 0);
           } else if (op.url === "/api/transactions") {
             if (d.type !== "expense" || !Number.isFinite(d.value) || d.value <= 0 || !/^\d{4}-\d{2}-\d{2}$/.test(d.date)) fail(400, "Despesa inválida.");
             storage.createTransaction(d);

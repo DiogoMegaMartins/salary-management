@@ -2,6 +2,16 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.34.1 | 2026-11-27
+
+Correções da auditoria ao servidor e ao Worker (F1, F3, F6, F7).
+
+- **F1, `npm run dev`**: o servidor de desenvolvimento voltava a servir `data.db` e `backups/` pela rota `/@fs/`, porque `server/vite.ts` substituía as opções do `vite.config.ts` e perdia o `fs.deny`. Passa a usá-las; um pedido a um ficheiro protegido dá 403 e já não deita o servidor abaixo.
+- **F3, restauro**: o backup volta a incluir e a repor o modelo de divisão (plataformas e ativos por parcela: `rulePlatforms`, `ruleAssets`). Antes eram apagados sem aviso.
+- **F6, offline**: a sincronização valida o mês com as mesmas regras do modo online (taxas, mês 1 a 12, base não negativa, nome) e respeita «parcela fora deste mês».
+- **F7, duplicar mês**: as parcelas excluídas no mês original continuam excluídas no duplicado.
+- Testes em `tests/integrity.test.ts` e `tests/offline-api.test.ts`.
+
 ## 1.34.0 | 2026-11-27
 
 Legendas clicáveis nos gráficos e o novo menu Organizar.

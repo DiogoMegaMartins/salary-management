@@ -141,3 +141,28 @@ test("editar saldo inicial e ajuste: valor, data e nota; validações; tipo fica
   assert.equal(state().goalEntries.find((e) => e.id === aj.id)!.amount, -12.35);
   assert.ok(state().changeLog!.some((c: any) => c.entity === "saldo/ajuste" && c.action === "alterar"));
 });
+
+test("duplicar um mês mantém as parcelas excluídas excluídas", async () => {
+  const p = (await call("POST", "/api/parcels", { name: "Férias dup", defaultMode: "fixo", defaultValue: 0 })).json;
+  const src = (await call("POST", "/api/months", { year: 2093, month: 3, label: "Origem", base: 1000 })).json;
+  await call("PUT", "/api/allocations", { monthId: src.id, parcelId: p.id, mode: "fixo", value: 200, included: false });
+  const dup = (await call("POST", `/api/months/${src.id}/duplicate`, { year: 2093, month: 4, label: "Copia" })).json;
+  const a = state().allocations.find((x) => x.monthId === dup.id && x.parcelId === p.id);
+  assert.equal(a?.included, 0);
+});
+
+test("restaurar um backup mantém o modelo de divisão (plataformas e ativos por parcela)", async () => {
+  const plat = (await call("POST", "/api/platforms", { name: "Plataforma modelo" })).json;
+  const p = (await call("POST", "/api/parcels", { name: "Parcela modelo", defaultMode: "fixo", defaultValue: 100 })).json;
+  const m = (await call("POST", "/api/months", { year: 2094, month: 1, label: "Modelo", base: 1000 })).json;
+  await call("PUT", "/api/allocations", { monthId: m.id, parcelId: p.id, mode: "fixo", value: 100 });
+  await call("PUT", `/api/months/${m.id}/parcels/${p.id}/distribution`, { lines: [{ platformId: plat.id, mode: "percentagem", value: 100 }] });
+  await call("PUT", `/api/months/${m.id}/parcels/${p.id}/distribution/${plat.id}/assets`, { lines: [{ name: "Ativo X", percent: 100 }] });
+  storage.saveAsModel(m.id);
+  const before = state();
+  assert.ok(before.rulePlatforms.length >= 1 && before.ruleAssets.length >= 1);
+  const exp = JSON.parse(await (await fetch(base + "/api/export/json", { headers: { "x-sm-client": "1" } })).text());
+  assert.equal((await call("POST", "/api/import", exp)).status, 200);
+  assert.equal(state().rulePlatforms.length, before.rulePlatforms.length);
+  assert.equal(state().ruleAssets.length, before.ruleAssets.length);
+});
