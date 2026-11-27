@@ -14,6 +14,7 @@ const Portfolio = lazy(() => import("@/pages/portfolio"));
 const DivisionPage = lazy(() => import("@/pages/division"));
 const BudgetPage = lazy(() => import("@/pages/budget"));
 const ExpensesPage = lazy(() => import("@/pages/expenses"));
+const OrganizePage = lazy(() => import("@/pages/organize"));
 const RedirectDividir = lazy(() => import("@/pages/redirect-dividir"));
 const DataPage = lazy(() => import("@/pages/data"));
 const HelpPage = lazy(() => import("@/pages/help"));
@@ -37,6 +38,7 @@ function AppRouter() {
       <Route path="/meses" component={Months} />
       <Route path="/divisao/:mes?" component={DivisionPage} />
       <Route path="/despesas" component={ExpensesPage} />
+      <Route path="/organizar/:secao?" component={OrganizePage} />
       <Route path="/fecho">{() => <RedirectDividir tab="fecho" />}</Route>
       <Route path="/parcelas">{() => <FeatureRoute feature="parcelas" component={() => <RedirectDividir tab="parcelas" />} />}</Route>
       <Route path="/carteira">{() => <FeatureRoute feature="plataformas" component={Portfolio} />}</Route>
