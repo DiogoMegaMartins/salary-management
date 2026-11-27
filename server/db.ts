@@ -92,6 +92,22 @@ CREATE TABLE IF NOT EXISTS categories (
 );
 `);
 
+/**
+ * Acrescenta uma coluna a uma base antiga. Só ignora "a coluna já existe"; qualquer outro erro (base ocupada,
+ * disco cheio) pára o arranque em vez de deixar a app a falhar mais tarde com «no such column».
+ * O `depois` (preenchimento inicial) corre na mesma transação: ou fica tudo feito, ou volta a correr no arranque seguinte.
+ */
+function addColumn(alter: string, depois?: string) {
+  try {
+    sqlite.transaction(() => {
+      sqlite.exec(alter);
+      if (depois) sqlite.exec(depois);
+    })();
+  } catch (e: any) {
+    if (!/duplicate column name/i.test(String(e?.message))) throw e;
+  }
+}
+
 /* migracoes leves para bases de dados criadas antes destas colunas */
 for (const stmt of [
   "ALTER TABLE settings ADD COLUMN access_code TEXT NOT NULL DEFAULT ''",
@@ -115,50 +131,34 @@ for (const stmt of [
   "ALTER TABLE transactions ADD COLUMN occurrence_key TEXT",
   "ALTER TABLE transactions ADD COLUMN import_batch_id INTEGER",
 ]) {
-  try {
-    sqlite.exec(stmt);
-  } catch {
-    /* coluna ja existe */
-  }
+  addColumn(stmt);
 }
 
 /* arranque no primeiro uso: bases que já têm meses contam como "feito", para quem já usa a app não o ver */
-try {
-  sqlite.exec("ALTER TABLE settings ADD COLUMN onboarding_done INTEGER NOT NULL DEFAULT 0");
-  sqlite.exec("UPDATE settings SET onboarding_done = 1 WHERE (SELECT COUNT(*) FROM months) > 0");
-} catch {
-  /* coluna já existe */
-}
+addColumn(
+  "ALTER TABLE settings ADD COLUMN onboarding_done INTEGER NOT NULL DEFAULT 0",
+  "UPDATE settings SET onboarding_done = 1 WHERE (SELECT COUNT(*) FROM months) > 0",
+);
 
 /* modo de utilização: instalações novas (arranque por fazer) começam no Básico; quem já usa a app fica no Detalhado */
-try {
-  sqlite.exec("ALTER TABLE settings ADD COLUMN ui_mode TEXT NOT NULL DEFAULT 'detalhado'");
-  sqlite.exec("UPDATE settings SET ui_mode = 'basico' WHERE onboarding_done = 0");
-} catch {
-  /* coluna já existe */
-}
+addColumn(
+  "ALTER TABLE settings ADD COLUMN ui_mode TEXT NOT NULL DEFAULT 'detalhado'",
+  "UPDATE settings SET ui_mode = 'basico' WHERE onboarding_done = 0",
+);
 
 /* assistente com IA: opção desligada por defeito e contagem diária de pedidos */
 for (const stmt of [
   "ALTER TABLE settings ADD COLUMN ai_enabled INTEGER NOT NULL DEFAULT 0",
   "ALTER TABLE settings ADD COLUMN ai_model TEXT NOT NULL DEFAULT 'haiku'",
 ]) {
-  try {
-    sqlite.exec(stmt);
-  } catch {
-    /* coluna já existe */
-  }
+  addColumn(stmt);
 }
 /* aparência: cor da app e modo claro/escuro (Céu e automático por defeito) */
 for (const stmt of [
   "ALTER TABLE settings ADD COLUMN palette TEXT NOT NULL DEFAULT 'ceu'",
   "ALTER TABLE settings ADD COLUMN color_mode TEXT NOT NULL DEFAULT 'auto'",
 ]) {
-  try {
-    sqlite.exec(stmt);
-  } catch {
-    /* coluna já existe */
-  }
+  addColumn(stmt);
 }
 sqlite.exec("CREATE TABLE IF NOT EXISTS ai_usage (day TEXT PRIMARY KEY, count INTEGER NOT NULL DEFAULT 0)");
 
