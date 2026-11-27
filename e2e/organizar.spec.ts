@@ -145,3 +145,46 @@ test("organizar: criar, renomear e arquivar uma plataforma", async ({ page, requ
   expect(p?.archived).toBe(1);
   if (p) await request.delete(`/api/platforms/${p.id}`, { headers: cabecalhosApi() });
 });
+
+test("organizar: procurar movimentos, escolher vários, mudar a categoria e eliminar", async ({ page, request }, info) => {
+  const marca = `lote-${sufixo(info.project.name)}-${Date.now()}`;
+  const catNova = `Cat Lote ${sufixo(info.project.name)} ${Date.now()}`;
+  const e0 = await estado(request);
+  const mes = e0.months[e0.months.length - 1];
+  const data = `${mes.year}-${String(mes.month).padStart(2, "0")}-12`;
+  const cat = await (await request.post("/api/categories", { headers: cabecalhosApi(), data: { name: catNova } })).json();
+  const criar = async (valor: number) => (await (await request.post("/api/transactions", { headers: cabecalhosApi(), data: { monthId: mes.id, date: data, type: "expense", value: valor, category: "", note: marca } })).json()).id as number;
+  const ids = [await criar(11), await criar(12), await criar(13)];
+  try {
+    await entrar(page);
+    await page.goto("/#/organizar");
+    await clicar(page.getByTestId("organizar-movimentos-abrir"));
+    await expect(page.getByTestId("mov-manage")).toBeVisible();
+    await page.getByTestId("mov-search").fill(marca);
+    for (const id of ids) await expect(page.getByTestId(`mov-row-${id}`)).toBeVisible();
+    await expect(page.getByTestId("mov-bar")).toContainText("3 movimentos");
+
+    await clicar(page.getByTestId("mov-select-all"));
+    await expect(page.getByTestId("mov-bar")).toContainText("3 escolhidos");
+    await expect(page.getByTestId("mov-summary")).toContainText("Saídas");
+
+    await clicar(page.getByTestId("mov-change-category"));
+    await clicar(page.getByTestId("mov-choice"));
+    await page.getByRole("option", { name: catNova }).click();
+    await clicar(page.getByTestId("mov-apply"));
+    await expect(page.getByTestId("mov-bar")).toContainText("3 movimentos");
+    await expect.poll(async () => (await estado(request)).transactions.filter((t: any) => ids.includes(t.id) && t.category === catNova).length).toBe(3);
+
+    // eliminar só dois
+    await clicar(page.getByTestId(`mov-check-${ids[0]}`));
+    await clicar(page.getByTestId(`mov-check-${ids[1]}`));
+    await expect(page.getByTestId("mov-bar")).toContainText("2 escolhidos");
+    await clicar(page.getByTestId("mov-delete"));
+    await page.getByRole("alertdialog").getByRole("button", { name: "Confirmar" }).click();
+    await expect.poll(async () => (await estado(request)).transactions.filter((t: any) => ids.includes(t.id)).length).toBe(1);
+    await expect(page.getByTestId(`mov-row-${ids[2]}`)).toBeVisible();
+  } finally {
+    for (const id of ids) await request.delete(`/api/transactions/${id}`, { headers: cabecalhosApi() });
+    await request.delete(`/api/categories/${cat.id}`, { headers: cabecalhosApi() });
+  }
+});

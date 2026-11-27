@@ -2,6 +2,16 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.36.0 | 2026-11-27
+
+Gestão de movimentos no Organizar.
+
+- **Organizar › Movimentos** (`/organizar/movimentos`, `pages/organize-movements.tsx`): todos os movimentos de todos os meses numa lista, com filtros (mês, categoria incluindo «sem categoria», parcela, tipo) e pesquisa por nota, categoria ou valor, sem acentos nem maiúsculas. Escolhem-se um, vários ou todos e, de uma vez, muda-se a categoria, muda-se a parcela ou eliminam-se. Mostra quantos estão escolhidos e quanto somam (saídas e entradas). Mostra 100 de cada vez («Mostrar mais»).
+- **Tudo ou nada**: `POST /api/transactions/bulk` (`bulkTransactionsSchema`, máximo 500). Corre numa só transação; se um movimento estiver num mês fechado, ou já não existir, nenhum muda. Usa as mesmas regras e o mesmo histórico de alterações dos movimentos individuais. Só com ligação (não entra na fila offline).
+- O cartão «Movimentos» do Organizar abre esta gestão (antes abria Despesas).
+- Regras puras em `shared/organizar.ts` (`filterMovements`, `selectionSummary`).
+- Testes: `tests/organizar.test.ts`, `tests/integrity.test.ts` (lote), `e2e/organizar.spec.ts`.
+
 ## 1.35.1 | 2026-11-27
 
 Mais correções da auditoria ao servidor e ao Worker (F2, F4, F5, F8, F9, F10, F11, F12, F13, F14).

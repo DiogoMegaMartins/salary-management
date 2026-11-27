@@ -2,6 +2,7 @@ import { Link, useRoute } from "wouter";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { ManageList } from "@/components/manage-list";
+import { MovementsManager } from "@/pages/organize-movements";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { errMsg } from "@/components/catalogs";
@@ -35,7 +36,7 @@ const Chips = ({ names }: { names: string[] }) => (
 
 /**
  * Organizar: tudo o que a app usa, num só sítio. O ecrã inicial resume as quatro áreas; Parcelas, Categorias e Plataformas
- * têm aqui a sua gestão (listas iguais: procurar, criar, renomear, arquivar, eliminar). Movimentos abre o ecrã que já existe.
+ * têm aqui a sua gestão (listas iguais: procurar, criar, renomear, arquivar, eliminar). Movimentos deixa procurar em todos os meses e mudar vários de uma vez.
  */
 export default function OrganizePage() {
   const { data, isLoading } = useAppState();
@@ -80,6 +81,15 @@ export default function OrganizePage() {
             if (await ask(`Eliminar a categoria "${c?.name}"?`, "Não tem movimentos. Esta ação não se desfaz.")) save.deleteCategory.mutate(id, { onError: fail("Não foi possível eliminar") });
           }}
         />
+      </AppShell>
+    );
+  }
+
+  if (secao === "movimentos") {
+    return (
+      <AppShell title="Movimentos" subtitle="Todas as despesas, entradas e saídas">
+        {back}
+        <MovementsManager />
       </AppShell>
     );
   }
@@ -155,7 +165,7 @@ export default function OrganizePage() {
           </HubCard>
         )}
         <HubCard testId="organizar-movimentos" title="Movimentos" count={latest ? `${latestCount} em ${latest.label}` : "sem meses"}
-          text="Todas as despesas, entradas e saídas." to="/despesas" action="Ver as despesas">
+          text="Todas as despesas, entradas e saídas." to="/organizar/movimentos" action="Gerir movimentos">
           {latest ? (latestCount === 0 ? `Ainda sem movimentos em ${latest.label} ${latest.year}.` : `Último mês: ${latest.label} ${latest.year}.`) : "Cria um mês para começares a registar."}
         </HubCard>
       </div>
