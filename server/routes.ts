@@ -3,7 +3,7 @@ import {
   idParamSchema, platformCreateSchema, platformPatchSchema, parcelTypeCreateSchema, parcelTypePatchSchema,
   txTypeCreateSchema, txTypePatchSchema, goalEntryCreateSchema, goalEntryPatchSchema, subgoalCreateSchema, subgoalPatchSchema,
   contributionLinkCreateSchema, fxRateCreateSchema, valuationCreateSchema, recurringSchema, reserveSchema, reservePaySchema, occurrenceKeySchema,
-  closeMonthSchema, reopenMonthSchema,
+  closeMonthSchema, reopenMonthSchema, bulkTransactionsSchema,
 } from "./route-schemas";
 import { aiStatus, parseSentence } from "./ai";
 import { settingsPatchSchema, monthCreateSchema, monthPatchSchema, parcelCreateSchema, parcelPatchSchema, categoryCreateSchema, issueMessage } from "./validation";
@@ -310,6 +310,28 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     const patch: any = {};
     for (const k of allowed) if (k in b) patch[k] = b[k];
     res.json(storage.updateTransaction(pid(req.params.id), patch));
+  });
+
+  /** Vários movimentos de uma vez (Organizar): mudar a categoria/parcela ou eliminar. Tudo ou nada: se um falhar (mês fechado, por exemplo), nenhum muda. */
+  app.post("/api/transactions/bulk", (req, res) => {
+    const b = parse(bulkTransactionsSchema, req.body ?? {});
+    const ids = Array.from(new Set(b.ids));
+    const count = storage.transaction(() => {
+      const have = new Set(storage.getState().transactions.map((t) => t.id));
+      const missing = ids.filter((i) => !have.has(i));
+      if (missing.length) throw httpError(404, `${missing.length} movimento(s) já não existem. Atualiza a lista.`);
+      for (const id of ids) {
+        if (b.action === "delete") storage.deleteTransaction(id);
+        else {
+          const patch: any = {};
+          if (b.patch?.category !== undefined) patch.category = b.patch.category.trim();
+          if (b.patch?.parcelId !== undefined) patch.parcelId = b.patch.parcelId;
+          storage.updateTransaction(id, patch);
+        }
+      }
+      return ids.length;
+    });
+    res.json({ ok: true, count });
   });
 
   app.delete("/api/transactions/:id", (req, res) => {
