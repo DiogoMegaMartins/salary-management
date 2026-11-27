@@ -480,9 +480,19 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       for (const x of arr) if (!x || typeof x !== "object" || !isNum(x.id)) return `Coleção "${k}" contém registos sem id numérico.`;
     }
     for (const m of body.months) if (!isNum(m.year) || !isNum(m.month) || m.month < 1 || m.month > 12) return "Mês com ano/mês inválido.";
+    // as mesmas regras das rotas normais: um backup editado à mão não passa por cima dos limites
+    for (const m of body.months) {
+      const r = monthPatchSchema.safeParse(m);
+      if (!r.success) return `Mês ${m.month}/${m.year} inválido: ${issueMessage(r.error)}`;
+    }
+    for (const p of body.parcels) {
+      const r = parcelPatchSchema.safeParse(p);
+      if (!r.success) return `Parcela "${String(p?.name ?? p?.id)}" inválida: ${issueMessage(r.error)}`;
+    }
     for (const a of body.allocations ?? []) if (!["fixo", "percentagem"].includes(a.mode) || !isNum(a.value)) return "Alocação inválida.";
     for (const t of body.transactions ?? []) {
       if (!["expense", "transfer", "withdrawal", "contribution"].includes(t.type) || !isNum(t.value) || !isDate(t.date)) return "Movimento inválido.";
+      if (t.value <= 0) return "Movimento com valor igual ou inferior a zero.";
     }
     for (const l of body.allocationPlatforms ?? []) if (!["fixo", "percentagem"].includes(l.mode) || !isNum(l.value) || l.value < 0) return "Distribuição por plataforma inválida.";
     for (const x of body.allocationAssets ?? []) {

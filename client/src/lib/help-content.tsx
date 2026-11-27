@@ -668,6 +668,7 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
         <UL>
           <li>Sem ligação, uma despesa com data num mês que não existe ou está fechado é recusada logo, com uma explicação, em vez de bloquear a sincronização.</li>
           <li>Com percentagens, o fecho do mês já não mostra um défice de 0,01 € que não existia, e os valores arredondam-se sempre da mesma maneira.</li>
+          <li>Ao restaurar um backup, a app confirma os valores (taxas, limites, movimentos) como nos ecrãs normais. Um ficheiro editado à mão com valores impossíveis é recusado e nada muda.</li>
           <li>Não se elimina uma categoria que já tem movimentos: arquiva-se.</li>
           <li>O histórico de alterações das metas e submetas passa a mostrar o que mudou ao editar e eliminar.</li>
           <li>Correções de segurança no servidor: limite de tentativas do código e aviso quando o segredo é demasiado curto.</li>

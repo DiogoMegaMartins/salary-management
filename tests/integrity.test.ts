@@ -200,3 +200,21 @@ test("eliminar uma categoria com movimentos é recusado; sem movimentos elimina"
   const livre = (await call("POST", "/api/categories", { name: "Cat livre" })).json;
   assert.equal((await call("DELETE", `/api/categories/${livre.id}`)).status, 200);
 });
+
+test("restaurar: um backup com meses, parcelas ou movimentos fora dos limites é recusado e nada muda", async () => {
+  const exp = JSON.parse(await (await fetch(base + "/api/export/json", { headers: { "x-sm-client": "1" } })).text());
+  assert.ok(exp.months.length > 0 && exp.parcels.length > 0);
+  const antes = state().months.length;
+  const mau = (mut: (b: any) => void) => { const b = structuredClone(exp); mut(b); return b; };
+  const casos: [string, any][] = [
+    ["taxa de 700 %", mau((b) => { b.months[0].taxaSs = 7; })],
+    ["base absurda", mau((b) => { b.months[0].base = 1e12; })],
+    ["etiqueta vazia", mau((b) => { b.months[0].label = ""; })],
+    ["tipo de parcela inválido", mau((b) => { b.parcels[0].kind = "lixo"; })],
+    ["movimento negativo", mau((b) => { b.transactions = [{ id: 1, monthId: b.months[0].id, date: "2026-01-02", type: "expense", value: -50, parcelId: null, targetParcelId: null, category: "", note: "" }]; })],
+    ["movimento a zero", mau((b) => { b.transactions = [{ id: 1, monthId: b.months[0].id, date: "2026-01-02", type: "expense", value: 0, parcelId: null, targetParcelId: null, category: "", note: "" }]; })],
+  ];
+  for (const [nome, b] of casos) assert.equal((await call("POST", "/api/import", b)).status, 400, nome);
+  assert.equal(state().months.length, antes);
+  assert.equal((await call("POST", "/api/import", exp)).status, 200); // o backup legítimo continua a restaurar
+});
