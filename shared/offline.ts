@@ -26,6 +26,17 @@ export function projectOffline(state: any, op: OfflineOp) {
   }
   if (op.url === "/api/transactions") {
     if (d.type !== "expense" || !Number.isFinite(d.value) || d.value <= 0 || !/^\d{4}-\d{2}-\d{2}$/.test(d.date)) throw new Error("Offline permite registar despesas válidas; outros movimentos exigem ligação.");
+    // como no servidor: a data decide o mês. Se o mês dessa data não existe ou está fechado, recusa-se já aqui;
+    // senão a operação ficava na fila e bloqueava a sincronização (e todas as escritas) para sempre.
+    const [y, mo] = String(d.date).split("-").map(Number);
+    if (month.year !== y || month.month !== mo) {
+      const target = state.months
+        .filter((m: any) => m.year === y && m.month === mo)
+        .sort((a: any, b: any) => Number(a.status === "fechado") - Number(b.status === "fechado") || a.id - b.id)[0];
+      if (!target) throw new Error(`Não existe o mês ${String(mo).padStart(2, "0")}/${y}. Cria esse mês (com ligação) antes de usar esta data.`);
+      if (target.status === "fechado") throw new Error("O mês da data indicada está fechado. Reabre-o online antes de registar.");
+      d.monthId = target.id;
+    }
     const row = { ...d, id: op.localId, createdAt: new Date().toISOString() };
     state.transactions.push(row);
     return row;
