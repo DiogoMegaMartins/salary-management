@@ -2,6 +2,14 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.35.0 | 2026-11-27
+
+Gestão de parcelas dentro do Organizar.
+
+- **Parcelas e metas** (`/organizar/parcelas`): a mesma lista de gestão das categorias e plataformas (procurar, criar, renomear, arquivar/restaurar, eliminar). O número de usos conta movimentos (como origem ou destino), recorrências e reservas, o mesmo critério do servidor para recusar eliminar (`parcelRows` em `shared/organizar.ts`). Valores, metas, submetas e tipos continuam no ecrã completo, com uma ligação a partir desta lista.
+- O cartão "Parcelas e metas" do Organizar passa a abrir esta gestão.
+- Testes: `tests/organizar.test.ts` e `e2e/organizar.spec.ts`.
+
 ## 1.34.1 | 2026-11-27
 
 Correções da auditoria ao servidor e ao Worker (F1, F3, F6, F7).

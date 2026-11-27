@@ -14,11 +14,34 @@ test("organizar: o ecrã inicial resume as quatro áreas", async ({ page }) => {
   await expect(page.getByTestId("page-organizar")).toBeVisible();
 });
 
-test("organizar: o cartão de parcelas abre as parcelas e metas", async ({ page }) => {
+test("organizar: o cartão de parcelas abre a gestão e daí o ecrã completo", async ({ page }) => {
   await entrar(page);
   await page.goto("/#/organizar");
   await clicar(page.getByTestId("organizar-parcelas-abrir"));
+  await expect(page.getByTestId("parc-manage")).toBeVisible();
+  await clicar(page.getByTestId("organizar-parcelas-editor"));
   await expect(page.getByTestId("parcels-list")).toBeVisible();
+});
+
+test("organizar: criar, renomear, arquivar e eliminar uma parcela", async ({ page }, info) => {
+  const base = `Parc Org ${sufixo(info.project.name)} ${Date.now()}`;
+  const novo = `${base} v2`;
+  await entrar(page);
+  await page.goto("/#/organizar/parcelas");
+  await clicar(page.getByTestId("parc-add"));
+  await page.getByTestId("parc-new-input").fill(base);
+  await page.getByTestId("parc-new-save").click();
+  const linha = page.locator('[data-testid^="parc-row-"]', { hasText: base });
+  await expect(linha).toBeVisible();
+  await expect(linha).toContainText("sem uso");
+  await clicar(linha.getByRole("button", { name: /Renomear/ }));
+  await page.getByTestId("parc-rename-input").fill(novo);
+  await page.getByTestId("parc-rename-save").click();
+  const renomeada = page.locator('[data-testid^="parc-row-"]', { hasText: novo });
+  await expect(renomeada).toBeVisible();
+  await clicar(renomeada.getByRole("button", { name: /Eliminar/ }));
+  await page.getByRole("alertdialog").getByRole("button", { name: "Confirmar" }).click();
+  await expect(page.locator('[data-testid^="parc-row-"]', { hasText: novo })).toHaveCount(0);
 });
 
 test("organizar: criar, renomear, arquivar, restaurar e eliminar uma categoria", async ({ page, request }, info) => {
