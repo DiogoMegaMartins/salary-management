@@ -664,6 +664,12 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.35.1</H3>
+        <UL>
+          <li>Não se elimina uma categoria que já tem movimentos: arquiva-se.</li>
+          <li>O histórico de alterações das metas e submetas passa a mostrar o que mudou ao editar e eliminar.</li>
+          <li>Correções de segurança no servidor: limite de tentativas do código e aviso quando o segredo é demasiado curto.</li>
+        </UL>
         <H3>1.35.0</H3>
         <UL>
           <li>Em Organizar, as parcelas e metas têm agora a mesma lista das categorias e plataformas: procurar, criar, renomear, arquivar e eliminar. Só se elimina o que não tem movimentos, recorrências nem reservas; o resto arquiva-se. Para mexer em valores e metas há uma ligação para o ecrã completo.</li>

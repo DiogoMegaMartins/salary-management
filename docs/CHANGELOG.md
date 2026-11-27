@@ -2,6 +2,18 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.35.1 | 2026-11-27
+
+Mais correções da auditoria ao servidor e ao Worker (F8, F10, F11, F12, F13, F14).
+
+- **F8**: `TRUST_PROXY` passa a vir desligado por omissão em produção. Antes, sem proxy à frente, um `X-Forwarded-For` forjado fugia ao limite por IP. Quem corre atrás de um proxy define `TRUST_PROXY=1` (README e `docs/SEGURANCA.md`). No Worker nada muda.
+- **F11**: no Worker, um segredo `ACCESS_CODE` com menos de 8 caracteres já não deixa a app aberta: a API responde 503 com uma mensagem clara.
+- **F10**: as rotas de alocações, distribuição, movimentos e do modelo usam `pid()` e o tratamento de erros comum. Ids inválidos dão 400 em vez de 500 com texto da base de dados, e já não se regista «mês NaN».
+- **F12**: o histórico de alterações das metas e submetas guarda agora o que mudou, também ao alterar e eliminar (antes ficava `{}`).
+- **F13**: as migrações da base de dados só ignoram «coluna já existe»; outros erros param o arranque. O preenchimento inicial corre na mesma transação do `ALTER`.
+- **F14**: eliminar uma categoria que tem movimentos devolve 409 («arquiva-a»); removido o código morto do import CSV.
+- Testes em `tests/integrity.test.ts` e `tests/acesso-middleware.test.ts`.
+
 ## 1.35.0 | 2026-11-27
 
 Gestão de parcelas dentro do Organizar.

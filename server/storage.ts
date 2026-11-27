@@ -328,7 +328,11 @@ export const storage = {
     return db.update(categories).set(patch).where(eq(categories.id, id)).returning().get();
   },
   deleteCategory(id: number) {
-    // nunca apagar categorias com historico; arquivar em vez disso via updateCategory({active:0})
+    // nunca apagar categorias com histórico: arquivar em vez disso (updateCategory({ active: 0 }))
+    const cat = db.select().from(categories).where(eq(categories.id, id)).get();
+    if (!cat) return;
+    const used = db.select().from(transactions).all().filter((t) => normName(t.category) === normName(cat.name)).length;
+    if (used > 0) throw httpError(409, `A categoria tem ${used} movimento(s). Arquiva-a em vez de eliminar.`);
     db.delete(categories).where(eq(categories.id, id)).run();
   },
 
