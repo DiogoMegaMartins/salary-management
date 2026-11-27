@@ -18,6 +18,7 @@ import { AlertTriangle, TrendingUp } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { FilterBar } from "@/components/filter-bar";
 import { Kpi, SectionCard } from "@/components/kpi";
+import { visibleShares } from "@shared/legend-filter";
 import { ChartTooltip, LegendDots, axisProps, eurAxis, gridProps, useLegendFilter, useSquareFit } from "@/components/charts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -146,7 +147,6 @@ export default function Dashboard() {
               label="Taxa de poupança"
               value={model.savingsRate}
               kind="pct"
-              tone="primary"
               delta={model.comparison.hasData ? model.comparison.savingsRateDeltaPP : null}
               hint={fmtEur(model.savedTotal)}
               testId="kpi-savings"
@@ -302,8 +302,8 @@ export default function Dashboard() {
               defaultLayout: { x: 7, y: 10, w: 5, h: 11 },
               node: (
             <SectionCard title="Distribuição média" description="Peso de cada parcela no período filtrado">
-              <div className="donut-layout flex h-full min-h-[260px] min-w-0 items-stretch">
-                <div ref={donutFitRef} className="donut-disc shrink-0" style={{ width: donutSize || undefined, height: donutSize || undefined, minWidth: donutSize ? undefined : 180, minHeight: donutSize ? undefined : 180 }}>
+              <div className="donut-layout flex h-full min-h-[260px] min-w-0 items-center">
+                <div ref={donutFitRef} className="donut-disc relative shrink-0" style={{ width: donutSize || undefined, height: donutSize || undefined, minWidth: donutSize ? undefined : 180, minHeight: donutSize ? undefined : 180 }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -314,9 +314,11 @@ export default function Dashboard() {
                         }))}
                         dataKey="value"
                         nameKey="name"
-                        innerRadius="58%"
+                        startAngle={90}
+                        endAngle={-270}
+                        innerRadius="60%"
                         outerRadius="96%"
-                        paddingAngle={2}
+                        paddingAngle={model.perParcel.filter((p) => p.total > 0 && !legend.isHidden("donut", p.parcel.name)).length > 1 ? 2 : 0}
                         stroke="hsl(var(--card))"
                         strokeWidth={2}
                       >
@@ -329,11 +331,20 @@ export default function Dashboard() {
                       <Tooltip trigger={isMobile ? "click" : "hover"} content={<ChartTooltip />} />
                     </PieChart>
                   </ResponsiveContainer>
+                  {/* no centro: quanto as parcelas visíveis somam por mês, em média */}
+                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center" data-testid="donut-center">
+                    <span className="tnum text-base font-semibold leading-tight sm:text-lg">
+                      {fmtEur(model.perParcel.filter((p) => p.total > 0 && !legend.isHidden("donut", p.parcel.name)).reduce((a, p) => a + p.avg, 0))}
+                    </span>
+                    <span className="text-xs text-muted-foreground">por mês</span>
+                  </div>
                 </div>
                 <div className="donut-legend flex min-w-0 flex-1 flex-col justify-center space-y-2 pl-2">
-                  {model.perParcel
-                    .filter((p) => p.total > 0)
-                    .map((p, _i, all) => {
+                  {(() => {
+                    const rows = model.perParcel.filter((p) => p.total > 0);
+                    // depois de esconder parcelas, as que ficam repartem o círculo todo (soma 100 %)
+                    const shares = visibleShares(rows.map((p) => ({ key: p.parcel.name, value: p.total })), (k) => legend.isHidden("donut", k));
+                    return rows.map((p, _i, all) => {
                       const off = legend.isHidden("donut", p.parcel.name);
                       return (
                         <button
@@ -344,10 +355,11 @@ export default function Dashboard() {
                         >
                           <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: off ? "transparent" : p.parcel.color, boxShadow: off ? `inset 0 0 0 1.5px ${p.parcel.color}` : undefined }} />
                           <span className={`min-w-0 wrap-break-word ${off ? "line-through" : ""}`}>{p.parcel.name}</span>
-                          <span className="tnum ml-auto font-medium">{fmtPct(p.share)}</span>
+                          <span className="tnum ml-auto font-medium" data-testid={`legend-pct-${p.parcel.name}`}>{shares[p.parcel.name] == null ? "—" : fmtPct(shares[p.parcel.name]!)}</span>
                         </button>
                       );
-                    })}
+                    });
+                  })()}
                 </div>
               </div>
             </SectionCard>
@@ -407,65 +419,65 @@ export default function Dashboard() {
               defaultLayout: { x: 0, y: 32, w: 6, h: 11 },
               node: (
             <SectionCard title="Parcelas no período" description="Total, média e tendência da segunda metade do período">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-border text-xs text-muted-foreground">
-                      <th className="py-2 text-left font-medium">Parcela</th>
-                      <th className="py-2 text-right font-medium">Total</th>
-                      <th className="py-2 text-right font-medium">Média</th>
-                      <th className="py-2 text-right font-medium">Peso</th>
-                      <th className="py-2 pl-3 text-right font-medium">Tendência</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {model.perParcel.map((p) => (
-                      <tr
-                        key={p.parcel.id}
-                        role="button"
-                        tabIndex={0}
-                        aria-label={`Ver movimentos de ${p.parcel.name}`}
-                        className="cursor-pointer border-b border-border/60 last:border-0 transition-colors hover:bg-muted/40 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-ring"
-                        onClick={() => openParcelDrill(p.parcel)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            openParcelDrill(p.parcel);
-                          }
-                        }}
-                        data-testid={`row-parcel-drilldown-${p.parcel.id}`}
-                      >
-                        <td className="py-2">
-                          <span className="flex items-center gap-2">
-                            <span className="h-2.5 w-2.5 rounded-full" style={{ background: p.parcel.color }} />
-                            <span className="truncate">{p.parcel.name}</span>
+              {/* sem rolagem lateral: a média passa para a linha de baixo do nome, e a tabela cabe sempre no cartão */}
+              <table className="w-full table-fixed text-sm">
+                <thead>
+                  <tr className="border-b border-border text-xs text-muted-foreground">
+                    <th className="py-2 text-left font-medium">Parcela</th>
+                    <th className="w-[5.5rem] py-2 text-right font-medium sm:w-24">Total</th>
+                    <th className="w-12 py-2 text-right font-medium sm:w-14">Peso</th>
+                    <th className="w-16 py-2 pl-2 text-right font-medium sm:w-20">Tendência</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {model.perParcel.map((p) => (
+                    <tr
+                      key={p.parcel.id}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Ver movimentos de ${p.parcel.name}`}
+                      className="cursor-pointer border-b border-border/60 last:border-0 transition-colors hover:bg-muted/40 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-ring"
+                      onClick={() => openParcelDrill(p.parcel)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          openParcelDrill(p.parcel);
+                        }
+                      }}
+                      data-testid={`row-parcel-drilldown-${p.parcel.id}`}
+                    >
+                      <td className="min-w-0 py-2 pr-2">
+                        <span className="flex items-center gap-2">
+                          <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: p.parcel.color }} />
+                          <span className="min-w-0">
+                            <span className="block truncate">{p.parcel.name}</span>
+                            <span className="tnum block truncate text-xs text-muted-foreground">média {fmtEur(p.avg)}</span>
                           </span>
-                        </td>
-                        <td className="tnum py-2 text-right font-medium">{fmtEur(p.total)}</td>
-                        <td className="tnum py-2 text-right text-muted-foreground">{fmtEur(p.avg)}</td>
-                        <td className="tnum py-2 text-right text-muted-foreground">{fmtPct(p.share)}</td>
-                        <td className="py-2 pl-3 text-right">
-                          <Badge
-                            variant="secondary"
-                            className={
-                              p.trend > 0.02
-                                ? "bg-primary/15 text-primary"
-                                : p.trend < -0.02
-                                  ? "bg-destructive/15 text-destructive"
-                                  : ""
-                            }
-                          >
-                            <span className="tnum">
-                              {p.trend > 0 ? "+" : ""}
-                              {fmtPct(p.trend, 0)}
-                            </span>
-                          </Badge>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        </span>
+                      </td>
+                      <td className="tnum py-2 text-right font-medium">{fmtEur(p.total)}</td>
+                      <td className="tnum py-2 text-right text-muted-foreground">{fmtPct(p.share, 0)}</td>
+                      <td className="py-2 pl-2 text-right">
+                        <Badge
+                          variant="secondary"
+                          className={
+                            p.trend > 0.02
+                              ? "bg-primary/15 text-primary"
+                              : p.trend < -0.02
+                                ? "bg-destructive/15 text-destructive"
+                                : ""
+                          }
+                        >
+                          <span className="tnum">
+                            {p.trend > 0 ? "+" : ""}
+                            {fmtPct(p.trend, 0)}
+                          </span>
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </SectionCard>
               ),
             });
