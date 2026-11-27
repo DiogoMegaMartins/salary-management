@@ -25,10 +25,16 @@ for (const tema of ["claro", "escuro"] as const) {
     test(`acessibilidade: todas as páginas sem violações (${tema}, ${uiMode})`, async ({ page }) => {
       test.setTimeout(120_000);
       await modo(page, uiMode);
+      // com uma categoria a sério o Orçamento mostra a tabela com os controlos de cada linha (switch, ações)
+      const cat = await (await page.request.post("/api/categories", { data: { name: `Cat a11y ${tema}-${uiMode}-${Date.now()}` }, headers: cabecalhosApi() })).json();
       await page.addInitScript((m) => localStorage.setItem("sm.appearance", JSON.stringify({ palette: "ceu", mode: m })), tema);
       await entrar(page);
       const todas: string[] = [];
-      for (const { route, title } of SCREENS) todas.push(...(await verificar(page, route, title)));
+      try {
+        for (const { route, title } of SCREENS) todas.push(...(await verificar(page, route, title)));
+      } finally {
+        await page.request.delete(`/api/categories/${cat.id}`, { headers: cabecalhosApi() });
+      }
       expect(todas).toEqual([]);
     });
   }
