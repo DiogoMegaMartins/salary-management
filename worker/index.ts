@@ -49,8 +49,9 @@ export class SalaryDO extends DurableObject<Env> {
   /** Exportação completa em JSON (a mesma de Definições > Backups), para a cópia agendada. */
   async backupJson(): Promise<string> {
     await this.ready;
-    const headers = new Headers({ "x-sm-client": "1" });
-    if (this.env.ACCESS_CODE) headers.set("x-codigo-acesso", this.env.ACCESS_CODE);
+    // pedido interno: não passa pelo código nem pelo limite de tentativas (ver INTERNAL_TOKEN em server/access.ts)
+    const { INTERNAL_TOKEN } = await import("../server/access");
+    const headers = new Headers({ "x-sm-client": "1", "x-sm-interno": INTERNAL_TOKEN });
     const res = await storageContext.run(this.ctx.storage, () =>
       handleAsNodeRequest(PORT, new Request("http://localhost/api/export/json", { headers })),
     );

@@ -166,3 +166,55 @@ test("restaurar um backup mantém o modelo de divisão (plataformas e ativos por
   assert.equal(state().rulePlatforms.length, before.rulePlatforms.length);
   assert.equal(state().ruleAssets.length, before.ruleAssets.length);
 });
+
+test("erros de ids e de base de dados: respostas iguais em todas as rotas, sem texto interno", async () => {
+  const bad = await call("PUT", "/api/allocations", { monthId: "x", parcelId: null, mode: "fixo", value: 1 });
+  assert.equal(bad.status, 400);
+  assert.equal((await call("POST", "/api/months/abc/apply-rules")).status, 400);
+  assert.equal((await call("POST", "/api/months/abc/save-as-rules")).status, 400);
+  assert.equal((await call("DELETE", "/api/months/abc")).status, 400);
+  const before = (state() as any).changeLog?.length ?? 0;
+  assert.equal((await call("DELETE", "/api/months/abc")).status, 400);
+  assert.equal(((state() as any).changeLog?.length ?? 0), before); // não regista «mês NaN»
+});
+
+test("histórico de metas e submetas guarda o que mudou, também ao alterar e eliminar", async () => {
+  const p = (await call("POST", "/api/parcels", { name: "Meta hist", defaultMode: "fixo", defaultValue: 0 })).json;
+  const sub = (await call("POST", "/api/subgoals", { parcelId: p.id, name: "Submeta hist", currency: "EUR" })).json;
+  await call("PATCH", `/api/subgoals/${sub.id}`, { name: "Submeta renomeada" });
+  await call("DELETE", `/api/subgoals/${sub.id}`);
+  const log = ((await call("GET", "/api/change-log")).json as any[]).filter((l) => l.entity === "submeta");
+  const forId = log.filter((l) => Number(l.entityId) === sub.id);
+  assert.ok(forId.length >= 3, "criar, alterar e eliminar ficam registados");
+  for (const l of forId) assert.match(l.summary, /Submeta|renomeada/, `resumo vazio: ${JSON.stringify(l)}`);
+});
+
+test("eliminar uma categoria com movimentos é recusado; sem movimentos elimina", async () => {
+  const c = (await call("POST", "/api/categories", { name: "Cat uso" })).json;
+  const m = (await call("POST", "/api/months", { year: 2095, month: 5, label: "Cats", base: 1000 })).json;
+  const p = (await call("POST", "/api/parcels", { name: "Parcela cats", defaultMode: "fixo", defaultValue: 0 })).json;
+  await call("POST", "/api/transactions", { monthId: m.id, date: "2095-05-10", type: "expense", value: 5, parcelId: p.id, category: "Cat uso" });
+  const r = await call("DELETE", `/api/categories/${c.id}`);
+  assert.equal(r.status, 409);
+  assert.ok(state().categories.some((x) => x.id === c.id));
+  const livre = (await call("POST", "/api/categories", { name: "Cat livre" })).json;
+  assert.equal((await call("DELETE", `/api/categories/${livre.id}`)).status, 200);
+});
+
+test("restaurar: um backup com meses, parcelas ou movimentos fora dos limites é recusado e nada muda", async () => {
+  const exp = JSON.parse(await (await fetch(base + "/api/export/json", { headers: { "x-sm-client": "1" } })).text());
+  assert.ok(exp.months.length > 0 && exp.parcels.length > 0);
+  const antes = state().months.length;
+  const mau = (mut: (b: any) => void) => { const b = structuredClone(exp); mut(b); return b; };
+  const casos: [string, any][] = [
+    ["taxa de 700 %", mau((b) => { b.months[0].taxaSs = 7; })],
+    ["base absurda", mau((b) => { b.months[0].base = 1e12; })],
+    ["etiqueta vazia", mau((b) => { b.months[0].label = ""; })],
+    ["tipo de parcela inválido", mau((b) => { b.parcels[0].kind = "lixo"; })],
+    ["movimento negativo", mau((b) => { b.transactions = [{ id: 1, monthId: b.months[0].id, date: "2026-01-02", type: "expense", value: -50, parcelId: null, targetParcelId: null, category: "", note: "" }]; })],
+    ["movimento a zero", mau((b) => { b.transactions = [{ id: 1, monthId: b.months[0].id, date: "2026-01-02", type: "expense", value: 0, parcelId: null, targetParcelId: null, category: "", note: "" }]; })],
+  ];
+  for (const [nome, b] of casos) assert.equal((await call("POST", "/api/import", b)).status, 400, nome);
+  assert.equal(state().months.length, antes);
+  assert.equal((await call("POST", "/api/import", exp)).status, 200); // o backup legítimo continua a restaurar
+});

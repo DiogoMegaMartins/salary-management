@@ -36,6 +36,7 @@ Os dados ficam em `data.db` (SQLite) na raiz do projeto, criado no primeiro arra
 | `PORT` | Porta do servidor (omissão 5000) |
 | `ACCESS_CODE` | Código de acesso (mínimo 8 caracteres); recomendado em produção |
 | `DATA_DIR` | Pasta de `data.db`, `backups/` e `pre-import-backup-*.json`; aponta para um volume persistente |
+| `TRUST_PROXY` | `1` quando há um proxy à frente (plataformas como Render ou Railway): usa o IP do `X-Forwarded-For` no limite de tentativas. Por omissão desligado; sem proxy, ligá-lo deixaria qualquer pessoa forjar o IP |
 | `DB_PATH` | Caminho do ficheiro da base de dados (alternativa a `DATA_DIR`) |
 | `TRUST_PROXY` | Proxies à frente do servidor (omissão 1 em produção); define o IP real para o limite de tentativas |
 | `BACKUP_DIR` | Pasta das cópias automáticas (omissão `backups/` dentro de `DATA_DIR`) |

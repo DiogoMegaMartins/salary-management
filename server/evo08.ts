@@ -1,9 +1,9 @@
 /** EVO-08: serviços de fecho mensal, histórico, recorrências, reservas, importação CSV e verificação. */
 import { eq, and, desc } from "drizzle-orm";
 import { db, storage, httpError } from "./storage";
-import { months, transactions, monthClosures, changeLog, recurringExpenses, recurrenceSkips, reserves, importBatches, categories } from "@shared/schema";
-import { availableOf, allocationAmount } from "@shared/calc";
-import { checkConsistency, monthRemainder, nextMonthKey, isClosed, pendingOccurrences, parseCsv, validateCsvRows, fingerprint, round2, sumEuros, type CsvMapping } from "@shared/evo08";
+import { months, transactions, monthClosures, changeLog, recurringExpenses, recurrenceSkips, reserves, importBatches } from "@shared/schema";
+import { availableOf, allocatedTotal } from "@shared/calc";
+import { checkConsistency, monthRemainder, nextMonthKey, isClosed, pendingOccurrences, parseCsv, validateCsvRows, fingerprint, round2, type CsvMapping } from "@shared/evo08";
 
 export { APP_VERSION } from "@shared/version";
 export const ENV_NAME = process.env.NODE_ENV === "production" ? "produção" : "desenvolvimento";
@@ -78,9 +78,19 @@ export function installGuards() {
   };
   const origDelMonth = s.deleteMonth.bind(s);
   s.deleteMonth = (id: number) => { assertMonthOpen(id); const r = origDelMonth(id); logChange("mês", id, "eliminar", `mês ${id}`); return r; };
+  const goalSummary = (x: any) => (x ? JSON.stringify({ kind: x.kind, amount: x.amount, name: x.name }) : "{}");
   for (const [fn, label] of [["createGoalEntry", "criar"], ["updateGoalEntry", "alterar"], ["deleteGoalEntry", "eliminar"], ["createSubgoal", "criar"], ["updateSubgoal", "alterar"], ["deleteSubgoal", "eliminar"]] as const) {
     const orig = s[fn].bind(s);
-    s[fn] = (...a: any[]) => { const r = orig(...a); logChange(fn.includes("Entry") ? "saldo/ajuste" : "submeta", r?.id ?? (typeof a[0] === "number" ? a[0] : null), label, JSON.stringify(typeof a[0] === "object" ? { kind: a[0].kind, amount: a[0].amount, name: a[0].name } : {})); return r; };
+    const isEntry = fn.includes("Entry");
+    s[fn] = (...a: any[]) => {
+      const id = typeof a[0] === "number" ? a[0] : null;
+      // ao eliminar, o registo lê-se antes de desaparecer
+      const before = label === "eliminar" && id !== null ? (isEntry ? s.getState().goalEntries : s.getState().subgoals).find((x: any) => x.id === id) : undefined;
+      const r = orig(...a);
+      const shown = label === "criar" ? a[0] : label === "alterar" ? r : before;
+      logChange(isEntry ? "saldo/ajuste" : "submeta", r?.id ?? id, label, goalSummary(shown));
+      return r;
+    };
   }
 }
 
@@ -101,7 +111,7 @@ export function monthSummary(monthId: number) {
   const m = st.months.find((x) => x.id === monthId);
   if (!m) throw httpError(404, "Mês não encontrado.");
   const available = availableOf(m, st.settings);
-  const allocated = sumEuros(st.allocations.filter((a) => a.monthId === monthId).map((a) => allocationAmount(a as any, available)));
+  const allocated = allocatedTotal(st.allocations.filter((a) => a.monthId === monthId) as any, available);
   const txs = st.transactions.filter((t) => t.monthId === monthId);
   const remainder = monthRemainder(available, m.carryIn ?? 0, allocated, txs as any);
   return { month: m, available, carryIn: m.carryIn ?? 0, allocated, remainder, status: m.status, transactions: txs.length };
@@ -265,12 +275,10 @@ export function csvImport(d: { text: string; mapping: CsvMapping; hasHeader?: bo
   }
   return (db as any).$client.transaction(() => {
     const batch = db.insert(importBatches).values({ fingerprint: pv.fingerprint, fileName: d.fileName ?? "", rows: rows.length, at: new Date().toISOString() }).returning().get();
-    const known = new Set(db.select().from(categories).all().map((c) => c.name.toLowerCase()));
     for (const r of rows) {
       const m = monthFor(r.date!)!;
       const tx = storage.createTransaction({ monthId: m.id, date: r.date, type: "expense", value: r.value, parcelId: Number(d.parcelId), category: r.category ?? "", note: r.note ?? "" } as any);
       db.update(transactions).set({ importBatchId: batch.id }).where(eq(transactions.id, tx.id)).run();
-      void known;
     }
     logChange("importação", batch.id, "importar", `${rows.length} movimentos (${d.fileName ?? "CSV"})`);
     return { imported: rows.length, batchId: batch.id, skipped: pv.results.length - rows.length };

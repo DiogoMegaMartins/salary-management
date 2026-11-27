@@ -261,7 +261,7 @@ export default function BudgetPage() {
                   <th className="py-2 pr-3 font-medium">Desvio (%)</th>
                   <th className="py-2 pr-3 font-medium">Estado</th>
                   <th className="py-2 pr-3 font-medium">Essencial</th>
-                  <th className="py-2 pr-1 font-medium" />
+                  <th className="py-2 pr-1 font-medium"><span className="sr-only">Ações</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -298,6 +298,7 @@ export default function BudgetPage() {
                       {row.category && (
                         <Switch
                           checked={row.essential}
+                          aria-label={`Essencial: ${row.categoryName}`}
                           onCheckedChange={(v) =>
                             save.updateCategory.mutate({ id: row.category!.id, patch: { essential: v } as any })
                           }

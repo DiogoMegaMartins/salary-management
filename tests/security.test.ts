@@ -86,7 +86,7 @@ test("mudar o código funciona com o código antigo; o novo passa a valer", asyn
   assert.equal((await call("GET", "/api/state")).status, 200);
 });
 
-test("tentativas erradas pelo cabeçalho são limitadas (429); o código certo já conhecido continua a passar", async () => {
+test("tentativas erradas pelo cabeçalho são limitadas (429); bloqueado é bloqueado, mesmo com o código certo", async () => {
   let blocked = 0;
   for (let i = 0; i < 8 && !blocked; i++) {
     const s = (await call("GET", "/api/state", undefined, { code: "errado" + i })).status;
@@ -94,8 +94,16 @@ test("tentativas erradas pelo cabeçalho são limitadas (429); o código certo j
   }
   assert.ok(blocked > 0 && blocked <= 6, "bloqueia ao fim de poucas tentativas");
   assert.equal((await call("GET", "/api/state", undefined, { code: "outro-errado" })).status, 429);
-  // o dono (código já verificado antes) não fica trancado por tentativas alheias no mesmo IP
-  assert.equal((await call("GET", "/api/state")).status, 200);
+  // um IP bloqueado leva 429 também com o código certo: senão «429 ou 200» dizia a quem adivinha se acertou
+  assert.equal((await call("GET", "/api/state")).status, 429);
+});
+
+test("a cópia agendada do Worker passa pela senha interna, mesmo com o limite esgotado; uma senha inventada não", async () => {
+  const { INTERNAL_TOKEN } = await import("../server/access");
+  const pedir = (token: string) => fetch(`${base}/api/export/json`, { headers: { "x-sm-client": "1", "x-sm-interno": token } }).then((r) => r.status);
+  assert.equal(await pedir(INTERNAL_TOKEN), 200);
+  assert.equal(await pedir("x".repeat(INTERNAL_TOKEN.length)), 401);
+  assert.equal(await pedir("curta"), 401);
 });
 
 test("sem código, o corpo nem chega a ser lido: JSON inválido dá 401 e não 400", async () => {

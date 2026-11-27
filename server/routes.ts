@@ -1,4 +1,4 @@
-import { secretCode, hashCode, verifyCode, verifyCodeAsync, knownGood, isHashed, authLimiter, globalLimiter, GLOBAL_KEY, ipKey, publicState, publicSettings, MIN_CODE_LENGTH } from "./access";
+import { secretCode, hashCode, verifyCode, verifyCodeAsync, isHashed, authLimiter, globalLimiter, GLOBAL_KEY, ipKey, publicState, publicSettings, MIN_CODE_LENGTH } from "./access";
 import {
   idParamSchema, platformCreateSchema, platformPatchSchema, parcelTypeCreateSchema, parcelTypePatchSchema,
   txTypeCreateSchema, txTypePatchSchema, goalEntryCreateSchema, goalEntryPatchSchema, subgoalCreateSchema, subgoalPatchSchema,
@@ -76,12 +76,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     const given = String(req.body?.code ?? "").trim();
     if (!code) return res.json({ ok: true });
     const ip = ipKey(req.ip);
-    if (!knownGood(code, given)) {
-      const wait = Math.max(authLimiter.retryAfterSeconds(ip), globalLimiter.retryAfterSeconds(GLOBAL_KEY));
-      if (wait) {
-        res.setHeader("Retry-After", String(wait));
-        return res.status(429).json({ ok: false, message: "Demasiadas tentativas. Tenta novamente dentro de alguns minutos." });
-      }
+    // o limite vem antes de verificar o código (ver middleware.ts): bloqueado é bloqueado, mesmo com o código certo
+    const wait = Math.max(authLimiter.retryAfterSeconds(ip), globalLimiter.retryAfterSeconds(GLOBAL_KEY));
+    if (wait) {
+      res.setHeader("Retry-After", String(wait));
+      return res.status(429).json({ ok: false, message: "Demasiadas tentativas. Tenta novamente dentro de alguns minutos." });
     }
     if (await verifyCodeAsync(code, given)) {
       authLimiter.reset(ip);
@@ -129,7 +128,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.patch("/api/parcels/:id", (req, res) => {
     // `platforms` (texto) deriva do catálogo; não aceitar escrita direta
     const { platforms: _legacy, platformIds, ...raw } = req.body ?? {};
-    const id = Number(req.params.id);
+    const id = pid(req.params.id);
     let patch: any;
     try { patch = parse(parcelPatchSchema, raw); } catch (e: any) { return res.status(e.status ?? 400).json({ message: e.message }); }
     if (!storage.getState().parcels.some((p) => p.id === id)) return res.status(404).json({ message: "Parcela não encontrada." });
@@ -183,7 +182,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.delete("/api/valuations/:id", guard((req) => (storage.deleteValuation(pid(req.params.id)), { ok: true })));
 
   app.put("/api/months/:monthId/parcels/:parcelId/distribution/:platformId/assets", guard((req) =>
-    storage.setAssets(Number(req.params.monthId), Number(req.params.parcelId), Number(req.params.platformId), req.body?.lines ?? [])));
+    storage.setAssets(pid(req.params.monthId), pid(req.params.parcelId), pid(req.params.platformId), req.body?.lines ?? [])));
   app.post("/api/platforms", guard((req) => storage.createPlatform(parse(platformCreateSchema, req.body))));
   app.patch("/api/platforms/:id", guard((req) => storage.updatePlatform(pid(req.params.id), parse(platformPatchSchema, req.body))));
   app.delete("/api/platforms/:id", guard((req) => (storage.deletePlatform(pid(req.params.id)), { ok: true })));
@@ -193,7 +192,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.post("/api/tx-types", guard((req) => storage.createTxType(parse(txTypeCreateSchema, req.body))));
   app.patch("/api/tx-types/:id", guard((req) => storage.updateTxType(pid(req.params.id), parse(txTypePatchSchema, req.body))));
   app.delete("/api/tx-types/:id", guard((req) => (storage.deleteTxType(pid(req.params.id)), { ok: true })));
-  app.delete("/api/parcels/:id", guard((req) => (storage.deleteParcel(Number(req.params.id)), { ok: true })));
+  app.delete("/api/parcels/:id", guard((req) => (storage.deleteParcel(pid(req.params.id)), { ok: true })));
 
   /* ------------------------------------------------------------- meses */
   // um mês novo nasce com o modelo das parcelas aplicado (se houver); tudo ou nada
@@ -206,7 +205,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     });
   }));
   app.patch("/api/months/:id", guard((req) => {
-    const id = Number(req.params.id);
+    const id = pid(req.params.id);
     if (!storage.getState().months.some(m => m.id === id)) throw Object.assign(new Error("Mês não encontrado."), { status: 404 });
     const b = req.body ?? {};
     // status/carryIn seguem para o armazenamento, que os recusa (e exige mês aberto) como antes
@@ -215,12 +214,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     if ("carryIn" in b) protectedFields.carryIn = b.carryIn;
     return storage.updateMonth(id, { ...(parse(monthPatchSchema, b) as any), ...protectedFields });
   }));
-  app.delete("/api/months/:id", guard((req) => (storage.deleteMonth(Number(req.params.id)), { ok: true })));
+  app.delete("/api/months/:id", guard((req) => (storage.deleteMonth(pid(req.params.id)), { ok: true })));
 
   /** Duplica um mês (valores do vencimento e alocações) para um novo mês, sempre aberto e sem transporte. */
   app.post("/api/months/:id/duplicate", guard((req) => {
     const state = storage.getState();
-    const src = state.months.find((m) => m.id === Number(req.params.id));
+    const src = state.months.find((m) => m.id === pid(req.params.id));
     if (!src) throw httpError(404, "Mês não encontrado.");
     const { id: _id, status: _status, carryIn: _carry, ...rest } = src;
     const year = Number(req.body?.year ?? src.year);
@@ -238,22 +237,14 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   /** Aplica as regras por omissão de cada parcela (fixo ou % do disponível). */
   /** Aplica o modelo de cada parcela (entra, valor, plataformas e ativos) ao mês. */
   app.post("/api/months/:id/apply-rules", (req, res) => {
-    try {
-      const { semDetalhe } = storage.applyModel(Number(req.params.id));
-      res.json({ ...publicState(storage.getState()), modelo: { semDetalhe } });
-    } catch (e: any) {
-      return res.status(e.status ?? 500).json({ message: e.message });
-    }
+    const { semDetalhe } = storage.applyModel(pid(req.params.id));
+    res.json({ ...publicState(storage.getState()), modelo: { semDetalhe } });
   });
 
   /** Guarda a divisão do mês como modelo das parcelas. */
   app.post("/api/months/:id/save-as-rules", (req, res) => {
-    try {
-      storage.saveAsModel(Number(req.params.id));
-      res.json(publicState(storage.getState()));
-    } catch (e: any) {
-      return res.status(e.status ?? 500).json({ message: e.message });
-    }
+    storage.saveAsModel(pid(req.params.id));
+    res.json(publicState(storage.getState()));
   });
 
   /* -------------------------------------------------------- alocações */
@@ -262,29 +253,21 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     const v = Number(value);
     if (!Number.isFinite(v) || v < 0) return res.status(400).json({ message: "Valor inválido." });
     if (mode !== "fixo" && mode !== "percentagem") return res.status(400).json({ message: "Modo inválido." });
-    try {
-      res.json(storage.setAllocation(Number(monthId), Number(parcelId), String(mode), v, included === undefined ? undefined : included ? 1 : 0));
-    } catch (e: any) {
-      res.status(e.status ?? 500).json({ message: e.message });
-    }
+    res.json(storage.setAllocation(pid(monthId), pid(parcelId), String(mode), v, included === undefined ? undefined : included ? 1 : 0));
   });
 
   /** Distribuição planeada de uma parcela mensal por plataformas (EVO-03). */
   app.put("/api/months/:monthId/parcels/:parcelId/distribution", (req, res) => {
-    try {
-      const lines = Array.isArray(req.body?.lines) ? req.body.lines : null;
-      if (!lines) return res.status(400).json({ message: "Linhas em falta." });
-      res.json(storage.setDistribution(Number(req.params.monthId), Number(req.params.parcelId), lines));
-    } catch (e: any) {
-      res.status(e.status ?? 500).json({ message: e.message });
-    }
+    const lines = Array.isArray(req.body?.lines) ? req.body.lines : null;
+    if (!lines) return res.status(400).json({ message: "Linhas em falta." });
+    res.json(storage.setDistribution(pid(req.params.monthId), pid(req.params.parcelId), lines));
   });
 
   /* -------------------------------------------------------- movimentos */
   const TX_TYPES = new Set(["expense", "transfer", "withdrawal", "contribution"]);
 
   app.get("/api/months/:id/transactions", (req, res) => {
-    res.json(storage.listTransactions(Number(req.params.id)));
+    res.json(storage.listTransactions(pid(req.params.id)));
   });
 
   app.post("/api/transactions", (req, res) => {
@@ -303,7 +286,6 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     if (b.type === "transfer" && (!b.parcelId || !b.targetParcelId)) {
       return res.status(400).json({ message: "Transferência exige origem e destino" });
     }
-    try {
     res.json(
       storage.createTransaction({
         monthId: Number(b.monthId),
@@ -317,9 +299,6 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         note: String(b.note ?? ""),
       }),
     );
-    } catch (e: any) {
-      res.status(e.status ?? 500).json({ message: e.message });
-    }
   });
 
   app.patch("/api/transactions/:id", (req, res) => {
@@ -327,18 +306,14 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     if (b.type && !TX_TYPES.has(b.type)) {
       return res.status(400).json({ message: "Tipo de movimento inválido" });
     }
-    try {
-      const allowed = ["date", "value", "parcelId", "targetParcelId", "category", "note", "type", "monthId"];
-      const patch: any = {};
-      for (const k of allowed) if (k in b) patch[k] = b[k];
-      res.json(storage.updateTransaction(Number(req.params.id), patch));
-    } catch (e: any) {
-      res.status(e.status ?? 500).json({ message: e.message });
-    }
+    const allowed = ["date", "value", "parcelId", "targetParcelId", "category", "note", "type", "monthId"];
+    const patch: any = {};
+    for (const k of allowed) if (k in b) patch[k] = b[k];
+    res.json(storage.updateTransaction(pid(req.params.id), patch));
   });
 
   app.delete("/api/transactions/:id", (req, res) => {
-    storage.deleteTransaction(Number(req.params.id));
+    storage.deleteTransaction(pid(req.params.id));
     res.json({ ok: true });
   });
 
@@ -352,7 +327,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.get("/api/app-info", h(() => ({ version: evo8.APP_VERSION, environment: evo8.ENV_NAME, schemaVersion: SCHEMA_VERSION })));
   app.get("/api/verify", h(() => evo8.verifyData()));
   app.get("/api/change-log", h(() => evo8.listChangeLog()));
-  app.get("/api/months/:id/summary", h((r) => evo8.monthSummary(Number(r.params.id))));
+  app.get("/api/months/:id/summary", h((r) => evo8.monthSummary(pid(r.params.id))));
   app.post("/api/months/:id/close", h((r) => evo8.closeMonth(pid(r.params.id), parse(closeMonthSchema, r.body ?? {}) as any)));
   app.post("/api/months/:id/reopen", h((r) => evo8.reopenMonth(pid(r.params.id), parse(reopenMonthSchema, r.body ?? {}).note ?? "")));
   app.get("/api/closures", h((r) => evo8.closureHistory(r.query.monthId ? Number(r.query.monthId) : undefined)));
@@ -394,10 +369,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     if (b.essential != null) patch.essential = b.essential ? 1 : 0;
     if (b.active != null) patch.active = b.active ? 1 : 0;
     if (b.sortOrder != null) patch.sortOrder = Number(b.sortOrder) || 0;
-    res.json(storage.updateCategory(Number(req.params.id), patch));
+    res.json(storage.updateCategory(pid(req.params.id), patch));
   });
   app.delete("/api/categories/:id", (req, res) => {
-    storage.deleteCategory(Number(req.params.id));
+    storage.deleteCategory(pid(req.params.id));
     res.json({ ok: true });
   });
 
@@ -405,7 +380,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.patch("/api/months/:id/reconciliation", (req, res) => {
     const { deficitReason, deficitNote } = req.body ?? {};
     res.json(
-      storage.updateMonth(Number(req.params.id), {
+      storage.updateMonth(pid(req.params.id), {
         deficitReason: String(deficitReason ?? ""),
         deficitNote: String(deficitNote ?? ""),
       }),
@@ -504,9 +479,19 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       for (const x of arr) if (!x || typeof x !== "object" || !isNum(x.id)) return `Coleção "${k}" contém registos sem id numérico.`;
     }
     for (const m of body.months) if (!isNum(m.year) || !isNum(m.month) || m.month < 1 || m.month > 12) return "Mês com ano/mês inválido.";
+    // as mesmas regras das rotas normais: um backup editado à mão não passa por cima dos limites
+    for (const m of body.months) {
+      const r = monthPatchSchema.safeParse(m);
+      if (!r.success) return `Mês ${m.month}/${m.year} inválido: ${issueMessage(r.error)}`;
+    }
+    for (const p of body.parcels) {
+      const r = parcelPatchSchema.safeParse(p);
+      if (!r.success) return `Parcela "${String(p?.name ?? p?.id)}" inválida: ${issueMessage(r.error)}`;
+    }
     for (const a of body.allocations ?? []) if (!["fixo", "percentagem"].includes(a.mode) || !isNum(a.value)) return "Alocação inválida.";
     for (const t of body.transactions ?? []) {
       if (!["expense", "transfer", "withdrawal", "contribution"].includes(t.type) || !isNum(t.value) || !isDate(t.date)) return "Movimento inválido.";
+      if (t.value <= 0) return "Movimento com valor igual ou inferior a zero.";
     }
     for (const l of body.allocationPlatforms ?? []) if (!["fixo", "percentagem"].includes(l.mode) || !isNum(l.value) || l.value < 0) return "Distribuição por plataforma inválida.";
     for (const x of body.allocationAssets ?? []) {

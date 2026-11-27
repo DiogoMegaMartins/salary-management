@@ -72,6 +72,16 @@ export function allocationAmount(a: Allocation, available: number): number {
 }
 
 /**
+ * Total alocado de um mês em euros: soma os valores exatos de cada parcela e arredonda uma só vez ao cêntimo.
+ * Arredondar cada parcela antes de somar dava 1 cêntimo a mais (ex.: 2 × 50 % de 1000,01 € = 500,005 € cada),
+ * e o fecho do mês mostrava um défice que não existia.
+ */
+export function allocatedTotal(allocs: Allocation[], available: number): number {
+  const sum = allocs.reduce((acc, a) => acc + allocationAmount(a, available), 0);
+  return Math.round(sum * 100 + 1e-9) / 100;
+}
+
+/**
  * Reconciliacao do mes (SM-001/SM-002). As `transactions` sao lancamentos
  * individuais a partir de agora; nao substituem `allocations`, somam-se a elas.
  *   despesasTotais = despesas (expense) + retiradas (withdrawal)
