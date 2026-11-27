@@ -496,7 +496,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   function validateBackupShape(body: any): string | null {
     const isNum = (v: any) => typeof v === "number" && Number.isFinite(v);
     const isDate = (v: any) => typeof v === "string" && /^\d{4}-\d{2}-\d{2}/.test(v);
-    const colls = ["monthClosures", "recurringExpenses", "recurrenceSkips", "reserves", "importBatches", "changeLog", "months", "parcels", "allocations", "transactions", "categories", "platforms", "parcelPlatforms", "parcelTypes", "txTypes", "allocationPlatforms", "allocationAssets", "subgoals", "goalEntries", "contributionLinks", "fxRates", "valuations"];
+    const colls = ["monthClosures", "recurringExpenses", "recurrenceSkips", "reserves", "importBatches", "changeLog", "months", "parcels", "allocations", "transactions", "categories", "platforms", "parcelPlatforms", "parcelTypes", "txTypes", "allocationPlatforms", "allocationAssets", "rulePlatforms", "ruleAssets", "subgoals", "goalEntries", "contributionLinks", "fxRates", "valuations"];
     for (const k of colls) {
       const arr = body[k];
       if (arr === undefined) continue;
@@ -636,6 +636,8 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       txTypes: body.txTypes,
       allocationPlatforms: body.allocationPlatforms,
       allocationAssets: body.allocationAssets,
+      rulePlatforms: body.rulePlatforms,
+      ruleAssets: body.ruleAssets,
       subgoals: body.subgoals,
       goalEntries: body.goalEntries,
       contributionLinks: body.contributionLinks,
