@@ -664,6 +664,10 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.32.1</H3>
+        <UL>
+          <li>No Início (modo Detalhado), o cartão do resumo do mês passa a acabar na mesma linha que os cartões pequenos da direita, mesmo com um layout guardado.</li>
+        </UL>
         <H3>1.32.0</H3>
         <UL>
           <li>No modo Básico, o Início mostra o valor disponível ao lado de para onde vai o dinheiro (com um anel por categoria), três números do dia a dia (quanto gastaste, quanto podes gastar por dia e a última despesa) e as últimas despesas.</li>

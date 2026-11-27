@@ -2,6 +2,13 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.32.1 | 2026-11-27
+
+Corrige o alinhamento do cartão do topo do Início.
+
+- Com um layout guardado (grelha), o cartão do resumo do mês ficava mais baixo do que a caixa que lhe cabe e acabava acima dos cartões pequenos da direita. Agora enche a caixa e acaba na mesma linha (`h-full` em `components/inicio-summary.tsx`).
+- Teste novo em `e2e/inicio.spec.ts`: com um layout antigo guardado, o resumo enche a caixa e acaba onde acaba o último cartão da direita.
+
 ## 1.32.0 | 2026-11-27
 
 Início no modo Básico e novo cartão de Metas.
