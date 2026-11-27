@@ -664,6 +664,11 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.33.0</H3>
+        <UL>
+          <li>No modo Básico, o Início também deixa editar o layout (botão com os quatro quadrados, no topo). Podes mover e redimensionar os cartões e o layout fica guardado.</li>
+          <li>Os dois cartões de cima do Início Básico têm sempre a mesma altura, mesmo sem despesas.</li>
+        </UL>
         <H3>1.32.2</H3>
         <UL>
           <li>Os cartões dos vários menus ficaram alinhados e com o mesmo aspeto: no Plano do mês, em Parcelas e metas, em Definições e no Orçamento.</li>

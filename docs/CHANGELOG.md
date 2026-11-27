@@ -2,6 +2,14 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.33.0 | 2026-11-27
+
+Editar o layout também no modo Básico.
+
+- O **Início no modo Básico** passa a ter o botão "Editar layout": o resumo, "Para onde vai o dinheiro", os três números e as últimas despesas podem ser movidos e redimensionados, e o layout guarda-se à parte do Detalhado (`painel-basico`, em `components/inicio-basico.tsx`, com `EditableSectionGrid`). Orçamento e Carteira já deixavam editar no Básico e têm teste.
+- Os dois cartões de cima do Início Básico (resumo e "Para onde vai o dinheiro") têm sempre a mesma altura, mesmo sem despesas registadas.
+- Testes novos em `e2e/inicio.spec.ts`: altura igual, editar e guardar o layout, e o botão em Orçamento e Carteira.
+
 ## 1.32.2 | 2026-11-27
 
 Cartões alinhados e com o mesmo estilo em todos os menus.
