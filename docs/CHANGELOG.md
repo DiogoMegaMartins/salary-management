@@ -10,7 +10,8 @@ Gestão de movimentos no Organizar.
 - **Tudo ou nada**: `POST /api/transactions/bulk` (`bulkTransactionsSchema`, máximo 500). Corre numa só transação; se um movimento estiver num mês fechado, ou já não existir, nenhum muda. Usa as mesmas regras e o mesmo histórico de alterações dos movimentos individuais. Só com ligação (não entra na fila offline).
 - O cartão «Movimentos» do Organizar abre esta gestão (antes abria Despesas).
 - Regras puras em `shared/organizar.ts` (`filterMovements`, `selectionSummary`).
-- Testes: `tests/organizar.test.ts`, `tests/integrity.test.ts` (lote), `e2e/organizar.spec.ts`.
+- **Botão «Registar despesa»**: passa a aparecer só no modo Básico **e só no Início** (antes aparecia em todos os menus do modo Básico). `RegisterBar` verifica a rota (`/`).
+- Testes: `tests/organizar.test.ts`, `tests/integrity.test.ts` (lote), `e2e/organizar.spec.ts`, `e2e/registar.spec.ts`.
 
 ## 1.35.1 | 2026-11-27
 
