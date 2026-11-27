@@ -30,6 +30,8 @@ export type AppState = {
   contributionLinks: ContributionLink[];
   fxRates: FxRate[];
   valuations: Valuation[];
+  recurringExpenses?: { parcelId?: number | null }[];
+  reserves?: { parcelId?: number | null }[];
 };
 
 export function useAppState() {

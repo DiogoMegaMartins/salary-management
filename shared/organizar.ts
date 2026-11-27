@@ -20,6 +20,27 @@ export function platformRows(
   return platforms.map((p) => ({ id: p.id, name: p.name, archived: p.archived === 1, uses: links.filter((l) => l.platformId === p.id).length }));
 }
 
+/**
+ * Quantas coisas usam cada parcela: movimentos (como origem ou destino), recorrências e reservas.
+ * É o mesmo critério do servidor para recusar eliminar uma parcela.
+ */
+export function parcelRows(
+  parcels: { id: number; name: string; archived: number }[],
+  transactions: { parcelId?: number | null; targetParcelId?: number | null }[],
+  recurring: { parcelId?: number | null }[] = [],
+  reserves: { parcelId?: number | null }[] = [],
+): ManageRow[] {
+  return parcels.map((p) => ({
+    id: p.id,
+    name: p.name,
+    archived: p.archived === 1,
+    uses:
+      transactions.filter((t) => t.parcelId === p.id || t.targetParcelId === p.id).length +
+      recurring.filter((r) => r.parcelId === p.id).length +
+      reserves.filter((r) => r.parcelId === p.id).length,
+  }));
+}
+
 /** Pesquisa por nome (sem acentos nem maiúsculas) e, por defeito, sem as arquivadas. Ordem: ativas por nome, depois arquivadas. */
 export function filterRows(rows: ManageRow[], query: string, showArchived: boolean): ManageRow[] {
   const strip = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();

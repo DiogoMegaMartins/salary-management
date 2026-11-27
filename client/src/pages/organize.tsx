@@ -9,7 +9,7 @@ import { useConfirm } from "@/components/confirm";
 import { useToast } from "@/hooks/use-toast";
 import { useAppState, useSave } from "@/lib/app";
 import { useFeatures } from "@/lib/features";
-import { categoryRows, platformRows, usesText } from "@shared/organizar";
+import { categoryRows, parcelRows, platformRows, usesText } from "@shared/organizar";
 
 function HubCard({ title, count, text, children, to, action, testId }: { title: string; count: string; text: string; children?: React.ReactNode; to: string; action: string; testId: string }) {
   return (
@@ -34,9 +34,8 @@ const Chips = ({ names }: { names: string[] }) => (
 );
 
 /**
- * Organizar: tudo o que a app usa, num só sítio. O ecrã inicial resume as quatro áreas; Categorias e Plataformas
- * têm aqui a sua gestão (listas iguais: procurar, criar, renomear, arquivar, eliminar). Parcelas e metas e Movimentos
- * abrem os ecrãs que já existem.
+ * Organizar: tudo o que a app usa, num só sítio. O ecrã inicial resume as quatro áreas; Parcelas, Categorias e Plataformas
+ * têm aqui a sua gestão (listas iguais: procurar, criar, renomear, arquivar, eliminar). Movimentos abre o ecrã que já existe.
  */
 export default function OrganizePage() {
   const { data, isLoading } = useAppState();
@@ -58,6 +57,7 @@ export default function OrganizePage() {
 
   const cats = categoryRows(data.categories, data.transactions);
   const plats = platformRows(data.platforms ?? [], data.parcelPlatforms ?? []);
+  const parcs = parcelRows(data.parcels, data.transactions, data.recurringExpenses ?? [], data.reserves ?? []);
   const back = (
     <Link href="/organizar" className="mb-4 inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline" data-testid="organizar-voltar">
       <ArrowLeft className="h-4 w-4" aria-hidden /> Organizar
@@ -80,6 +80,30 @@ export default function OrganizePage() {
             if (await ask(`Eliminar a categoria "${c?.name}"?`, "Não tem movimentos. Esta ação não se desfaz.")) save.deleteCategory.mutate(id, { onError: fail("Não foi possível eliminar") });
           }}
         />
+      </AppShell>
+    );
+  }
+
+  if (secao === "parcelas" && features.parcelas) {
+    return (
+      <AppShell title="Parcelas e metas" subtitle="Para onde vai o teu salário e o que queres alcançar">
+        {dialog}
+        {back}
+        <ManageList
+          testPrefix="parc" noun="parcelas" rows={parcs} placeholderNew="Por exemplo: Férias"
+          usesLabel={(n) => usesText(n, "movimento ou reserva", "movimentos ou reservas")}
+          onCreate={(name) => save.createParcel.mutate({ name }, { onError: fail("Não foi possível criar a parcela") })}
+          onRename={(id, name) => save.parcel.mutate({ id, patch: { name } }, { onError: fail("Não foi possível renomear") })}
+          onArchive={(id, archived) => save.parcel.mutate({ id, patch: { archived: archived ? 1 : 0 } }, { onError: fail("Não foi possível alterar") })}
+          onDelete={async (id) => {
+            const p = parcs.find((x) => x.id === id);
+            if (await ask(`Eliminar a parcela "${p?.name}"?`, "Não tem movimentos nem reservas. Esta ação não se desfaz.")) save.deleteParcel.mutate(id, { onError: fail("Não foi possível eliminar") });
+          }}
+        />
+        <p className="mt-4 text-sm text-muted-foreground">
+          Valores, metas, submetas e tipos editam-se no ecrã completo:{" "}
+          <Link href="/parcelas" className="font-medium text-primary underline-offset-4 hover:underline" data-testid="organizar-parcelas-editor">abrir Parcelas e metas</Link>.
+        </p>
       </AppShell>
     );
   }
@@ -116,7 +140,7 @@ export default function OrganizePage() {
       <div className="grid gap-4 md:grid-cols-2" data-testid="page-organizar">
         {features.parcelas && (
           <HubCard testId="organizar-parcelas" title="Parcelas e metas" count={`${parcels.length} ${parcels.length === 1 ? "parcela" : "parcelas"} · ${goals} ${goals === 1 ? "meta" : "metas"}`}
-            text="Para onde vai o teu salário e o que queres alcançar." to="/parcelas" action="Gerir parcelas e metas">
+            text="Para onde vai o teu salário e o que queres alcançar." to="/organizar/parcelas" action="Gerir parcelas e metas">
             <Chips names={parcels.slice(0, 4).map((p) => p.name)} />
           </HubCard>
         )}

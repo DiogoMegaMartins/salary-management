@@ -1,7 +1,7 @@
 // Organizar: listas de categorias e plataformas, pesquisa e validação de nomes.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { categoryRows, platformRows, filterRows, checkName, usesText } from "../shared/organizar";
+import { categoryRows, parcelRows, platformRows, filterRows, checkName, usesText } from "../shared/organizar";
 
 test("organizar: conta os movimentos de cada categoria, sem diferenças de maiúsculas ou espaços", () => {
   const rows = categoryRows([{ id: 1, name: "Casa", active: 1 }, { id: 2, name: "Café", active: 0 }], [{ category: "casa " }, { category: "CASA" }, { category: "Outra" }]);
@@ -37,4 +37,14 @@ test("organizar: texto de uso", () => {
   assert.equal(usesText(0, "movimento", "movimentos"), "sem uso");
   assert.equal(usesText(1, "movimento", "movimentos"), "1 movimento");
   assert.equal(usesText(12, "movimento", "movimentos"), "12 movimentos");
+});
+
+test("organizar: uma parcela conta movimentos (origem ou destino), recorrências e reservas", () => {
+  const rows = parcelRows(
+    [{ id: 1, name: "Férias", archived: 0 }, { id: 2, name: "Antiga", archived: 1 }],
+    [{ parcelId: 1 }, { parcelId: 3, targetParcelId: 1 }, { parcelId: 3 }],
+    [{ parcelId: 1 }],
+    [{ parcelId: 1 }],
+  );
+  assert.deepEqual(rows, [{ id: 1, name: "Férias", archived: false, uses: 4 }, { id: 2, name: "Antiga", archived: true, uses: 0 }]);
 });
