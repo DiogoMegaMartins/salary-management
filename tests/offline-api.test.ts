@@ -37,3 +37,13 @@ test("sync is atomic, idempotent, and detects concurrent changes", async () => {
   assert.equal((await request("POST", "/api/offline/sync", bad)).status, 400);
   assert.equal(storage.getState().transactions.length, before + 1);
 });
+
+test("sync offline valida o mês e respeita «parcela fora deste mês»", async () => {
+  const parcel = storage.createParcel({ name: "Offline parcela", defaultMode: "fixo", defaultValue: 0 } as any);
+  const mk = async (id: string, operations: any[]) => request("POST", "/api/offline/sync", { id, version: (await request("GET", "/api/state")).version, operations });
+  const badMonth = await mk("bad-month", [{ method: "PATCH", url: `/api/months/${month.id}`, data: { taxaSs: 7, month: 13, base: -500, label: "" }, localId: -1 }]);
+  assert.equal(badMonth.status, 400);
+  const off = await mk("incl", [{ method: "PUT", url: "/api/allocations", data: { monthId: month.id, parcelId: parcel.id, mode: "fixo", value: 50, included: false }, localId: -2 }]);
+  assert.equal(off.status, 200);
+  assert.equal(storage.getState().allocations.find((a) => a.monthId === month.id && a.parcelId === parcel.id)?.included, 0);
+});
