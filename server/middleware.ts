@@ -1,7 +1,7 @@
 import express from "express";
 import type { Express } from "express";
 import { storage } from "./storage";
-import { authLimiter, globalLimiter, GLOBAL_KEY, ipKey, knownGood, verifyCodeAsync } from "./access";
+import { authLimiter, globalLimiter, GLOBAL_KEY, ipKey, knownGood, verifyCodeAsync, secretCode } from "./access";
 
 /**
  * Configuração base partilhada pelo servidor e pelos testes: proxy, cabeçalhos, limites de corpo
@@ -9,8 +9,9 @@ import { authLimiter, globalLimiter, GLOBAL_KEY, ipKey, knownGood, verifyCodeAsy
  * formulário de outro site não consegue enviar sem pré-verificação CORS, que não está ativa).
  */
 export function installBase(app: Express) {
-  // Atrás do proxy da plataforma o IP real vem em X-Forwarded-For; sem isto todos partilham um IP.
-  const tp = (process.env.TRUST_PROXY ?? (process.env.NODE_ENV === "production" ? "1" : "")).trim();
+  // Só se confia em X-Forwarded-For com TRUST_PROXY (ex.: TRUST_PROXY=1 atrás do proxy de uma plataforma).
+  // Por omissão não: sem proxy à frente, qualquer pessoa podia forjar o cabeçalho e fugir ao limite por IP.
+  const tp = (process.env.TRUST_PROXY ?? "").trim();
   if (tp && tp !== "false") app.set("trust proxy", /^\d+$/.test(tp) ? Number(tp) : tp === "true" ? true : tp);
 
   // CSP só em produção (o Vite em desenvolvimento usa scripts inline e WebSocket). Sem frame-ancestors:
@@ -42,6 +43,10 @@ export function installBase(app: Express) {
     try {
       res.setHeader("Cache-Control", "no-store");
       if (req.path === "/auth" || req.path === "/auth/status" || req.path === "/health") return next();
+      // Worker: um segredo ACCESS_CODE curto não conta como código (secretCode devolve ""); em vez de deixar a app
+      // aberta, recusa tudo até o segredo ser corrigido.
+      if (process.env.ACCESS_CODE_FROM_SECRET === "1" && (process.env.ACCESS_CODE ?? "").trim() && !secretCode())
+        return res.status(503).json({ ok: false, message: "O segredo ACCESS_CODE é demasiado curto (mínimo 8 caracteres). Corrige-o na Cloudflare." });
       const code = storage.getAccessCode().trim();
       if (!code) return next();
       const given = String(req.headers["x-codigo-acesso"] ?? "").trim();
