@@ -664,6 +664,12 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.34.1</H3>
+        <UL>
+          <li>Restaurar um backup já não apaga o modelo de divisão (plataformas e ativos de cada parcela).</li>
+          <li>Duplicar um mês mantém fora do mês as parcelas que estavam fora no original.</li>
+          <li>Alterações feitas sem ligação passam a ser validadas como online; a opção &quot;parcela fora deste mês&quot; também é guardada.</li>
+        </UL>
         <H3>1.34.0</H3>
         <UL>
           <li>Nos gráficos, podes carregar num item da legenda para esconder ou mostrar essa série. A última série visível fica sempre.</li>
