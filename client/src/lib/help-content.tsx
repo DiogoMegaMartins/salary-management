@@ -664,6 +664,12 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
     keywords: ["changelog", "versão", "novidades"],
     body: (
       <>
+        <H3>1.37.0</H3>
+        <UL>
+          <li>Início: na distribuição média, ao esconder uma parcela na legenda as outras refazem as percentagens e o anel mostra ao centro o total por mês. A percentagem da taxa de poupança deixa de ser azul, e a tabela das parcelas já não tem rolagem lateral.</li>
+          <li>Início: as metas são cartões com anel. Carrega numa meta para ver por baixo o ritmo e as submetas, uma por cartão.</li>
+          <li>Plano do mês: o detalhe por plataforma e por ativo abre num painel lateral só com essa parcela. O que falta distribuir fica sempre à vista, cada plataforma é um bloco com os seus ativos, e no cartão da parcela fica só um resumo.</li>
+        </UL>
         <H3>1.36.0</H3>
         <UL>
           <li>O botão &quot;Registar despesa&quot; passa a aparecer só no modo Básico e só no Início. Nos outros menus usa o botão de registar desse menu ou volta ao Início.</li>

@@ -2,6 +2,17 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.37.0 | 2026-11-28
+
+Início e Plano do mês mais claros.
+
+- **Distribuição média** (Início): ao esconder uma parcela na legenda, as outras repartem o círculo todo e somam 100 % (`visibleShares` em `shared/legend-filter.ts`); a escondida mostra um traço. O anel começa às 12 horas, fica centrado e mostra ao centro quanto as parcelas visíveis somam por mês.
+- **Taxa de poupança**: a percentagem deixa de ser azul e fica na cor normal.
+- **Parcelas no período**: a tabela cabe sempre no cartão (a média passa para debaixo do nome) em vez de uma rolagem lateral que não mexia no telemóvel.
+- **Metas e submetas** (Início, `components/goals-card.tsx`): cada meta é um cartão com anel, valores, etiqueta do estado e tempo estimado («~3 anos para chegar»; a partir de 2 anos conta-se em anos). Escolher um cartão abre por baixo o detalhe dessa meta: barra, ritmo, aviso e as submetas, uma por cartão. Por defeito abre a meta que mais precisa de atenção.
+- **Detalhe por plataforma e ativo** (Plano do mês, `components/months/platform-distribution.tsx`, `components/assets-editor.tsx`): o cartão da parcela mostra só um resumo (barra com uma cor por plataforma e uma etiqueta por plataforma, com o número de ativos). «Detalhar» abre um painel lateral só com essa parcela (ecrã inteiro no telemóvel): o distribuído e o restante ficam sempre à vista no topo, o modo (valor ou percentagem) escolhe-se com dois botões, cada plataforma é um bloco com os seus ativos recolhíveis, e Guardar e Adicionar plataforma ficam fixos em baixo. Os ativos de cada plataforma mostram-se numa linha de resumo e abrem dentro do bloco.
+- Testes: `tests/legenda-filtro.test.ts`, `e2e/legendas.spec.ts`, `e2e/inicio.spec.ts`; os de `e2e/divisao.spec.ts` continuam a passar.
+
 ## 1.36.0 | 2026-11-27
 
 Gestão de movimentos no Organizar.
