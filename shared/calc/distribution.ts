@@ -130,3 +130,48 @@ export function distributeAssets(platformAmountEuros: number, lines: AssetLine[]
     remainingPercent: (1_000_000 - sumUnits) / 10000,
   };
 }
+
+
+/* ------------------------------------------ ativos: conversão entre valor e percentagem */
+
+/**
+ * Percentagens (até 0,0001 %) que correspondem a valores em euros dentro do montante da plataforma. Arredonda a soma
+ * acumulada, não cada linha: se os valores somam o montante, as percentagens somam exatamente 100 %.
+ */
+export function assetPercentsFromValues(amountEuros: number, valuesEuros: number[]): number[] {
+  const total = toCents(amountEuros);
+  if (total <= 0) return valuesEuros.map(() => 0);
+  let cum = 0;
+  let prev = 0;
+  return valuesEuros.map((v) => {
+    cum += Math.max(0, toCents(v));
+    const units = Math.round((cum * 1_000_000) / total);
+    const d = units - prev;
+    prev = units;
+    return d / 10000;
+  });
+}
+
+/** Montantes (em euros) de cada percentagem, com a mesma soma acumulada arredondada de `distributeAssets`. */
+export function assetValuesFromPercents(amountEuros: number, percents: number[]): number[] {
+  const total = toCents(amountEuros);
+  let acc = 0;
+  let prev = 0;
+  return percents.map((p) => {
+    acc += Math.round((Number.isFinite(p) && p > 0 ? p : 0) * 10000);
+    const cum = Math.round((total * acc) / 1_000_000);
+    const a = cum - prev;
+    prev = cum;
+    return a / 100;
+  });
+}
+
+/** Reparte `n` partes iguais de `total` (euros ou %), com o resto nas primeiras: a soma é exata. */
+export function equalParts(total: number, n: number, decimals = 2): number[] {
+  if (n <= 0) return [];
+  const f = 10 ** decimals;
+  const t = Math.round(total * f);
+  const base = Math.floor(t / n);
+  const extra = t - base * n;
+  return Array.from({ length: n }, (_, i) => (base + (i < extra ? 1 : 0)) / f);
+}
