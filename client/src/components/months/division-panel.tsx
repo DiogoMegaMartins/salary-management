@@ -206,7 +206,7 @@ export function DivisionPanel({ month }: { month: Month }) {
                   <div className="h-full" style={{ width: `${total > 0 ? Math.min(100, (r.amount / total) * 100) : 0}%`, background: r.p.color }} />
                 </div>
                 {features.plataformas && (
-                  <PlatformDistribution monthId={month.id} parcelId={r.p.id} allocationId={r.a?.id ?? null} total={r.amount} />
+                  <PlatformDistribution monthId={month.id} parcelId={r.p.id} parcelName={r.p.name} allocationId={r.a?.id ?? null} total={r.amount} />
                 )}
               </>
             )}

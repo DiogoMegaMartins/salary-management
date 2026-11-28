@@ -12,7 +12,10 @@ const toNum = (s: string) => {
   return t === "" ? 0 : /^\d+(\.\d{0,4})?$/.test(t) ? Number(t) : NaN;
 };
 
-/** Distribuição opcional por ativos/classes dentro de uma plataforma: nome, % e nota. O valor é sempre derivado. */
+/**
+ * Distribuição opcional por ativos/classes dentro de uma plataforma: nome, % e nota. O valor é sempre derivado.
+ * Vive dentro do painel de detalhe de cada parcela: fechado mostra um resumo numa linha; aberto, uma linha por ativo.
+ */
 export function AssetsEditor({ monthId, parcelId, allocationId, platformId, platformName, amount }: {
   monthId: number; parcelId: number; allocationId: number; platformId: number; platformName: string; amount: number;
 }) {
@@ -42,42 +45,51 @@ export function AssetsEditor({ monthId, parcelId, allocationId, platformId, plat
         onError: (e) => toast({ title: "Não foi possível guardar", description: errMsg(e), variant: "destructive" }),
       },
     );
+  const summary = saved.length === 0
+    ? "Sem ativos"
+    : savedR.remainingCents > 0
+      ? `${saved.length} ${saved.length === 1 ? "ativo" : "ativos"} · faltam ${savedR.remainingPercent.toFixed(1)} %`
+      : `${saved.length} ${saved.length === 1 ? "ativo" : "ativos"} · 100 %`;
 
   return (
-    <div className="assets-panel ml-10 text-xs" data-testid={`assets-${key}`}>
-      <button type="button" onClick={() => (open ? setOpen(false) : begin())} aria-expanded={open} className="flex max-w-full flex-wrap items-center gap-1 text-left text-muted-foreground hover:text-foreground" data-testid={`button-assets-${key}`}>
-        {open ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-        {platformName} ({fmtEur(amount)}): ativos{saved.length ? ` (${saved.length})` : ""}
-        {!open && saved.length > 0 && savedR.remainingCents > 0 && <span className="ml-1">· restante {savedR.remainingPercent.toFixed(2)}% = {fmtEur(savedR.remainingCents / 100)}</span>}
+    <div className="border-t border-border/70 pt-2 text-xs" data-testid={`assets-${key}`}>
+      <button type="button" onClick={() => (open ? setOpen(false) : begin())} aria-expanded={open} className="flex min-h-9 w-full items-center gap-1.5 text-left font-medium text-muted-foreground hover:text-foreground pointer-coarse:min-h-11" data-testid={`button-assets-${key}`}>
+        {open ? <ChevronDown className="h-3.5 w-3.5 shrink-0" aria-hidden /> : <ChevronRight className="h-3.5 w-3.5 shrink-0" aria-hidden />}
+        <span>Ativos de {platformName}</span>
+        <span className={`ml-auto font-normal ${!open && saved.length > 0 && savedR.remainingCents > 0 ? "text-warning" : ""}`}>{summary}</span>
       </button>
       {!open && saved.length > 0 && (
-        <ul className="ml-4 mt-0.5 space-y-0.5 text-muted-foreground">
+        <ul className="mt-1 flex flex-wrap gap-1.5 pl-5">
           {saved.map((x, i) => (
-            <li key={x.id} className="flex flex-wrap gap-2 wrap-break-word"><span>{x.name}</span><span className="tnum">{x.percent}% = {fmtEur((savedR.amountsCents[i] ?? 0) / 100)}</span>{x.note && <span className="wrap-break-word">· {x.note}</span>}</li>
+            <li key={x.id} className="tnum rounded-full border border-border bg-background px-2 py-0.5 text-[11px]" title={x.note || undefined}>
+              {x.name} · {x.percent} % · {fmtEur((savedR.amountsCents[i] ?? 0) / 100)}
+            </li>
           ))}
         </ul>
       )}
       {open && (
-        <div className="mt-1.5 space-y-1.5 rounded-md border border-border bg-muted/20 p-2.5">
+        <div className="mt-1.5 space-y-2 pl-1">
           {rows.length === 0 && <p className="text-muted-foreground">Sem linhas: o montante fica todo na plataforma.</p>}
           {rows.map((x, i) => (
-            <div key={i} className="asset-row grid grid-cols-[minmax(0,1fr)_80px_90px_minmax(0,1fr)_44px] items-center gap-1.5">
-              <Input value={x.name} onChange={(e) => patch(i, { name: e.target.value })} placeholder="Ativo / classe" aria-label="Nome do ativo" className="h-8 text-xs" data-testid={`input-asset-name-${key}-${i}`} />
-              <Input value={x.percent} onChange={(e) => patch(i, { percent: e.target.value })} inputMode="decimal" placeholder="%" aria-label="Percentagem" className="tnum h-8 text-xs" data-testid={`input-asset-pct-${key}-${i}`} />
-              <span className="tnum text-right text-muted-foreground" aria-label="Valor calculado">{fmtEur((r.amountsCents[i] ?? 0) / 100)}</span>
-              <Input value={x.note} onChange={(e) => patch(i, { note: e.target.value })} placeholder="nota (opcional)" aria-label="Nota" className="h-8 text-xs" />
-              <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Remover linha" onClick={() => setRows(rows.filter((_, k) => k !== i))}><Trash2 className="h-3 w-3" /></Button>
+            <div key={i} className="space-y-1.5 rounded-lg border border-border/70 bg-background p-2">
+              <div className="flex items-center gap-1.5">
+                <Input value={x.name} onChange={(e) => patch(i, { name: e.target.value })} placeholder="Ativo ou classe" aria-label="Nome do ativo" className="h-9 min-w-0 flex-1 text-sm" data-testid={`input-asset-name-${key}-${i}`} />
+                <Input value={x.percent} onChange={(e) => patch(i, { percent: e.target.value })} inputMode="decimal" placeholder="%" aria-label="Percentagem" className="tnum h-9 w-16 text-right text-sm" data-testid={`input-asset-pct-${key}-${i}`} />
+                <span className="tnum w-20 shrink-0 text-right text-muted-foreground" aria-label="Valor calculado">{fmtEur((r.amountsCents[i] ?? 0) / 100)}</span>
+                <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 text-muted-foreground hover:text-destructive" aria-label="Remover ativo" onClick={() => setRows(rows.filter((_, k) => k !== i))}><Trash2 className="h-4 w-4" aria-hidden /></Button>
+              </div>
+              <Input value={x.note} onChange={(e) => patch(i, { note: e.target.value })} placeholder="Nota (opcional)" aria-label="Nota" className="h-8 text-xs" />
             </div>
           ))}
-          <Button variant="outline" size="sm" className="h-7 gap-1 text-xs" onClick={() => setRows([...rows, { name: "", percent: "", note: "" }])} data-testid={`button-add-asset-${key}`}><Plus className="h-3 w-3" />Adicionar ativo</Button>
-          <div className="flex flex-wrap gap-x-4" data-testid={`summary-assets-${key}`}>
+          <Button variant="outline" size="sm" className="h-9 gap-1 text-xs" onClick={() => setRows([...rows, { name: "", percent: "", note: "" }])} data-testid={`button-add-asset-${key}`}><Plus className="h-3.5 w-3.5" aria-hidden />Adicionar ativo</Button>
+          <div className="flex flex-wrap gap-x-4 gap-y-0.5" data-testid={`summary-assets-${key}`}>
             <span>Distribuído <b className="tnum">{r.ok ? `${r.percentSum.toFixed(2)}% = ${fmtEur(r.distributedCents / 100)}` : "—"}</b></span>
             <span>Não distribuído <b className="tnum">{r.ok ? `${r.remainingPercent.toFixed(2)}% = ${fmtEur(r.remainingCents / 100)}` : "—"}</b></span>
           </div>
           {!r.ok && <p className="font-medium text-destructive" role="alert" data-testid={`error-assets-${key}`}>{r.error}</p>}
           <div className="flex justify-end gap-2">
-            <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button size="sm" className="h-8 text-xs" disabled={!r.ok || save.setAssets.isPending} onClick={submit} data-testid={`button-save-assets-${key}`}>Guardar ativos</Button>
+            <Button variant="ghost" size="sm" className="h-9 text-xs" onClick={() => setOpen(false)}>Cancelar</Button>
+            <Button size="sm" className="h-9 text-xs" disabled={!r.ok || save.setAssets.isPending} onClick={submit} data-testid={`button-save-assets-${key}`}>Guardar ativos</Button>
           </div>
         </div>
       )}

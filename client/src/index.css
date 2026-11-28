@@ -1167,51 +1167,6 @@
   .month-editor > div:last-of-type > button:last-child {
     flex: 1;
   }
-  .platform-panel,
-  .assets-panel {
-    margin-left: 0;
-  }
-  .platform-row {
-    grid-template-columns: minmax(0, 1fr) 44px;
-    border-top: 1px solid hsl(var(--border));
-    padding-top: 0.75rem;
-  }
-  .platform-row > :first-child {
-    grid-column: 1 / -1;
-  }
-  .platform-row > input {
-    grid-column: 1;
-  }
-  .platform-row > span {
-    grid-column: 1;
-    text-align: left;
-  }
-  .platform-row > button:last-child {
-    grid-column: 2;
-    grid-row: 2 / 4;
-  }
-  .asset-row {
-    grid-template-columns: minmax(0, 1fr) 44px;
-    border-top: 1px solid hsl(var(--border));
-    padding-top: 0.75rem;
-  }
-  .asset-row > input:first-child,
-  .asset-row > input:nth-child(4) {
-    grid-column: 1 / -1;
-  }
-  .asset-row > input:nth-child(2),
-  .asset-row > span {
-    grid-column: 1;
-    text-align: left;
-  }
-  .asset-row > button:last-child {
-    grid-column: 2;
-    grid-row: 2 / 4;
-  }
-  .assets-panel > button {
-    text-align: left;
-    flex-wrap: wrap;
-  }
   [data-testid='select-from-month'],
   [data-testid='select-to-month'] {
     width: 128px;
