@@ -92,4 +92,4 @@ A Cloudflare descarta o Durable Object quando está inativo e cria outro, no mes
 - **IP dos visitantes:** o limite de tentativas usa o IP que a Cloudflare indica (`cf-connecting-ip`).
 - Um só Durable Object: todos os pedidos passam por ele, um de cada vez. Para uma app pessoal chega.
 - O `XLSX` corre dentro do Worker; confirma o descarregamento do Excel depois do primeiro deploy.
-- Um domínio próprio e o Cloudflare Access (login por e-mail antes da app) ficam para uma fase seguinte.
+- Um domínio próprio e o Cloudflare Access (login por e-mail antes da app) ficam para uma fase seguinte; o plano está em [PLANO-LOGIN.md](PLANO-LOGIN.md).
