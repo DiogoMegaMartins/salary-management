@@ -227,4 +227,58 @@ test.describe("Detalhe por plataforma (opcional)", () => {
     await page.getByTestId(`button-save-dist-${m.a}`).click();
     await expect(page.getByTestId(`detail-status-${m.a}`)).toContainText("Por detalhar 200,00");
   });
+
+  test("detalhe por plataforma em janela: valor ou percentagem, e os ativos noutra janela", async ({ page, request }, info) => {
+    const m = await mesDeTeste(request, info.project.name === "telemovel" ? 15 : 16);
+    mesId = m.mesId;
+    await abrirMes(page, m.mesId);
+    const id = m.a;
+    await page.getByTestId(`button-distribute-${id}`).click();
+    const janela = page.getByTestId(`panel-distribute-${id}`);
+    await expect(janela).toBeVisible();
+    await page.getByTestId(`button-add-dist-line-${id}`).click();
+    await page.getByTestId(`button-add-dist-line-${id}`).click();
+    await expect(page.getByTestId(`dist-line-${id}-1`)).toBeVisible();
+
+    // dividir igualmente por valor
+    await page.getByTestId(`button-equalise-${id}`).click();
+    const v0 = page.getByTestId(`input-dist-value-${id}-0`);
+    const v1 = page.getByTestId(`input-dist-value-${id}-1`);
+    await expect(v0).toHaveValue("150");
+    await expect(v1).toHaveValue("150");
+    await expect(page.getByTestId(`summary-dist-${id}`)).toContainText("Restante");
+
+    // passar a percentagem: as linhas convertem-se (50 % + 50 %)
+    await page.getByTestId(`mode-dist-${id}-percentagem`).click();
+    await expect(v0).toHaveValue("50");
+    await expect(v1).toHaveValue("50");
+    await page.getByTestId(`mode-dist-${id}-fixo`).click();
+    await expect(v0).toHaveValue("150");
+
+    // os ativos abrem noutra janela (guarda o detalhe primeiro)
+    const botaoAtivos = page.locator(`[data-testid^="button-assets-${id}-"]`).first();
+    await botaoAtivos.click();
+    const ativos = page.locator(`[data-testid^="assets-${id}-"]`).first();
+    await expect(ativos).toBeVisible();
+    const chave = (await ativos.getAttribute("data-testid"))!.replace("assets-", "");
+    await page.getByTestId(`button-add-asset-${chave}`).click();
+    await page.getByTestId(`input-asset-name-${chave}-0`).fill("ETF Mundo");
+    const val = page.getByTestId(`input-asset-pct-${chave}-0`);
+    await val.fill("90");
+    await val.blur();
+    await page.getByTestId(`button-add-asset-${chave}`).click();
+    await page.getByTestId(`input-asset-name-${chave}-1`).fill("Ação A");
+    // em valor: faltam 60 € de 150 €; «Completar» não aplica (há linha sem valor), por isso passa a percentagem
+    await page.getByTestId(`mode-assets-${chave}-percentagem`).click();
+    await expect(val).toHaveValue("60");
+    const val1 = page.getByTestId(`input-asset-pct-${chave}-1`);
+    await val1.fill("40");
+    await val1.blur();
+    await expect(page.getByTestId(`summary-assets-${chave}`)).toContainText("100 %");
+    await page.getByTestId(`button-save-assets-${chave}`).click();
+    await expect(ativos).toHaveCount(0);
+    await expect(page.locator(`[data-testid^="button-assets-${id}-"]`).first()).toContainText("2 ativos");
+    await page.getByTestId(`button-save-dist-${id}`).click();
+    await expect(page.getByTestId(`detail-status-${id}`)).toContainText("Detalhe completo");
+  });
 });

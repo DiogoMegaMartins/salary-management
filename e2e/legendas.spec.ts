@@ -41,6 +41,21 @@ test("legendas: o gráfico de anel também filtra pela legenda", async ({ page }
   await expect(itens.first()).toHaveAttribute("data-hidden", "false");
 });
 
+test("legendas: depois de esconder uma parcela, as percentagens das que ficam somam 100 %", async ({ page }) => {
+  await entrar(page);
+  await page.goto("/#/");
+  const pcts = page.locator('.donut-legend [data-testid^="legend-pct-"]');
+  const soma = async () => (await pcts.allTextContents()).reduce((a, t) => a + (/\d/.test(t) ? parseFloat(t.replace("%", "").replace(",", ".")) : 0), 0);
+  const itens = page.locator('.donut-legend [data-testid^="legend-"][aria-pressed]');
+  await itens.first().scrollIntoViewIfNeeded();
+  expect(Math.abs((await soma()) - 100)).toBeLessThan(0.6);
+  await itens.first().click();
+  await expect(itens.first()).toHaveAttribute("data-hidden", "true");
+  await expect(pcts.first()).toHaveText("—");
+  expect(Math.abs((await soma()) - 100)).toBeLessThan(0.6); // 100 % repartido pelas visíveis
+  await itens.first().click();
+});
+
 test("legendas: na Carteira também", async ({ page }) => {
   await entrar(page);
   await page.goto("/#/carteira");

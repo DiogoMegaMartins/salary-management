@@ -2,6 +2,17 @@
 
 Ordem do mais recente para o mais antigo.
 
+## 1.37.0 | 2026-11-28
+
+Início e Plano do mês mais claros.
+
+- **Distribuição média** (Início): ao esconder uma parcela na legenda, as outras repartem o círculo todo e somam 100 % (`visibleShares` em `shared/legend-filter.ts`); a escondida mostra um traço. O anel começa às 12 horas, fica centrado e mostra ao centro quanto as parcelas visíveis somam por mês.
+- **Taxa de poupança**: a percentagem deixa de ser azul e fica na cor normal.
+- **Parcelas no período**: a tabela cabe sempre no cartão (a média passa para debaixo do nome) em vez de uma rolagem lateral que não mexia no telemóvel.
+- **Metas e submetas** (Início, `components/goals-card.tsx`): cada meta é um cartão com anel, valores, etiqueta do estado e tempo estimado («~3 anos para chegar»; a partir de 2 anos conta-se em anos). Escolher um cartão abre por baixo o detalhe dessa meta: barra, ritmo, aviso e as submetas, uma por cartão. Por defeito abre a meta que mais precisa de atenção.
+- **Detalhe por plataforma e ativo** (Plano do mês, `components/months/platform-distribution.tsx`, `components/assets-editor.tsx`): o cartão da parcela mostra só um resumo (barra com uma cor por plataforma e uma etiqueta por plataforma, com o número de ativos). «Detalhar» abre uma janela com o anel e o que falta à esquerda e, à direita, uma linha por plataforma com valor, cursor e botão «N ativos». Reparte-se **por valor (€) ou por percentagem**, com «Dividir igualmente» e «+ restante» em cada linha. Os **ativos** abrem **noutra janela** (anel, uma linha por ativo com valor, cursor e nota), também **por valor ou por percentagem**, com «Dividir igualmente» e «Completar com Outros»; se a plataforma ainda não está guardada, guarda-se primeiro e a janela dos ativos abre a seguir. A base continua a guardar percentagens nos ativos: os valores convertem-se arredondando a soma acumulada (`assetPercentsFromValues`, `assetValuesFromPercents`, `equalParts` em `shared/calc/distribution.ts`), por isso valores que enchem o montante dão exatamente 100 %.
+- Testes: `tests/legenda-filtro.test.ts`, `tests/distribuicao-ativos.test.ts`, `e2e/legendas.spec.ts`, `e2e/inicio.spec.ts`, `e2e/divisao.spec.ts`.
+
 ## 1.36.0 | 2026-11-27
 
 Gestão de movimentos no Organizar.

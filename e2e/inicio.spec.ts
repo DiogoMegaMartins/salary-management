@@ -163,3 +163,32 @@ test("modo Básico: Orçamento e Carteira também deixam editar o layout", async
     await expect(page.getByTestId("button-edit-layout")).toBeVisible();
   }
 });
+
+test("início: metas em cartões; escolher uma abre o ritmo e as submetas por baixo", async ({ page, request }) => {
+  const estado = async () => (await (await request.get("/api/state", { headers: cabecalhosApi() })).json());
+  const e0 = await estado();
+  const [a, b] = e0.parcels.filter((p: any) => !p.archived);
+  const orig = [a, b].map((p: any) => ({ id: p.id, targetAmount: p.targetAmount, targetDate: p.targetDate }));
+  let sub: any;
+  try {
+    for (const p of [a, b]) await request.patch(`/api/parcels/${p.id}`, { headers: cabecalhosApi(), data: { targetAmount: 50_000, targetDate: "2030-06" } });
+    sub = await (await request.post("/api/subgoals", { headers: cabecalhosApi(), data: { parcelId: b.id, name: "Submeta de teste", currency: "EUR", target: 1000 } })).json();
+    await entrar(page);
+    await page.goto("/#/");
+    await page.reload();
+    const cartaoB = page.getByTestId(`dashboard-goal-${b.id}`);
+    await cartaoB.scrollIntoViewIfNeeded();
+    await clicar(cartaoB);
+    await expect(cartaoB).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByTestId(`dashboard-goal-${a.id}`)).toHaveAttribute("aria-pressed", "false");
+    const detalhe = page.getByTestId(`dashboard-goal-detail-${b.id}`);
+    await expect(detalhe).toBeVisible();
+    await expect(detalhe.getByTestId(`dashboard-subgoal-${sub.id}`)).toContainText("Submeta de teste");
+    await clicar(page.getByTestId(`dashboard-goal-${a.id}`));
+    await expect(page.getByTestId(`dashboard-goal-detail-${a.id}`)).toBeVisible();
+    await expect(page.getByTestId(`dashboard-goal-detail-${b.id}`)).toHaveCount(0);
+  } finally {
+    if (sub?.id) await request.delete(`/api/subgoals/${sub.id}`, { headers: cabecalhosApi() });
+    for (const o of orig) await request.patch(`/api/parcels/${o.id}`, { headers: cabecalhosApi(), data: { targetAmount: o.targetAmount, targetDate: o.targetDate } });
+  }
+});

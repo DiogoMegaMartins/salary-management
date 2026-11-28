@@ -17,14 +17,14 @@ export function DashboardSubgoals({ subs }: { subs: SubBreakdown[] }) {
   if (!subs.length) return null;
 
   return (
-    <ul aria-label="Submetas" className="mt-3 space-y-3 rounded-md bg-muted/30 p-3">
+    <ul aria-label="Submetas" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
       {subs.map(({ sub, balance, remaining, progress }) => {
         const hasTarget = sub.target != null && sub.target > 0;
         const pct = Math.max(0, Math.min(1, progress ?? 0));
         return (
-          <li key={sub.id} className="min-w-0 space-y-1.5" data-testid={`dashboard-subgoal-${sub.id}`}>
+          <li key={sub.id} className="min-w-0 space-y-2 rounded-xl border border-card-border bg-card p-3" data-testid={`dashboard-subgoal-${sub.id}`}>
             <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-xs">
-              <span className="min-w-0 wrap-break-word font-medium">{sub.name}</span>
+              <span className="min-w-0 wrap-break-word text-sm font-medium">{sub.name}</span>
               {hasTarget && <span className="tnum text-muted-foreground">{fmtPct(pct, 0)}</span>}
             </div>
             <dl className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-1 text-xs">
