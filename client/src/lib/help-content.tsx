@@ -668,7 +668,7 @@ runwayMeses = saldoReservaElegivel / mediaDespesasEssenciais`}</CODE>
         <UL>
           <li>Início: na distribuição média, ao esconder uma parcela na legenda as outras refazem as percentagens e o anel mostra ao centro o total por mês. A percentagem da taxa de poupança deixa de ser azul, e a tabela das parcelas já não tem rolagem lateral.</li>
           <li>Início: as metas são cartões com anel. Carrega numa meta para ver por baixo o ritmo e as submetas, uma por cartão.</li>
-          <li>Plano do mês: o detalhe por plataforma e por ativo abre num painel lateral só com essa parcela. O que falta distribuir fica sempre à vista, cada plataforma é um bloco com os seus ativos, e no cartão da parcela fica só um resumo.</li>
+          <li>Plano do mês: o detalhe por plataforma abre numa janela com o anel, o que falta distribuir e uma linha por plataforma, com valor, cursor e «N ativos». Podes repartir por valor (€) ou por percentagem, dividir igualmente e usar «+ restante». Os ativos de cada plataforma abrem noutra janela, também por valor ou por percentagem. No cartão da parcela fica só um resumo.</li>
         </UL>
         <H3>1.36.0</H3>
         <UL>

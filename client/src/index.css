@@ -1275,3 +1275,37 @@ button:disabled,
     scroll-behavior: auto !important;
   }
 }
+
+/* Cursor de distribuição (plataformas e ativos): trilho com a parte preenchida na cor da linha, em todos os navegadores. */
+.sm-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 28px;
+  background-color: transparent;
+  background-size: 100% 6px;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 9999px;
+}
+.sm-range::-webkit-slider-runnable-track { background: transparent; height: 28px; }
+.sm-range::-moz-range-track { background: transparent; height: 28px; }
+.sm-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border-radius: 9999px;
+  background: hsl(var(--background));
+  border: 2px solid var(--range-color, hsl(var(--primary)));
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
+}
+.sm-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: hsl(var(--background));
+  border: 2px solid var(--range-color, hsl(var(--primary)));
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
+}
+.sm-range:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
