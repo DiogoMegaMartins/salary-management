@@ -17,14 +17,24 @@ const abrir = async (page: Page) => {
   await expect(page.getByTestId("register-dialog")).toBeVisible();
 };
 
-test("registar: o botão está sempre à mão, por baixo do conteúdo", async ({ page }) => {
+test("registar: o botão só aparece no Início, não nos outros menus", async ({ page }) => {
+  await entrar(page);
+  await expect(page.getByTestId("register-button")).toBeVisible();
+  for (const rota of ["/#/meses", "/#/despesas", "/#/divisao", "/#/organizar", "/#/carteira", "/#/orcamento", "/#/dados"]) {
+    await page.goto(rota);
+    await expect(page.locator("main")).toBeVisible();
+    await expect(page.getByTestId("register-button"), rota).toHaveCount(0);
+  }
+  await page.goto("/#/");
+  await expect(page.getByTestId("register-button")).toBeVisible();
+});
+
+test("registar: o botão está sempre à mão no Início, por baixo do conteúdo", async ({ page }) => {
   await entrar(page);
   const botao = page.getByTestId("register-button");
   await expect(botao).toBeVisible();
   await expect(botao).toBeInViewport();
   await page.locator("main").evaluate((m) => m.scrollTo(0, m.scrollHeight));
-  await expect(botao).toBeInViewport();
-  await page.goto("/#/meses");
   await expect(botao).toBeInViewport();
 });
 
@@ -115,7 +125,7 @@ test("registar: o botão do assistente fica por cima da faixa do botão Registar
   expect(await z("assistant-fab")).toBeGreaterThan(await z("register-bar"));
 });
 
-test("registar: o botão só aparece no modo Básico, e o modo escolhe-se em Definições › Funcionalidades", async ({ page }) => {
+test("registar: o botão só aparece no modo Básico (no Início), e o modo escolhe-se em Definições › Funcionalidades", async ({ page }) => {
   await entrar(page);
   await expect(page.getByTestId("register-button")).toBeVisible();
   await page.goto("/#/dados");
@@ -128,6 +138,8 @@ test("registar: o botão só aparece no modo Básico, e o modo escolhe-se em Def
   await expect(page.getByTestId("register-button")).toHaveCount(0);
   await page.getByTestId("settings-tab-funcionalidades").click();
   await page.getByTestId("ui-mode-basico").click();
+  await expect(page.getByTestId("register-button")).toHaveCount(0); // nas Definições nunca aparece
+  await page.goto("/#/");
   await expect(page.getByTestId("register-button")).toBeVisible();
 });
 

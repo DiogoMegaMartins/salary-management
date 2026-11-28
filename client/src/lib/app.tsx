@@ -137,6 +137,7 @@ export function useSave() {
       mutationFn: async (v: any) => (await apiRequest(method, url(v), body ? body(v) : v)).json() as Promise<T>,
       onSuccess: invalidate,
     });
+  const bulkTransactions = mk<{ ok: boolean; count: number }>("POST", () => "/api/transactions/bulk");
   const createPlatform = mk<Platform>("POST", () => "/api/platforms");
   const updatePlatform = mk<Platform>("PATCH", (v) => `/api/platforms/${v.id}`, (v) => v.patch);
   const deletePlatform = mk<unknown>("DELETE", (v) => `/api/platforms/${v}`, () => undefined);
@@ -166,6 +167,7 @@ export function useSave() {
   const setAssets = mk<AllocationAsset[]>("PUT", (v) => `/api/months/${v.monthId}/parcels/${v.parcelId}/distribution/${v.platformId}/assets`, (v) => ({ lines: v.lines }));
   return {
     setAssets,
+    bulkTransactions,
     createGoalEntry, updateGoalEntry, deleteGoalEntry, createSubgoal, updateSubgoal, deleteSubgoal, createLink, deleteLink, createFxRate, deleteFxRate, createValuation, deleteValuation,
     setDistribution,
     createPlatform,

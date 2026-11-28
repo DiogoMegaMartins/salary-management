@@ -66,3 +66,46 @@ export function checkName(input: string, rows: ManageRow[], selfId?: number): Na
 export function usesText(uses: number, singular: string, plural: string): string {
   return uses === 0 ? "sem uso" : `${uses} ${uses === 1 ? singular : plural}`;
 }
+
+/* ---------------------------------------------------------------- movimentos */
+export type MovementFilter = {
+  /** null = todos os meses */
+  monthId: number | null;
+  /** "" = qualquer; NO_CATEGORY = movimentos sem categoria */
+  category: string;
+  /** null = qualquer parcela */
+  parcelId: number | null;
+  /** "" = qualquer tipo */
+  type: string;
+  search: string;
+};
+export const NO_CATEGORY = "__sem_categoria__";
+type Mov = { id: number; monthId: number; date: string; type: string; value: number; parcelId: number | null; targetParcelId?: number | null; category: string; note?: string | null };
+
+/** Movimentos que passam nos filtros, do mais recente para o mais antigo. A pesquisa ignora acentos e maiúsculas e olha para a nota, a categoria e o valor. */
+export function filterMovements<T extends Mov>(txs: T[], f: MovementFilter): T[] {
+  const strip = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+  const q = strip(f.search.trim());
+  return txs
+    .filter((t) => {
+      if (f.monthId !== null && t.monthId !== f.monthId) return false;
+      if (f.category === NO_CATEGORY ? t.category.trim() !== "" : f.category && strip(t.category.trim()) !== strip(f.category.trim())) return false;
+      if (f.parcelId !== null && t.parcelId !== f.parcelId && t.targetParcelId !== f.parcelId) return false;
+      if (f.type && t.type !== f.type) return false;
+      if (q && !strip(`${t.note ?? ""} ${t.category} ${String(t.value).replace(".", ",")} ${t.value}`).includes(q)) return false;
+      return true;
+    })
+    .sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+}
+
+/** Resumo dos movimentos escolhidos: quantos e quanto somam (despesas e retiradas contam como saída, o resto como entrada). */
+export function selectionSummary(txs: Mov[], selected: Set<number>): { count: number; out: number; into: number } {
+  let out = 0, into = 0, count = 0;
+  for (const t of txs) {
+    if (!selected.has(t.id)) continue;
+    count++;
+    const cents = Math.round(t.value * 100);
+    if (t.type === "expense" || t.type === "withdrawal") out += cents; else into += cents;
+  }
+  return { count, out: out / 100, into: into / 100 };
+}

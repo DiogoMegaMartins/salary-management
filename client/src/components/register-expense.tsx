@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "wouter";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -20,13 +21,14 @@ const hoje = () => new Date().toLocaleDateString("sv-SE");
 
 /**
  * Botão sempre à mão, fixo no fundo da área de conteúdo, que abre um diálogo rápido para registar uma despesa.
- * Só existe no modo Básico, depois do arranque e com pelo menos um mês criado. No telemóvel esconde-se enquanto se escreve noutro campo.
+ * Só existe no modo Básico e só no Início, depois do arranque e com pelo menos um mês criado. No telemóvel esconde-se enquanto se escreve noutro campo.
  */
 export function RegisterBar() {
   const { data } = useAppState();
   const save = useSave();
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const [location] = useLocation();
   const [open, setOpen] = useState(false);
   const [typing, setTyping] = useState(false);
   const [value, setValue] = useState("");
@@ -47,7 +49,7 @@ export function RegisterBar() {
     return () => { document.removeEventListener("focusin", onIn); document.removeEventListener("focusout", onOut); };
   }, []);
 
-  if (!data || data.settings.onboardingDone === 0 || data.months.length === 0 || parseUiMode(data.settings.uiMode) !== "basico") return null;
+  if (location !== "/" || !data || data.settings.onboardingDone === 0 || data.months.length === 0 || parseUiMode(data.settings.uiMode) !== "basico") return null;
   const categories = data.categories.filter((c) => c.active).map((c) => c.name);
   const parcels = data.parcels.filter((p) => !p.archived);
 

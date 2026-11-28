@@ -111,3 +111,11 @@ export const closeMonthSchema = z.strictObject({
   note: text(2000).optional(),
 });
 export const reopenMonthSchema = z.strictObject({ note: text(2000).optional() });
+
+/* ------------------------------------------------- movimentos em lote (Organizar) */
+/** Vários movimentos de uma vez: mudar a categoria ou a parcela, ou eliminar. Tudo ou nada. */
+export const bulkTransactionsSchema = z.strictObject({
+  ids: z.array(id).min(1, "Escolhe pelo menos um movimento.").max(500, "No máximo 500 movimentos de cada vez."),
+  action: z.enum(["update", "delete"]),
+  patch: z.strictObject({ category: text(100).optional(), parcelId: id.nullable().optional() }).optional(),
+}).refine((v) => v.action === "delete" || (v.patch && Object.keys(v.patch).length > 0), { message: "Indica o que mudar.", path: ["patch"] });
